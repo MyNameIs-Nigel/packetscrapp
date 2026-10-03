@@ -1,5 +1,7 @@
 # Vision
 
+Planning baseline for October 2026; milestones below are targets, not completed delivery.
+
 ## The pitch
 
 Harvest scrap behind an asteroid belt for two minutes, choose between fortifying your core and arming your ship, then fight to be the last one standing when the belt drops.
@@ -44,13 +46,13 @@ The game must work with two players, and a bot fills in when only one human is o
 
 The server decides everything, and the source is public.
 
-**Why:** an open-source game cannot rely on hiding how it works. If the server validates every action and never sends a player information they should not have, reading the code gives a cheater nothing.
+**Why:** an open-source game cannot rely on hiding how it works. If the server validates every action and never sends a player information they should not have, reading the code does not grant authority over the game state. Automation and abuse still require limits and testing.
 
 ### Cheap to run
 
-The whole game runs on a $4 droplet plus free tiers.
+Target a small hosting budget, with server capacity and provider costs validated before launch. Include isolated development infrastructure in that budget.
 
-**Why:** a hobby project that costs real money each month gets shut down. A grid-based, tick-based design keeps the server light enough that the smallest machine is plenty.
+**Why:** a hobby project that costs real money each month gets shut down. A grid-based, tick-based design keeps the server light enough that a small machine may be sufficient; load tests determine the safe room limit.
 
 ## Fiction
 
@@ -74,7 +76,7 @@ The fiction is deliberately thin. It exists to make the rules feel natural, and 
 
 | Week | Dates | Goal |
 |---|---|---|
-| 1 | Oct 3 to 10 | Two browsers move ships in the same room, deployed end to end at `packetscr.app` |
+| 1 | Oct 3 to 10 | Two browsers move ships in the same room, deployed to development, then a validated tagged release at `packetscr.app` |
 | 2 | Oct 11 to 17 | Build phase: the Belt, harvesting, the shop, building |
 | 3 | Oct 18 to 24 | Battle: combat, cores, respawn, sudden death, win screen, the bot |
 | 4 | Oct 25 to 31 | Regions and health checks, spectators, playtests, tuning |
@@ -89,3 +91,7 @@ The fiction is deliberately thin. It exists to make the rules feel natural, and 
 - A first-time player understands the goal before their first match ends, without being told.
 - A solo visitor gets a match against the bot within 20 seconds.
 - Stopping the New York server sends new players to Atlanta without anyone changing a setting.
+
+## Operational acceptance
+
+A public launch also requires CI checks, isolated development and production, a tested release/rollback path, working alerts, and the smoke tests in [ENGINEERING.md](ENGINEERING.md). Main changes ship to development; only approved stable releases update the public game. See [DEPLOYMENT.md](DEPLOYMENT.md).

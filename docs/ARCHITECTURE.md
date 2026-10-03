@@ -1,5 +1,7 @@
 # Architecture
 
+Design specification; application code is not implemented yet. The diagram shows the planned production topology. Development uses isolated equivalents described in [DEPLOYMENT.md](DEPLOYMENT.md).
+
 ## Components
 
 ```mermaid
@@ -29,7 +31,7 @@ The server owns the game state. Clients send what they want to do, and the serve
 - The server owns the clock, so phase changes and cooldowns cannot be sped up from a browser.
 - The client draws what the server reports.
 
-**Why:** the code is public, so a cheater can read and modify the client freely. When the client has no say in the outcome, modifying it gains nothing.
+**Why:** the code is public, so a cheater can read and modify the client freely. When the client has no say in the outcome, the server can reject illegal actions; automation and other abuse still require explicit limits.
 
 ## Tick loop
 
@@ -99,7 +101,7 @@ Anything else, or anything malformed, is dropped.
 |---|---|---|
 | Actions per client | 30 per second | The game cannot use more than a few per tick. Excess is dropped, and sustained flooding disconnects the client. |
 | Connections per IP address | 20 | Stops one machine from filling a server. The limit is generous because players on the same campus or home network share one public address. |
-| Allowed origins | `https://packetscr.app` and local development | Stops other websites from embedding the game against these servers. It does not stop custom clients, which is why the server validates everything. |
+| Allowed origins | Exact client origin for the environment; localhost only in local mode | Stops other websites from embedding the game against these servers. It does not stop custom clients, which is why the server validates everything. |
 | Rooms per server | `MAX_ROOMS`, starting at 20 | Protects the 512 MB droplet. When the limit is reached, the server reports that it is not accepting players. |
 | Nickname | 1 to 16 characters, trimmed, control characters removed | Nicknames are shown to other players, so they are treated as untrusted input. |
 
@@ -124,7 +126,7 @@ The bot runs inside the room. Each tick it reads the same state a player in its 
 
 `shared/` exports a `PROTOCOL_VERSION` number. It increases whenever messages or state change in a way an old client could not handle.
 
-- Each server reports its protocol version from `/health`.
+- Each server reports its protocol version, environment, and full build SHA from `/health`.
 - The client ignores any region whose version differs from its own.
 
 **Why:** the client and the servers deploy separately and at slightly different times. Without the check, a player could join a server running different rules and see a broken game.
@@ -134,3 +136,7 @@ The bot runs inside the room. Each tick it reads the same state a player in its 
 - It does not store anything on disk.
 - It does not share state between regions.
 - It does not move a match when a server stops. Players in that match return to the start page, where region selection runs again.
+
+## Operational boundaries
+
+Development and production have separate region allowlists and never fail over across environments. Validate configuration at startup. Deployments must coordinate draining, protocol compatibility, client promotion, and rollback as specified in [DEPLOYMENT.md](DEPLOYMENT.md). Test capacity before raising room limits; monitor runtime metrics privately under [OPERATIONS.md](OPERATIONS.md).

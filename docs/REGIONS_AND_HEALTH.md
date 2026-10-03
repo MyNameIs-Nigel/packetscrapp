@@ -1,5 +1,7 @@
 # Regions and health checks
 
+Design specification; endpoints and infrastructure are not implemented or verified. The table below describes production. Development uses `nyc-dev.packetscr.app` and `atl-dev.packetscr.app` and its own client at `dev.packetscr.app`.
+
 ## Summary
 
 There are two game servers. Players are sent to the first healthy one in a fixed priority order, and they can override the choice from a small picker in the bottom-left corner of the start page.
@@ -19,7 +21,7 @@ The default region is the first healthy one in the list. A player in Atlanta is 
 
 ### The region list
 
-`shared/regions.ts` exports an ordered array. The order is the priority.
+The planned `shared/regions.ts` exports explicit per-environment allowlists. The production list is shown below; the build selects exactly one environment and rejects cross-environment entries. The order is the priority.
 
 ```ts
 export const REGIONS = [
@@ -33,7 +35,7 @@ export const REGIONS = [
 ### How the client chooses
 
 1. When the start page loads, the client requests `/health` from every region at the same time, with a 2-second timeout.
-2. A region is **available** when the request succeeds, `status` is `ok`, `accepting` is `true`, and `protocol` matches the client.
+2. A region is **available** when the request succeeds, `status` is `ok`, `accepting` is `true`, and both `protocol` and `environment` match the client.
 3. In automatic mode, the client uses the first available region in priority order.
 4. The client checks again every 30 seconds while the start page is open, and once more when the player presses Quick Play.
 
@@ -83,7 +85,8 @@ Every server answers `GET /health` on the same port as the game.
 {
   "status": "ok",
   "region": "nyc",
-  "version": "a1b2c3d",
+  "version": "0123456789abcdef0123456789abcdef01234567",
+  "environment": "production",
   "protocol": 1,
   "uptimeSeconds": 86400,
   "rooms": 3,
@@ -97,7 +100,8 @@ Every server answers `GET /health` on the same port as the game.
 |---|---|
 | `status` | `ok` when the server is running normally |
 | `region` | The region id from the server's `REGION` setting |
-| `version` | The git commit the server was built from |
+| `version` | The full git commit SHA the server was built from |
+| `environment` | `development` or `production` (local mode uses `local`) |
 | `protocol` | The server's `PROTOCOL_VERSION` |
 | `uptimeSeconds` | Time since the process started |
 | `rooms`, `players` | Current counts |
@@ -107,11 +111,11 @@ Every server answers `GET /health` on the same port as the game.
 Rules for the endpoint:
 
 - It is public and needs no login.
-- It sends `Cache-Control: no-store` and allows cross-origin requests from `https://packetscr.app`.
+- It sends `Cache-Control: no-store` and allows cross-origin requests only from the configured environment client origin. Validate WebSocket Origin separately.
 - It does no heavy work. It reads counters the server already keeps.
 - It reports nothing about memory, the operating system, or IP addresses.
 
-**Why one endpoint for everything:** the client, the deploy script, and the uptime monitor all need the same facts. One endpoint means one definition of "healthy".
+**Liveness and readiness differ:** `status: ok` describes a running process; `accepting: true` also requires spare capacity and no active drain. Deployment probes verify HTTP success, status, environment, region, full SHA, and protocol, followed by a synthetic WebSocket join. Public probes use no cache.
 
 **Why keep system details out:** the endpoint is public. Memory and OS details help an attacker and are of no use to players.
 
@@ -128,7 +132,7 @@ Rules for the endpoint:
 | The client | Before every match and every 30 s on the start page | To pick a region and drive the picker |
 | The deploy workflow | After each restart, until `version` matches the new commit | To confirm a release is live, or roll back if it is not |
 | An uptime monitor | Every minute, from outside both servers | To alert when a region goes down |
-| systemd | `Restart=always` on the service | To bring the process back after a crash |
+| systemd | `Restart=on-failure` on the service | To restart a crashed process; systemd does not poll `/health` |
 
 **Why an outside monitor as well:** the client's checks protect players, and they tell the developer nothing. Without an alert, a region could be down for days while traffic quietly fails over. Uptime Kuma on the homelab or a free hosted monitor both work, as long as the monitor does not run on the server it is watching.
 
@@ -173,4 +177,4 @@ One thing to verify: Cloudflare may close a proxied connection that stays idle f
 1. Bring up a server with the standard setup and a new `REGION` value.
 2. Add a DNS record for its hostname.
 3. Add one line to `shared/regions.ts` at the right priority.
-4. Deploy.
+4. Test capacity, monitoring, failover, and deployment in development, then release to production.

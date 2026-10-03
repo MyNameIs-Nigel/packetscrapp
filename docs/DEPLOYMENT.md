@@ -1,156 +1,132 @@
-# Deployment
+# Deployment and GitHub setup
 
-## Overview
+## Current status
 
-One push to `main` deploys everything.
+This is the delivery contract for the planned application. Only `.github/workflows/ci.yml` (repository checks) exists today. No game source, package manifest, build, server provisioning, updater, or application deployment workflow exists. GitHub settings alone will not deploy a game; complete the implementation checklist below first.
 
-| Part | How it deploys | Trigger |
+## Environments and triggers
+
+| Event | GitHub environment | Client | Game servers |
+|---|---|---|---|
+| Pull request | None | Build/test only | Isolated test processes |
+| Push to `main` | `development` | `dev.packetscr.app` | `nyc-dev.packetscr.app`, `atl-dev.packetscr.app` |
+| Published stable Release tagged `vMAJOR.MINOR.PATCH` | `production` | `packetscr.app` | `nyc.packetscr.app`, `atl.packetscr.app` |
+
+Hostnames are proposed infrastructure, not verified live services. Use separate Vercel projects, service accounts, SSH keys, service units, release directories, configuration, and ports per environment. Prefer separate hosts/containers; sharing a host also shares its failure and resource limits. Development must never select production regions, and production must never fall back to development.
+
+A tag push alone does **not** deploy production. Publish a non-prerelease GitHub Release for that tag. Drafts and prereleases do not deploy. `main` updates must never move the public site's domain or production server pointer.
+
+## Required application pipelines
+
+These are specifications for future workflows, not installed workflows.
+
+### CI: every pull request and push to main
+
+Use GitHub-hosted runners with read-only repository permission and no environment secrets. Pin actions to verified full commit SHAs. Install the pinned Node/npm toolchain and run `npm ci`, formatting, lint, strict type checks, unit/integration/browser tests, and the client/server builds. The command contract is in [ENGINEERING.md](ENGINEERING.md).
+
+Do not execute fork code through `pull_request_target`, on a game host, or in a privileged follow-up workflow. Cache dependencies, never credentials. Publish sanitized test reports even on failure. Build/test jobs must precede deploy jobs through explicit `needs` dependencies.
+
+### Development: push to main
+
+1. Validate the pushed commit with CI, then build the server and development client from that exact SHA on the runner.
+2. Produce immutable artifacts with a manifest containing full commit SHA, protocol version, toolchain versions, environment, and SHA-256 digests. No server-side dependency installation.
+3. A job declaring `environment: development` obtains only development credentials. Deploy New York, check its health and a synthetic WebSocket join, then authorize Atlanta to pull that exact artifact.
+4. Wait for Atlanta to report the expected version. Deploy the development client and test a room link and two-client match join through its real domain.
+5. Record artifact identities, previous versions, verification results, and deployment URLs in the job summary. Fail and roll back affected components when verification fails.
+
+Store development artifacts in a separate development channel (for example a dedicated object-storage bucket with a read-only token on Atlanta). Do not create stable GitHub Releases for every main commit. Only a successful development run should become eligible for production.
+
+### Production: published stable release
+
+Use `release: { types: [published] }`, with an explicit `prerelease == false` condition. Before accessing production secrets:
+
+1. Validate the tag against `^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$`. GitHub's `v*` glob is only an outer filter, not SemVer validation.
+2. Resolve the tag to a full commit SHA, verify it is reachable from `origin/main`, and verify that exact SHA passed CI and development smoke tests. Check out the resolved SHA, never the latest `main` or `target_commitish` text. Fetch sufficient history for the ancestry check.
+3. Reuse the tested immutable server artifact by digest; if retention has expired, rebuild and requalify the commit in development. Build the production client from the same source SHA with the production region allowlist, and test this environment-specific build too.
+4. Upload versioned bundles, checksums, and the manifest to that release. Restrict `contents: write` to the publishing job. Never overwrite assets on a retry; verify existing digests or fail.
+5. Require the `production` environment gate before any production mutation. Deploy New York, verify it, then publish the approved Atlanta update pointer and wait for Atlanta verification. Only then promote the production client.
+6. Mark delivery successful only when both regions and the client report the intended commit/protocol and smoke tests pass. A published Release alone is not evidence of deployment.
+
+Serialize all mutations per environment with a shared concurrency group (including rollback workflows) and `cancel-in-progress: false`. Canceling tests is safe; canceling a deployment halfway through is not. Recheck the selected version before mutation: GitHub concurrency is not a FIFO queue. Reject stale runs that would downgrade a newer successful deployment unless an explicit rollback was selected.
+
+GitHub's `published` event also includes prereleases, which is why the explicit guard matters. See [release events](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#release) and [action pinning](https://docs.github.com/en/actions/reference/security/secure-use).
+
+## GitHub settings to configure
+
+1. **Settings → Environments:** create `development` and `production`. Select deployment branches/tags: allow only the **branch** `main` for development and only **tags** `v*` for production. Add the corresponding site URLs. Environment rules restrict refs; they do not validate tag syntax or ancestry.
+2. For production, require a trusted reviewer and disable administrator bypass where available. Prevent self-review when another maintainer is available. A solo maintainer must either allow self-approval or appoint a second reviewer; do not configure an impossible approval gate.
+3. **Settings → Rules → Rulesets:** protect `main` against force pushes and deletion. Require pull requests, resolved discussions, and the `repository-checks` status check after its first successful run. Add application checks once implemented. Require code-owner review when the team can satisfy it. Protect `v*` tags against modification/deletion and restrict creation to release maintainers or a dedicated release identity; avoid broad bypass rights.
+4. **Settings → Actions → General:** default workflow token permission to read-only, restrict allowed actions, and require approval for outside contributors as appropriate. Grant write permissions only to the jobs that need them. Never give fork CI production secrets.
+5. **Settings → Code security:** enable private vulnerability reporting, Dependabot alerts/security updates, and secret scanning/push protection where available. Actions dependency updates are already configured; add npm updates when the lockfile exists.
+6. Populate environment-scoped configuration below only after infrastructure exists. Do not put production credentials in repository-wide secrets.
+7. Update the repository About description/topics and use the public website link once the game is actually available. No GitHub settings are changed by this documentation commit.
+
+Reference: [managing GitHub environments](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments).
+
+### Environment configuration contract
+
+Use the same names with different values in each GitHub environment. These names are reserved for the future workflows.
+
+| Kind | Name | Purpose |
 |---|---|---|
-| Client | Vercel builds `client/` and serves it | Vercel's GitHub integration, on push |
-| New York server | GitHub Actions copies a bundle over SSH and restarts the service | Workflow, on push to `main` |
-| Atlanta server | The node downloads the latest release itself | A timer on the node, every 5 minutes |
+| Variable | `CLIENT_URL` | Exact environment website origin |
+| Variable | `NYC_HOST`, `NYC_HEALTH_URL`, `ATL_HEALTH_URL` | Environment-specific SSH and health endpoints |
+| Variable | `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` | Separate Vercel project per environment |
+| Secret | `VERCEL_TOKEN` | Deployment token with the narrowest available scope; document if access spans projects |
+| Secret | `NYC_SSH_KEY` | Distinct key for the environment's limited deploy user |
+| Secret | `NYC_KNOWN_HOSTS` | Pinned SSH known-hosts entry, verified out of band |
+| Variable | `UPDATE_CHANNEL_URL` | Separate approved-update manifest location for each environment |
+| Secret | `UPDATE_CHANNEL_WRITE_TOKEN` | Narrow permission to publish artifacts/pointers for that environment only |
 
-## DNS (Cloudflare)
+Atlanta stores its channel read credential locally if needed; CI does not need inbound SSH access to Atlanta. Never put tokens in the public client, URLs, logs, or artifacts. Rotate credentials on exposure or maintainer departure and verify revocation. Do not obtain trust by running unverified `ssh-keyscan` immediately before deployment.
 
-| Name | Points to | Cloudflare proxy |
+## Vercel and DNS
+
+Use two projects: one serves `dev.packetscr.app`, the other `packetscr.app` (with `www` redirecting to the apex). Disconnect automatic Git deployments in **both** projects so pushes cannot bypass GitHub checks or approval. CI explicitly targets the environment's project using a pinned Vercel CLI. Each project can use its own Vercel production target (`--prod`); the GitHub environment and project ID determine whether it is the public game.
+
+Once workspaces exist, configure the build from the repository root so the client can resolve `shared/` and the root lockfile. Set the Vite output directory and rewrite `/r/*` to the app entry point. Build with `vercel build --prod`, upload with `vercel deploy --prebuilt --prod --skip-domain`, validate the staged deployment, then promote after the servers pass verification. Retain the previous deployment ID for rollback. See [Vercel CLI deployment](https://vercel.com/docs/cli/deploy).
+
+The client contains public configuration only. Build an explicit environment region allowlist; fail a production build containing development or localhost hosts. If preview protection blocks smoke tests, use its scoped bypass mechanism in CI without exposing that credential to browsers.
+
+| DNS record | Destination | Cloudflare proxy |
 |---|---|---|
-| `packetscr.app` | Vercel, using the records Vercel shows when the domain is added | Off (DNS only) |
-| `www` | Vercel, redirecting to the apex | Off (DNS only) |
-| `nyc` | The droplet's IP address | Off (DNS only) |
-| `atl` | The Cloudflare Tunnel | On (required by the tunnel) |
+| Apex, `www`, `dev` | Records supplied by the corresponding Vercel project | DNS only for this design |
+| `nyc`, `nyc-dev` | Respective server address | DNS only for direct Caddy TLS |
+| `atl`, `atl-dev` | Separate Cloudflare Tunnel routes | Proxied (required for Tunnel) |
 
-**Why the proxy is off for Vercel and New York:** Vercel and Caddy each issue their own certificates, and the proxy gets in the way of that. Leaving it off also avoids an extra network hop on game traffic.
+The `.app` domain requires HTTPS; public WebSocket connections use `wss://`. Verify DNS, certificates, WebSocket upgrades, and cache behavior in development before production. DNS-only is an architectural choice for the direct hosts, not a claim that Cloudflare proxying cannot work with Vercel or Caddy.
 
-**Why it is on for Atlanta:** the tunnel only works through Cloudflare's proxy, and hiding the home IP address is the reason for using a tunnel.
+## Server provisioning and rollout
 
-**Why every hostname needs HTTPS:** the whole `.app` top-level domain is HTTPS-only in browsers. A page on `https://packetscr.app` can only open `wss://` connections, never `ws://`.
+Use patched Ubuntu LTS, a pinned supported Node LTS matching CI, and systemd. Measure memory before choosing instance size; swap is an emergency buffer, not capacity. Allow only SSH and Caddy HTTP/HTTPS on New York; bind the game port to loopback. Use key-only SSH, no root login, and a distinct service user without a login shell.
 
-## Client on Vercel
+Each environment has `/opt/packetscrapp/<environment>/releases/<sha>/`, an atomic `current` symlink, `/etc/packetscrapp/<environment>.env`, and its own `packetscrapp-<environment>.service`. The runtime user must not be able to modify release files. The deploy user owns releases and can restart only its exact service through a narrowly scoped sudo rule.
 
-- The Vercel project's root directory is `client/`, and its output is Vite's `dist/`.
-- A rewrite sends `/r/*` to `index.html`, so private room links load the app.
-- The client needs no secrets. The region list is part of the bundle.
+Configuration includes `APP_ENV`, `REGION`, `PORT`, `MAX_ROOMS`, and `ALLOWED_ORIGINS`. Production allows only the production client origin; development allows only the development origin. Localhost is allowed only by local configuration. Verify HTTP CORS and WebSocket Origin independently; neither substitutes for input validation.
 
-## New York server (droplet)
+Caddy proxies the matching New York hostname to the environment's loopback port. Atlanta uses Cloudflare Tunnel with the same service/configuration layout. systemd should use `Restart=on-failure`, `NoNewPrivileges=true`, `ProtectSystem=strict`, `ProtectHome=true`, a private temporary directory, and explicit resource limits. Provisioning scripts and exact units still need to be written and tested.
 
-### One-time setup
+### Atlanta's approved-update channel
 
-| Step | Why |
-|---|---|
-| Ubuntu LTS with automatic security updates | Long support window, and patches apply without manual work |
-| 1 GB swap file | A safety margin on 512 MB of RAM |
-| Firewall allowing only ports 22, 80, and 443 | The game port is reachable only through Caddy |
-| SSH with keys only, no passwords, no root login | The SSH port is open to the internet, so the key is the control |
-| Node LTS installed from the official packages | The server bundle needs only the Node runtime |
-| A `packetscrapp` user with no login shell, which runs the service | A compromised game process has no shell and owns nothing else |
-| A `deploy` user that owns `/opt/packetscrapp` | CI can replace files without being root |
-| A sudo rule letting `deploy` restart only the game service | CI can restart the game and do nothing else as root |
-| Caddy installed from its official packages | Automatic certificates for `nyc.packetscr.app` |
+A timer may poll every five minutes, but must **not** deploy GitHub's generic latest release. Publishing a release happens before production approval and New York verification. Instead, CI publishes a channel pointer only after those gates pass. That pointer identifies environment, tag (production), full SHA, protocol, artifact URL, and digest. Protect writes with environment-specific credentials; authenticate reads over HTTPS and verify the manifest and artifact digest before activation. Checksums alone do not prove publisher identity.
 
-### Caddy
+The updater takes a local lock, rejects the wrong environment, downloads to a temporary directory, verifies the artifact, records the previous target, atomically activates, restarts, and probes local health. On failure it restores the previous target and records a failed deployment. Keep known-bad digests from retrying endlessly. CI waits longer than the polling interval plus the drain/startup budget and checks the public endpoint. A timeout is a failed rollout, not eventual success.
 
-```
-nyc.packetscr.app {
-    reverse_proxy localhost:2567
-}
-```
+### Draining, protocol changes, and rollback
 
-WebSocket connections pass through with no extra configuration.
+Never rely on two unsynchronized timers to stagger restarts. CI explicitly waits for one region before advancing the other. Before restart, stop new room creation and set `accepting: false`; let existing matches finish within a tested bounded drain timeout. Set systemd's stop timeout above that bound. Probe startup for up to 60 seconds **after** draining, not after the initial stop request. Before draining is implemented, announce that restarts terminate active matches; production launch requires a tested drain path.
 
-### Files on the server
+During a backward-compatible rollout, the old client must work against both server versions. If `PROTOCOL_VERSION` changes incompatibly, use a maintenance window (or implement parallel protocol pools later). Coordinate both servers and the client; do not promise uninterrupted service when old clients reject new servers. Prompt stale clients to refresh.
 
-```
-/opt/packetscrapp/
-  releases/<commit>/server.js   One folder per deployed commit
-  current -> releases/<commit>  Symlink to the live release
-/etc/packetscrapp.env           REGION, MAX_ROOMS, ALLOWED_ORIGINS, PORT
-```
+On failure, stop promotion and restore the previous approved channel pointer before rolling servers back, so Atlanta's updater cannot reinstall the failed version. Restore the previous client deployment if it was promoted. Verify the old SHA/protocol and a WebSocket join in both regions. Keep at least five server releases plus every active rollback target; do not prune a release still in use. See [OPERATIONS.md](OPERATIONS.md) for incident handling.
 
-**Why a folder per release and a symlink:** switching versions is one atomic step, and rolling back means pointing the symlink at the previous folder.
+## Implementation checklist before the first public release
 
-**Why settings live in an env file on the server:** the same bundle runs in every region. Only the env file differs.
-
-### systemd service
-
-The unit runs `node /opt/packetscrapp/current/server.js` as the `packetscrapp` user with:
-
-- `Restart=always`, so a crash or reboot brings the game back
-- `EnvironmentFile=/etc/packetscrapp.env`
-- `NoNewPrivileges=true` and `ProtectSystem=strict`, so the process cannot gain privileges or write outside its own directories
-- A stop timeout long enough for running matches to finish (see Draining)
-
-## Deploy workflow
-
-The workflow runs on pushes to `main` only, on GitHub-hosted runners.
-
-1. **Check.** Install dependencies, type-check, and run the tests.
-2. **Bundle.** esbuild produces a single `server.js` with the commit hash and protocol version built in.
-3. **Publish.** Attach `server.js` and its SHA-256 checksum to a GitHub Release tagged with the commit.
-4. **Ship to New York.** Copy the bundle to `releases/<commit>/` over SSH, point `current` at it, and restart the service.
-5. **Verify.** Request `https://nyc.packetscr.app/health` until `version` matches the new commit.
-6. **Roll back on failure.** If the version does not appear within a minute, point `current` back at the previous release, restart, and fail the workflow.
-
-**Why builds happen on GitHub's runners:** a build on the droplet would compete with live matches for 512 MB of RAM.
-
-**Why not a self-hosted runner:** on a public repo, a pull request from a fork could run its own code on the runner, which would be the game server.
-
-**Why only pushes to `main`:** pull requests never run the deploy job, so code from a fork cannot reach the deploy secrets.
-
-**Why verify with `/health`:** a restart that "succeeded" only shows that systemd ran a command. The health check shows that the new version is answering requests.
-
-### Secrets in GitHub
-
-| Secret | Purpose |
-|---|---|
-| `NYC_HOST` | The droplet's address |
-| `NYC_SSH_KEY` | A private key used only for deploys, belonging to the `deploy` user |
-| `NYC_HOST_KEY` | The droplet's SSH host key, so the workflow can confirm it is talking to the right machine |
-
-No secret exists for Atlanta.
-
-## Atlanta server (self-hosted)
-
-The container has the same users, folder layout, env file, and systemd service as the droplet, with `REGION=atl`. It runs `cloudflared` in place of Caddy.
-
-### Pull-based updates
-
-A systemd timer runs an update script every 5 minutes. The script:
-
-1. Asks GitHub for the latest release of the repo.
-2. Stops if that commit is already live.
-3. Downloads `server.js` and its checksum, and verifies the checksum.
-4. Places it in `releases/<commit>/`, points `current` at it, and restarts the service.
-5. Checks the local `/health` for the new version, and switches back if it does not appear.
-
-**Why pull:** GitHub's runners cannot open an SSH connection into a home network unless SSH is exposed to the internet. With pull, the node makes only outbound requests, and CI holds no credentials for it.
-
-**Why this is safe on a public repo:** only the workflow on `main` can publish a release, and release files on a public repo can be downloaded without a token.
-
-### Open decision: pull for New York too
-
-Using the pull method on both servers would mean one deploy mechanism and no server credentials in GitHub at all. The cost is that New York would update within five minutes of a push, not immediately, and the workflow could no longer verify and roll back the release itself. New York stays on SSH push until this is decided.
-
-## Draining before a restart
-
-Target behaviour, planned for week 4:
-
-1. On a stop signal, the server sets `accepting` to `false` and stops creating rooms.
-2. Clients checking `/health` see that and send new players to the other region.
-3. The server exits when its last match ends, or after a maximum wait slightly longer than one full match.
-4. systemd starts the new version.
-
-**Why:** region failover already exists for outages. Reusing it for restarts means a deploy does not interrupt anyone's match, as long as the two regions do not restart at the same moment. New York restarts on push and Atlanta on its timer, so they are naturally staggered.
-
-Until draining is built, a restart ends the matches in progress on that server. That is acceptable during development.
-
-## Rollback
-
-- **Server:** point `current` at the previous release folder and restart. Keep the last five releases on disk.
-- **Client:** promote the previous deployment in Vercel.
-- **Protocol changes:** if a release changed `PROTOCOL_VERSION`, roll the client and the servers back together. Otherwise the client will treat every region as unavailable.
-
-## Local development
-
-- One command runs the Vite dev server and a game server on `localhost`.
-- In development, the region list contains a single local entry.
-- The server's allowed origins include the local dev address in development only.
+- [ ] Add npm workspaces, pinned toolchain/lockfile, application commands, and example environment files.
+- [ ] Implement environment region allowlists, health/version metadata, WebSocket validation, and bounded draining.
+- [ ] Add reproducible client/server builds and test the actual bundle without `node_modules` on the target runtime.
+- [ ] Provision isolated services, TLS, update channels, credentials, and external monitoring.
+- [ ] Implement CI, development deployment, production release validation/promotion, and approved Atlanta updates as specified above.
+- [ ] Prove fork PRs cannot access deployment credentials and main cannot target production.
+- [ ] Exercise failed downloads, failed health checks, stale/invalid tags, prereleases, concurrent runs, and coordinated rollback in development.
+- [ ] Record a successful two-player development smoke test and restore drill for the exact release candidate.
