@@ -15,6 +15,8 @@ TypeScript, Canvas 2D, Vite, and authoritative Colyseus servers. A static client
 
 Start with the [documentation index](docs/README.md), [game design](docs/GAME_DESIGN.md), and [contributing guide](CONTRIBUTING.md). Small, tested changes with clear acceptance criteria are welcome.
 
+Development is planned across three concurrent teams: [Design](docs/design/README.md), [Engineering / Programming](docs/engineer/README.md), and [QA](docs/qa/README.md). The [delivery plan](docs/DELIVERY_PLAN.md) defines small work packages, dependencies, and measurable shared checkpoints. Team branches use `design/summary-of-branch`, `engineer/summary-of-branch`, and `qa/summary-of-branch` respectively. These plans are not completed milestones.
+
 To check the current repository (Python 3.9+):
 
 ```sh

@@ -52,7 +52,10 @@ packet-scrapp/
   server/              Colyseus rooms, tick loop, bot, /health and /rooms
   shared/              Game rules, config, message types, region list
   deploy/              Caddyfile, systemd units, environment-specific services and approved-channel updater
-  docs/                These documents
+  docs/                Source specifications and shared delivery plan
+    design/            Design team phases and acceptance handoffs
+    engineer/          Engineering / Programming team phases
+    qa/                QA team phases and cross-team acceptance matrix
   .github/workflows/   CI and deploy
 ```
 

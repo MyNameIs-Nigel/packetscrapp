@@ -72,18 +72,22 @@ The fiction is deliberately thin. It exists to make the rules feel natural, and 
 | Moving a live match between servers | Match state lives in memory. A five-minute match is cheap to lose. |
 | Sound and music | Stretch goal. They do not affect whether the game works. |
 
-## October plan
+## October delivery targets
 
-| Week | Dates | Goal |
-|---|---|---|
-| 1 | Oct 3 to 10 | Two browsers move ships in the same room, deployed to development, then a validated tagged release at `packetscr.app` |
-| 2 | Oct 11 to 17 | Build phase: the Belt, harvesting, the shop, building |
-| 3 | Oct 18 to 24 | Battle: combat, cores, respawn, sudden death, win screen, the bot |
-| 4 | Oct 25 to 31 | Regions and health checks, spectators, playtests, tuning |
+The [parallel delivery plan](DELIVERY_PLAN.md) replaces the original serial weekly allocation. [Design](design/README.md), [Engineering / Programming](engineer/README.md), and [QA](qa/README.md) each have independent phases with explicit artifact dependencies and shared acceptance gates. Dates are forecasts; evidence determines completion.
 
-**Why deploy in week 1:** requirement 3 is the one that depends on things outside the code, such as DNS, certificates, and the droplet. Solving it first means every later week ships to a real URL, and deployment problems surface while there is still time to fix them.
+| Window | Shared target |
+|---|---|
+| Oct 3 to 10 | Agree first contracts and tests; connect two browsers with server-owned movement; start isolated development deployment |
+| Oct 11 to 17 | Verify the harvest/build loop while combat contracts and delivery/rollback work advance |
+| Oct 18 to 24 | Complete combat and bounded endings; integrate bot/private/reconnect paths and regional/spectator flows; run playtests |
+| Oct 25 to 31 | Close player-journey, balance, capacity, recovery, and release gates; launch only when accepted |
 
-**Why regions come last:** the game needs one working server before it needs two. The health endpoint is cheap and ships in week 1 because deploys use it too. Only the second region and the picker wait until week 4.
+**Decision:** deploy a development prototype early and reserve production for the launch gate. **Why:** DNS, certificates, runtime limits, and hosting access need early proof, but the required release/rollback, draining, and full-match smoke evidence cannot be replaced by a calendar date. The former week-one public-release target is superseded; development deployment is not public-game completion.
+
+**Decision:** prepare both regional delivery paths early, while implementing player-facing selection and spectators after their contracts are ready. **Why:** one connected server is enough to develop the core rules, but discovering Atlanta access or approved-update failures in the final week would put launch at risk. See the delivery plan for independently startable work packages.
+
+The ten-second entry pillar, 15-second Quick Play lobby, and five-to-six-minute match target need explicit measurement and boundary decisions in D0/D2 before implementation. Their current wording is design intent, not proof that the starting numbers satisfy every layout.
 
 ## How to tell it worked
 

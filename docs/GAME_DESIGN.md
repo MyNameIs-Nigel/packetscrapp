@@ -2,6 +2,8 @@
 
 Design specification; gameplay is not implemented yet. Rule changes should include deterministic tests and a compatibility review under [ENGINEERING.md](ENGINEERING.md).
 
+The [Design phase plan](design/README.md) schedules rule, map, balance, and UI decisions. The [shared decision register](DELIVERY_PLAN.md) identifies unresolved edge cases and their owners; Engineering must use accepted contracts and QA checks them through the [acceptance matrix](qa/ACCEPTANCE_MATRIX.md). Starting values below remain hypotheses until validated.
+
 ## Summary
 
 Packet Scrapp is a free-for-all for 2 to 5 ships on a tile grid. Each player has a ship and a core. Destroyed ships respawn at their core until the core is destroyed. The last player with a ship wins.

@@ -4,6 +4,8 @@
 
 These are acceptance criteria for implementation. Today only the documentation checker runs; application commands below must be added with the first workspace scaffold. A passing documentation check does not mean the game works. Aim for small, verifiable changes and recoverable failures, not a promise of defect-free software.
 
+Implementation is divided into [Engineering team phases](engineer/README.md), with independent [QA phases](qa/README.md) and [Design contracts](design/README.md). The [shared delivery plan](DELIVERY_PLAN.md) controls cross-team handoffs and gates; the [acceptance matrix](qa/ACCEPTANCE_MATRIX.md) links each requirement to its evidence. Engineering branches use `engineer/summary-of-branch`; QA branches use `qa/summary-of-branch`; Design branches use `design/summary-of-branch`.
+
 ## Developer feedback loop
 
 1. Define observable acceptance criteria and failure cases before coding.
