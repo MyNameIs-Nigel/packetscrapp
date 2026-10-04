@@ -87,7 +87,7 @@ The [parallel delivery plan](DELIVERY_PLAN.md) replaces the original serial week
 
 **Decision:** prepare both regional delivery paths early, while implementing player-facing selection and spectators after their contracts are ready. **Why:** one connected server is enough to develop the core rules, but discovering Atlanta access or approved-update failures in the final week would put launch at risk. See the delivery plan for independently startable work packages.
 
-The D0 [scope and entry record](design/D0_SCOPE.md) defines the ten-second lobby and 20-second solo measures separately from the 15-second countdown. These are targets awaiting Engineering and QA review and runtime evidence. D2 still must prove the five-to-six-minute match bound for every layout; the starting numbers alone do not establish it.
+The accepted D0 [scope and entry record](design/D0_SCOPE.md) defines the ten-second lobby and 20-second solo measures separately from the 15-second countdown. PR #3 records Engineering/QA acceptance of these measurement boundaries; actual runtime timings remain unverified. D2 still must prove the five-to-six-minute match bound for every layout; the starting numbers alone do not establish it.
 
 ## How to tell it worked
 

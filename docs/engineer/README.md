@@ -1,6 +1,6 @@
 # Engineering / Programming team phases
 
-Status: E0 foundation is implemented on the engineering branch and awaits CI plus cross-team review; E1–E7 remain planned. The transport-only room and connection harness are not a playable game. Branches use `engineer/summary-of-branch`. Follow [shared gates and dependencies](../DELIVERY_PLAN.md), [engineering practices](../ENGINEERING.md), and the [QA acceptance matrix](../qa/ACCEPTANCE_MATRIX.md).
+Status: E0 is merged in PR #9; its original CI passed and the [gate audit](../PROGRESS.md) supplies independent foundation evidence and a build correction for review. E1–E7 remain planned. The [E1 handoff](E1_HANDOFF.md) tracks prerequisites, technical choices, PR slices and the G1 completion checklist. The transport-only room and connection harness are not a playable game. Branches use `engineer/summary-of-branch`. Follow [shared gates and dependencies](../DELIVERY_PLAN.md), [engineering practices](../ENGINEERING.md), and the [QA acceptance matrix](../qa/ACCEPTANCE_MATRIX.md).
 
 ## Responsibility and implementation boundaries
 

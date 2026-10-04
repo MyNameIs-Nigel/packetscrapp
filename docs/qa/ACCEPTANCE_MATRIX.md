@@ -1,6 +1,6 @@
 # Cross-team acceptance matrix
 
-All rows start **Planned**. This is a coverage contract, not a report of passing tests. Each work issue links one or more IDs and records evidence using the [shared handoff record](../DELIVERY_PLAN.md). QA owns verification; Design owns player-rule intent; Engineering owns implementation and developer tests. Phase IDs resolve in the [Design](../design/README.md), [Engineering](../engineer/README.md), and [QA](README.md) plans.
+Full acceptance rows remain **Planned** until their runtime scope is verified. The [gate audit](../PROGRESS.md) records passing E0 subsets separately; the [Q0/Q1 case catalog](Q0_Q1_PLAN.md) marks E1 cases Ready with runtime execution Blocked on implementation. This is a coverage contract, not a report of full passing tests. Each work issue links one or more IDs and records evidence using the [shared handoff record](../DELIVERY_PLAN.md). QA owns verification; Design owns player-rule intent; Engineering owns implementation and developer tests. Phase IDs resolve in the [Design](../design/README.md), [Engineering](../engineer/README.md), and [QA](README.md) plans.
 
 **Decision:** use stable acceptance IDs across teams and track detailed cases in linked issues. **Why:** one feature may land in several PRs and require multiple test layers without losing its original intent.
 

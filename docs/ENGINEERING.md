@@ -52,6 +52,8 @@ Use Node 24.21.0 and npm 11.19.0. `npm run dev` starts a local-only Colyseus tra
 
 Unit tests use fake clocks; integration tests use bounded waits for observable state rather than arbitrary sleeps. Reset ports, rooms, timers, storage, and sockets between tests. Fail on uncaught exceptions or leaked processes. Capture random seeds, logs, screenshots, and traces for failed tests, with tokens and player identifiers removed.
 
+The [Q0/Q1 catalog](qa/Q0_Q1_PLAN.md) pins E1 preparation: `createSeededRandom` implements Mulberry32 revision 1 with an unsigned 32-bit seed and independent reference vectors; `tests/fixtures/clock.ts` provides a manually advanced clock. Record algorithm/config revision and admitted join order for map replay. Seeded randomness is for simulation, never identity or credentials. The integration suite also rebuilds an isolated Git fixture after injecting stale output, and the bare-artifact smoke rejects missing/invalid/mismatched runtime settings.
+
 Do not solve flaky tests by increasing retries until green. Track an owner and deadline for any temporary quarantine. Avoid snapshots that only mirror implementation and mocks that bypass the security boundary. Coverage is a signal: require meaningful tests for changed behavior and all critical rules; set numerical thresholds after establishing a real baseline.
 
 ## Browser and release smoke procedure
@@ -88,4 +90,4 @@ Test connection churn, slow consumers, oversized payloads, network loss, memory 
 
 ## Merge and release gates
 
-Pull requests require repository checks now; add the application command suite when implemented. Merges must not skip required tests. Release candidates also require development smoke, capacity evidence for relevant changes, protocol review, and a rollback target. See [CONTRIBUTING.md](../CONTRIBUTING.md), [DEPLOYMENT.md](DEPLOYMENT.md), and [OPERATIONS.md](OPERATIONS.md).
+Pull requests require both repository and application checks; E0 implemented the root command suite and CI. Merges must not skip required tests. Release candidates also require development smoke, capacity evidence for relevant changes, protocol review, and a rollback target. See [CONTRIBUTING.md](../CONTRIBUTING.md), [DEPLOYMENT.md](DEPLOYMENT.md), and [OPERATIONS.md](OPERATIONS.md).

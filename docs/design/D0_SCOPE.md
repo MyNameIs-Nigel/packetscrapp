@@ -1,6 +1,6 @@
 # D0 scope and entry record
 
-Status: Design proposal, revision 1. Engineering and QA review is pending; no runtime measure has passed. This record explains the [Vision](../VISION.md) and [game rules](../GAME_DESIGN.md) rather than replacing them. It supplies the first work packages for [G0](../DELIVERY_PLAN.md) and acceptance IDs [A01, A02, A07, A08](../qa/ACCEPTANCE_MATRIX.md).
+Status: accepted Design contract, revision 1, merged in [PR #3](https://github.com/MyNameIs-Nigel/packetscrapp/pull/3); its checklist records Engineering/QA acceptance of measurement boundaries and first-slice examples. No runtime measure has passed. This record explains the [Vision](../VISION.md) and [game rules](../GAME_DESIGN.md) rather than replacing them. It supplies the first work packages for [G0](../DELIVERY_PLAN.md) and acceptance IDs [A01, A02, A07, A08](../qa/ACCEPTANCE_MATRIX.md).
 
 ## Scope decisions
 
@@ -12,7 +12,7 @@ Status: Design proposal, revision 1. Engineering and QA review is pending; no ru
 | Accounts, persistence, progression, teams, chat, touch controls, sound, and live match migration remain outside October scope. | They add services or interaction paths without helping the required two-person, understandable, reachable match. | [Vision](../VISION.md); maintainer approves any scope change. |
 | The ten-second entry target ends at a connected Quick Play lobby, not the start of a match. The 15-second countdown remains; solo build start has its own 20-second target. | A 15-second solo countdown and a ten-second solo match start cannot both be true. The revised wording makes each promise observable. | [Vision](../VISION.md); Engineering/QA review the timing budget before E1/E5. |
 
-These decisions confirm the D0 scope for review. They do not claim that the 20-second solo target is feasible on production networks or that the match-duration target is proven. D2 must calculate the latter for each layout.
+These accepted decisions establish D0 scope. They do not claim that the 20-second solo target is feasible on production networks or that the match-duration target is proven. D2 must calculate the latter for each layout.
 
 ## Vocabulary and player-facing meanings
 
@@ -56,7 +56,7 @@ The D4 [playtest plan](README.md#d4--playtests-and-balance-iterations) owns the 
 
 ## Initial work packages and handoffs
 
-These are issue-ready records. Create or link repository issues when the three teams assign people; a role label here is not a named reviewer or an accepted contract. Each issue should use the [handoff template](../DELIVERY_PLAN.md#work-package--handoff-record).
+These are handoff records. D0/D1 first-slice acceptance is recorded in PRs #3/#4; the [Q0 plan](../qa/Q0_Q1_PLAN.md) assigns the maintainer as accountable owner for unassigned work and #13/#14 track the immediate implementation handoff. Later role labels still need named reviewers. Each issue should use the [handoff template](../DELIVERY_PLAN.md#work-package--handoff-record).
 
 | Package | Accountable role and required reviewers | Prerequisite | Acceptance / deliverable | Next checkpoint |
 |---|---|---|---|---|
@@ -80,4 +80,4 @@ The seven defaults in the [documentation index](../README.md#open-decisions) rem
 | Sudden death shatters cores and closes the Belt | Design D2; Engineering/QA review tick boundaries and bound. |
 | All unspent scrap drops on death | Design D2/D4; QA records any snowballing in playtests. |
 
-Further D1–D3 ambiguities remain assigned in the [delivery decision register](../DELIVERY_PLAN.md#decisions-to-close-before-implementation). G0 stays open until named Engineering and QA reviewers accept these first-slice examples and Q0 maps them to cases.
+Current decision states and checkpoints are in the [gate audit](../PROGRESS.md#decision-ownership-and-next-checkpoints). D0/D1 first-slice examples have accepted PR records; G0 still needs review of the prepared [Q0 baseline](../qa/Q0_Q1_PLAN.md) and E1 technical supplement. Later D2/D3 ambiguities block their dependent slices, not the accepted E1 movement contract.

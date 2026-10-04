@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
@@ -34,6 +34,8 @@ const dirty =
 if (environment !== "local" && dirty) {
   throw new Error("Development/production artifacts require a clean checkout");
 }
+// A candidate must contain only files emitted by this build, including its manifest.
+await rm("dist", { recursive: true, force: true });
 await mkdir("dist/server", { recursive: true });
 await esbuild({
   entryPoints: ["server/src/main.ts"],
