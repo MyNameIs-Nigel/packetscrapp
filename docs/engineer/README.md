@@ -40,18 +40,18 @@ Packages and deliverables:
 
 ## E2 — Isolated development delivery
 
-**Entry:** infrastructure/access preparation can start during E0. Application deployment needs E0 artifacts and E1 health/join. The maintainer supplies host, DNS, Vercel, Tunnel, credential, and budget access; record missing access as a blocker while gameplay continues.
+**Entry:** infrastructure/access preparation can start during E0. Application deployment needs E0 artifacts and E1 health/join. The maintainer supplies host, DNS, Tunnel, credential, and budget access (Vercel is needed only for E7 production); record missing access as a blocker while gameplay continues.
 
 Packages and deliverables:
 
-1. Confirm hosting/update defaults and provision isolated development services, non-login runtime users, least-privilege deploy access, TLS routes, environment files, and explicit region allowlists. Keep secret values out of source, artifacts, chat, and logs.
-2. Deliver immutable artifacts to New York development with health and synthetic join verification, atomic activation, bounded startup, and restore of the previous artifact on failure. Exercise bundle startup on the actual target runtime.
-3. Implement Atlanta's authenticated approved-update channel with environment/digest verification, locking, failed-digest handling, and rollback. CI advances only after New York passes and waits for Atlanta's exact SHA.
-4. Publish the development client after both servers pass, with room-link rewrites, previous deployment retention, and a two-client public-route smoke. Serialize environment mutations and reject stale runs. Add external probes and verify alert delivery.
+1. Provision the Atlanta development host: pinned runtime, separate runtime/build/deploy users, least-privilege restart rule, Caddy, Cloudflare Tunnel routes for `dev.packetscr.app` and `atl-dev.packetscr.app`, environment files, and the development region allowlist. Keep secret values out of source, artifacts, chat, and logs.
+2. Implement the pull-based development builder: select the newest `main` SHA whose required checks passed, build and smoke-test it as the unprivileged build user, verify digests, activate atomically, verify local and public health plus a synthetic join, and restore the previous release on failure. Hold a lock, never downgrade without an explicit rollback, and skip recorded failed SHAs.
+3. Serve the development client from the same release with room-link rewrites, and post the `deploy/development` commit status for every result.
+4. Prepare the New York production droplet (runtime only, Caddy, loopback port) and exercise the production bundle there. Add external probes and verify alert delivery.
 
-**Exit / measurable check:** a validated main candidate reaches isolated `dev.packetscr.app` and both development regions over HTTPS/WSS; wrong environment/digest and failed restart cases restore the prior working version; main and fork PRs have no production mutation path; deployed health/client metadata agrees with the manifest. Initial Q5 delivery evidence closes G2. Match draining remains an E7/Q5 launch requirement after the lifecycle exists.
+**Exit / measurable check:** a validated main candidate reaches isolated `dev.packetscr.app` and `atl-dev.packetscr.app` over HTTPS/WSS; failed checks are never deployed; failed build, wrong digest, and failed restart cases restore the prior working version; main and fork PRs have no production mutation path; deployed health/client metadata agrees with the manifest. Initial Q5 delivery evidence closes G2. Match draining remains an E7/Q5 launch requirement after the lifecycle exists.
 
-**Handoff:** QA gets development URLs, manifests, sanitized workflow results, restore evidence, and an access owner. E6 consumes real regional endpoints; E3/E4 need not wait for this stream. If a one-region intermediate deploy is used for diagnosis, report it as partial E2 completion.
+**Handoff:** QA gets development URLs, manifests, sanitized workflow results, restore evidence, and an access owner. E6 consumes the real development endpoint; E3/E4 need not wait for this stream. The production release workflow is completed under E7.
 
 ## E3 — Harvest and build loop
 
@@ -106,11 +106,11 @@ Packages and deliverables:
 1. Implement parallel two-second health probes, priority selection, 30-second start-page refresh and Quick Play recheck, saved/manual preference and fallback, full/draining exclusion, protocol/environment checks, and offline/retry behavior.
 2. Implement region-bound private links without silently moving a join to another region; add room-list fetches for the selected region and protect against stale responses after selection changes.
 3. Implement spectator admission/cap, build-only match metadata, post-Belt full view, and eliminated-player transition; reject all spectator gameplay actions and avoid counting watchers as player seats.
-4. Verify public routes and graceful handling of regional loss, restore, and Tunnel lobby connections. New players fail over; existing live matches remain on their original server and are lost if that server stops.
+4. Verify public routes, the single-region offline notice and restore, and Tunnel lobby connections. Exercise multi-region failover with controlled endpoint fixtures; existing live matches remain on their original server and are lost if that server stops.
 
 **Exit / measurable check:** Q4/Q5 pass A04/A10/A11 with real serialized views plus controlled endpoint failures; ten spectators fit and the eleventh is rejected; restored New York attracts only new joins; cross-environment endpoints are never selected. E5/E6/Q4 and D4 acceptance close G5.
 
-**Handoff:** E7 gets the complete two-region application; QA gets exact topology/version/configuration for capacity and recovery qualification.
+**Handoff:** E7 gets the complete application with region selection ready for one or more regions; QA gets exact topology/version/configuration for capacity and recovery qualification.
 
 ## E7 — Capacity, recovery, and release candidate
 

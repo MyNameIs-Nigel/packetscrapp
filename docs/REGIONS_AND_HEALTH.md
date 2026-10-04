@@ -1,15 +1,19 @@
 # Regions and health checks
 
-Design specification; E0 implements a local `/health` endpoint with environment, region, protocol, and build SHA. Regional readiness, capacity, CORS/origin policy, and infrastructure are not implemented or verified. The table below describes production. Development uses `nyc-dev.packetscr.app` and `atl-dev.packetscr.app` and its own client at `dev.packetscr.app`.
+Design specification; E0 implements a local `/health` endpoint with environment, region, protocol, and build SHA. Regional readiness, capacity, CORS/origin policy, and infrastructure are not implemented or verified.
 
 ## Summary
 
-There are two game servers. Players are sent to the first healthy one in a fixed priority order, and they can override the choice from a small picker in the bottom-left corner of the start page.
+Each environment has its own region list. At launch, each list has one region:
 
-| Priority | Region | Hostname | Host |
+| Environment | Region | Hostname | Host |
 |---|---|---|---|
-| 1 | New York (`nyc`) | `nyc.packetscr.app` | DigitalOcean droplet |
-| 2 | Atlanta (`atl`) | `atl.packetscr.app` | Self-hosted Ubuntu CT container |
+| Production | New York (`nyc`) | `nyc.packetscr.app` | DigitalOcean droplet |
+| Development | Atlanta (`atl`) | `atl-dev.packetscr.app` | Self-hosted Ubuntu CT container |
+
+The client still selects regions from an ordered list, so adding a second production region later is a list change rather than a redesign. Players are sent to the first healthy region in priority order, and they can override the choice from a small picker in the bottom-left corner of the start page.
+
+**Why one production region:** the Atlanta host now runs the whole development environment. Sharing it with production would share its failures and resource limits. A second production region, such as a separate Atlanta container, can be added once it has its own budget. See [Adding a region later](#adding-a-region-later).
 
 ## Region selection
 
@@ -17,17 +21,17 @@ There are two game servers. Players are sent to the first healthy one in a fixed
 
 The default region is the first healthy one in the list. A player in Atlanta is still sent to New York while New York is healthy.
 
-**Why:** a small player base split across regions means empty lobbies in every region. Sending everyone to one place fills matches. The cost is a little latency, which a 15-tick grid game hides easily: Atlanta to New York adds a few tens of milliseconds.
+**Why:** a small player base split across regions means empty lobbies in every region. Sending everyone to one place fills matches. The cost is a little latency, which a 15-tick grid game hides easily: Atlanta to New York adds a few tens of milliseconds. This rule matters once an environment has more than one region.
 
 ### The region list
 
-The planned `shared/regions.ts` exports explicit per-environment allowlists. The production list is shown below; the build selects exactly one environment and rejects cross-environment entries. The order is the priority.
+The planned `shared/regions.ts` exports explicit per-environment allowlists. The build selects exactly one environment and rejects cross-environment entries. The order is the priority.
 
 ```ts
-export const REGIONS = [
-  { id: "nyc", label: "New York", host: "nyc.packetscr.app" },
-  { id: "atl", label: "Atlanta",  host: "atl.packetscr.app" },
-];
+export const REGIONS = {
+  production: [{ id: "nyc", label: "New York", host: "nyc.packetscr.app" }],
+  development: [{ id: "atl", label: "Atlanta", host: "atl-dev.packetscr.app" }],
+};
 ```
 
 **Why a file in the repo:** adding or reordering a region is a one-line change that goes through the normal review and deploy. There is no region service to host or secure.
@@ -47,7 +51,7 @@ Selection happens before a match, never during one.
 
 When a server reaches its room limit, it reports `accepting: false`. Automatic selection then skips it and uses the next region.
 
-**Why:** the second region exists for failover and for busy periods. Treating "full" like "down" for new players handles both cases with the same rule, and nobody has to notice the load and switch by hand.
+**Why:** a second region exists for failover and for busy periods. Treating "full" like "down" for new players handles both cases with the same rule, and nobody has to notice the load and switch by hand. With a single region, a full server shows the player that it is full and offers a retry.
 
 ### Manual choice
 
@@ -56,17 +60,17 @@ When a server reaches its room limit, it reports `accepting: false`. Automatic s
 - Choosing Automatic clears the saved choice.
 - If the saved region is unavailable, the client falls back to automatic selection for that visit and shows a short notice. The saved choice is kept.
 
-**Why fall back:** a player who picked Atlanta weeks ago should still be able to play when Atlanta is offline.
+**Why fall back:** a player who picked one region weeks ago should still be able to play when that region is offline.
 
 ### Room links carry the region
 
-A private room link looks like `https://packetscr.app/r/atl/K7QF`. The client connects to the region named in the link and ignores the player's own setting for that join.
+A private room link looks like `https://packetscr.app/r/nyc/K7QF`. The client connects to the region named in the link and ignores the player's own setting for that join.
 
 **Why:** a room exists on one server. Without the region in the link, a friend's client could look for the room on the wrong server.
 
 ## The region picker
 
-- It sits in the bottom-left corner of the start page as small text, for example `● New York ▾`.
+- It sits in the bottom-left corner of the start page as small text, for example `● New York ▾`. With one region it shows that region's status, and the list has only Automatic and that region.
 - The dot is green when the region in use is available and red when it is not.
 - Clicking it opens a short list. Each row shows the region name, its status, the round-trip time of the last health check, and the number of players online.
 - It does not appear during a match.
@@ -130,31 +134,34 @@ Rules for the endpoint:
 | Consumer | How | Why |
 |---|---|---|
 | The client | Before every match and every 30 s on the start page | To pick a region and drive the picker |
-| The deploy workflow | After each restart, until `version` matches the new commit | To confirm a release is live, or roll back if it is not |
-| An uptime monitor | Every minute, from outside both servers | To alert when a region goes down |
+| The deploy workflow and the Atlanta development builder | After each restart, until `version` matches the new commit | To confirm a release is live, or roll back if it is not |
+| An uptime monitor | Every minute, from outside the servers it watches | To alert when a region goes down |
 | systemd | `Restart=on-failure` on the service | To restart a crashed process; systemd does not poll `/health` |
 
-**Why an outside monitor as well:** the client's checks protect players, and they tell the developer nothing. Without an alert, a region could be down for days while traffic quietly fails over. Uptime Kuma on the homelab or a free hosted monitor both work, as long as the monitor does not run on the server it is watching.
+**Why an outside monitor as well:** the client's checks protect players, and they tell the developer nothing. Without an alert, a region could be down for days. Uptime Kuma on the homelab or a free hosted monitor both work, as long as the monitor does not run on the server it is watching. A homelab monitor can watch New York; Atlanta needs a monitor outside the homelab.
 
 ## What happens when a region goes down
 
+With one production region:
+
 | Situation | Result |
 |---|---|
-| New York stops between matches | New players go to Atlanta on their next health check. Nothing needs to be changed by hand. |
-| New York stops during a match | Matches on it are lost. Those players return to the start page, which then selects Atlanta. |
-| New York comes back | New players go to New York again. Matches in progress on Atlanta finish there. |
-| New York is full | New Quick Play players go to Atlanta until New York has room. |
-| Both are down | The start page says the servers are offline and offers a retry button. |
+| New York stops between matches | The start page says the server is offline and offers a retry button. The external monitor alerts the maintainer. |
+| New York stops during a match | Matches on it are lost. Those players return to the start page, which shows the offline notice. |
+| New York comes back | The next health check finds it, and players can join again. |
+| New York is full | New Quick Play players see that the server is full and can retry. |
+
+With a second production region, new players fail over to it automatically, and full servers overflow to it.
 
 **Why live matches are not moved:** match state exists only in the memory of one server. Copying it between regions in real time would need shared storage and far more code, to protect a match that lasts five minutes.
 
-## The Atlanta node
+## The Atlanta development host
 
-The Atlanta server runs the same bundle as New York inside an Ubuntu CT container, with `REGION=atl`.
+The Atlanta host runs the whole development environment inside an Ubuntu CT container: the development client, the game server built with `PACKET_ENV=development` and `PACKET_REGION=atl`, and the builder that deploys each green `main` commit. See [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ### Reaching it from the internet
 
-The default is a **Cloudflare Tunnel**: a small `cloudflared` service in the container makes an outbound connection to Cloudflare, and `atl.packetscr.app` routes through it to the game server's local port.
+The default is a **Cloudflare Tunnel**: a small `cloudflared` service in the container makes an outbound connection to Cloudflare. `dev.packetscr.app` routes through it to the client's static file server, and `atl-dev.packetscr.app` routes to the game server's local port.
 
 **Why a tunnel:**
 
@@ -167,14 +174,15 @@ The alternative is forwarding ports 80 and 443 to the container and running Cadd
 
 One thing to verify: Cloudflare may close a proxied connection that stays idle for long. A match sends state many times a second, so game connections stay active. Lobby connections should send a periodic ping.
 
-### Limits of a home-hosted region
+### Limits of a home-hosted environment
 
-- Home upload bandwidth and power are less reliable than a data center. That is acceptable for a second-priority region.
-- If it later becomes the busier region, moving it to a rented server is a DNS change and an environment setting.
+- Home upload bandwidth and power are less reliable than a data center. That is acceptable for development.
+- Moving development to a rented server later is a DNS change and a host setup; the builder works the same anywhere it can reach GitHub.
 
 ## Adding a region later
 
-1. Bring up a server with the standard setup and a new `REGION` value.
+1. Bring up a server with the standard setup and a new `PACKET_REGION` value. A production region needs its own host or container, separate from development.
 2. Add a DNS record for its hostname.
-3. Add one line to `shared/regions.ts` at the right priority.
-4. Test capacity, monitoring, failover, and deployment in development, then release to production.
+3. Add one line to that environment's list in `shared/regions.ts` at the right priority.
+4. Extend the production release workflow to deploy it after New York passes.
+5. Test capacity, monitoring, failover, and deployment, then release to production.

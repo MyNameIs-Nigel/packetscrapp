@@ -40,10 +40,10 @@ The [delivery decision register](DELIVERY_PLAN.md) assigns owners and checkpoint
 
 | # | Decision | Default in these docs | Where |
 |---|---|---|---|
-| 1 | Does a full server count as unavailable for automatic region selection? | Yes, so overflow spills to the next region | REGIONS_AND_HEALTH |
-| 2 | How does the Atlanta node accept traffic from a home network? | Cloudflare Tunnel | REGIONS_AND_HEALTH, DEPLOYMENT |
-| 3 | How does the Atlanta node receive deploys? | It polls an environment-specific approved artifact pointer | DEPLOYMENT |
-| 4 | Should New York also switch to pull-based deploys? | No, it keeps SSH push for now | DEPLOYMENT |
+| 1 | Does a full server count as unavailable for automatic region selection? | Yes, so overflow spills to the next region when one exists | REGIONS_AND_HEALTH |
+| 2 | How does the Atlanta development host accept traffic from a home network? | Cloudflare Tunnel | REGIONS_AND_HEALTH, DEPLOYMENT |
+| 3 | How does the Atlanta development host receive deploys? | It pulls each green `main` commit, builds it, and deploys it in place | DEPLOYMENT |
+| 4 | How does the New York production server receive deploys? | A GitHub-hosted release workflow builds the bundle and pushes it over SSH | DEPLOYMENT |
 | 5 | Harvest by shooting deposits, or by bumping into them? | Shooting | GAME_DESIGN |
 | 6 | What does sudden death do? | Cores shatter and the Belt closes in | GAME_DESIGN |
 | 7 | Does unspent scrap drop on death? | Yes, all of it | GAME_DESIGN |

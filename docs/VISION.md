@@ -85,7 +85,7 @@ The [parallel delivery plan](DELIVERY_PLAN.md) replaces the original serial week
 
 **Decision:** deploy a development prototype early and reserve production for the launch gate. **Why:** DNS, certificates, runtime limits, and hosting access need early proof, but the required release/rollback, draining, and full-match smoke evidence cannot be replaced by a calendar date. The former week-one public-release target is superseded; development deployment is not public-game completion.
 
-**Decision:** prepare both regional delivery paths early, while implementing player-facing selection and spectators after their contracts are ready. **Why:** one connected server is enough to develop the core rules, but discovering Atlanta access or approved-update failures in the final week would put launch at risk. See the delivery plan for independently startable work packages.
+**Decision:** prepare both delivery paths early, the Atlanta development builder and the New York production release, while implementing player-facing selection and spectators after their contracts are ready. **Why:** one connected server is enough to develop the core rules, but discovering Atlanta access, builder, or release failures in the final week would put launch at risk. See the delivery plan for independently startable work packages.
 
 The accepted D0 [scope and entry record](design/D0_SCOPE.md) defines the ten-second lobby and 20-second solo measures separately from the 15-second countdown. PR #3 records Engineering/QA acceptance of these measurement boundaries; actual runtime timings remain unverified. D2 still must prove the five-to-six-minute match bound for every layout; the starting numbers alone do not establish it.
 
@@ -94,7 +94,7 @@ The accepted D0 [scope and entry record](design/D0_SCOPE.md) defines the ten-sec
 - Two people on different networks finish a match without help.
 - In an uncoached first match, a new player can explain the objective and core/respawn rule when asked immediately after the results appear; D4 samples at least five first-time players and targets four correct explanations.
 - A solo visitor enters the build phase against a visibly labelled bot within 20 seconds of pressing Quick Play on the agreed test network.
-- Stopping the New York server sends new players to Atlanta without anyone changing a setting.
+- Stopping the New York server shows new players a clear offline notice with a retry button, and the external monitor alerts the maintainer.
 
 ## Operational acceptance
 

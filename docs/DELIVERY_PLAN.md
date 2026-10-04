@@ -82,7 +82,7 @@ Current states, evidence and owners are in [PROGRESS.md](PROGRESS.md#shared-gate
 | G3 — Build loop | E3/Q2 pass for 2, 3, 4, and 5 participants; resource conservation, placement restrictions, hidden-state checks, and timer boundaries pass | Accepted D1 contract, rule/SDK/browser results, Design review |
 | G4 — Complete match | E4/Q3 pass: battle, core loss, respawn eligibility, draw, bounded sudden death, and results resolve deterministically | Accepted D2 contract and reproducible full-match evidence |
 | G5 — Complete player journeys | E5/E6 and Q4 pass: private/replay/solo flows, reconnect, spectators, and region selection work; D4 playtest acceptance passes | Design playtest report plus QA journey and visibility results |
-| G6 — Launch ready | D5/E7/Q5/Q6 pass: capacity, soak, alerts, drain, two-region release/rollback, cross-network smoke, and security checks are evidenced | QA recommendation, Design acceptance, Engineering readiness, maintainer approval |
+| G6 — Launch ready | D5/E7/Q5/Q6 pass: capacity, soak, alerts, drain, development and production release/rollback, cross-network smoke, and security checks are evidenced | QA recommendation, Design acceptance, Engineering readiness, maintainer approval |
 
 G2 and G3 can finish in either order. G4 does not wait for G2 locally, but G6 requires both. A gate pass is tied to a candidate; later changes rerun impacted checks and the final release smoke suite. Passing a team phase never waives another team's gate.
 
@@ -115,7 +115,7 @@ Defaults in the [documentation index](README.md) remain proposals until reviewed
 | Hull upgrade healing, turret targeting/occlusion/ties, scrap pickup collisions | Design, D2 | Deterministic outcomes and economy invariants |
 | Private-host departure, bot insertion control, reconnect identity, spectator waiting/disposal | Design + Engineering, D3 | Legal role/state transitions; current five-message list does not specify how a host adds a bot |
 | Hidden build state versus other-player core markers | Design + Engineering, D1/D3 | Exact public metadata and per-role state views without revealing enemy layouts |
-| Full-region default, Atlanta Tunnel and approved pulls, New York SSH | Engineering + maintainer, E2/E6 | Confirm index defaults, access and budget, failure modes, protocol/version policy; QA verifies |
+| Full-region default, Atlanta development Tunnel and pull-build, New York production SSH push | Engineering + maintainer, E2/E6 | Confirm index defaults, access and budget, failure modes, protocol/version policy; QA verifies |
 | Capacity and performance budgets | Engineering + QA, Q0/E7 | Workload, hardware, numerical thresholds, and measured safe room limit before launch |
 
 ## Branches and integration
