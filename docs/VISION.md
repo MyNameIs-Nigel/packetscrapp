@@ -18,11 +18,11 @@ The October project has three hard requirements. Every other decision serves the
 
 ## Design pillars
 
-### Playing within ten seconds of opening the link
+### Joining a connected lobby within ten seconds of Quick Play
 
-A player types a nickname and presses Quick Play. There are no accounts.
+A player types a nickname and presses Quick Play. There are no accounts. The ten-second target measures from pressing Quick Play with a valid nickname to entering a connected lobby on the agreed test network. It does not include time spent typing, the lobby countdown, or the start of the build phase. A solo player's separate target is to start the build phase against a labelled bot within 20 seconds of pressing Quick Play.
 
-**Why:** every step between the link and the game loses players, and a sign-up form loses the most. A small game needs every visitor it gets, because a multiplayer game with nobody online is not playable at all.
+**Why:** every step between the link and the lobby loses players, and a sign-up form loses the most. The 15-second Quick Play countdown gives another person time to join; calling that wait "playing within ten seconds" would promise an impossible solo start.
 
 ### Rules you learn by playing
 
@@ -87,13 +87,13 @@ The [parallel delivery plan](DELIVERY_PLAN.md) replaces the original serial week
 
 **Decision:** prepare both regional delivery paths early, while implementing player-facing selection and spectators after their contracts are ready. **Why:** one connected server is enough to develop the core rules, but discovering Atlanta access or approved-update failures in the final week would put launch at risk. See the delivery plan for independently startable work packages.
 
-The ten-second entry pillar, 15-second Quick Play lobby, and five-to-six-minute match target need explicit measurement and boundary decisions in D0/D2 before implementation. Their current wording is design intent, not proof that the starting numbers satisfy every layout.
+The D0 [scope and entry record](design/D0_SCOPE.md) defines the ten-second lobby and 20-second solo measures separately from the 15-second countdown. These are targets awaiting Engineering and QA review and runtime evidence. D2 still must prove the five-to-six-minute match bound for every layout; the starting numbers alone do not establish it.
 
 ## How to tell it worked
 
 - Two people on different networks finish a match without help.
-- A first-time player understands the goal before their first match ends, without being told.
-- A solo visitor gets a match against the bot within 20 seconds.
+- In an uncoached first match, a new player can explain the objective and core/respawn rule when asked immediately after the results appear; D4 samples at least five first-time players and targets four correct explanations.
+- A solo visitor enters the build phase against a visibly labelled bot within 20 seconds of pressing Quick Play on the agreed test network.
 - Stopping the New York server sends new players to Atlanta without anyone changing a setting.
 
 ## Operational acceptance

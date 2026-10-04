@@ -1,6 +1,6 @@
 # D1 start, lobby, and build HUD wireframes
 
-Status: Design proposal, revision 1. These text wireframes describe visible behavior for the [game design](../GAME_DESIGN.md) and [Vision](../VISION.md); they are not a built client or a verified browser layout. Engineering and QA review is pending. D3 owns complete private-room, reconnect, region fallback, and spectator journeys. D1 economy must approve the exact build-radius metric and rejection reasons before E3 treats this as a final purchase contract.
+Status: accepted Design contract, revision 1. These text wireframes describe visible behavior for the [game design](../GAME_DESIGN.md) and [Vision](../VISION.md); they are not a built client or a verified browser layout. D3 owns complete private-room, reconnect, region fallback, and spectator journeys. The accepted D1 economy contract defines the Manhattan build radius and purchase rejection rules used here.
 
 ## Start page
 
@@ -58,13 +58,13 @@ The lobby is a waiting room, not the match start. Its countdown comes from the s
 │ Enemy sectors hidden                                         │
 │                                                              │
 │                                                              │
-│ Scrap 50  |  1 Wall 10  |  2 Turret 40  |  Q Blaster 50      │
+│ Scrap 50* |  1 Wall 10  |  2 Turret 40  |  Q Blaster 50      │
 │           E Hull 40  |  Space Shoot/Harvest                  │
 │  Move WASD/arrows     feedback: “Need 10 scrap for Wall.”    │
 └──────────────────────────────────────────────────────────────┘
 ```
 
-The HUD uses DOM text for time, health, scrap, roster, shop, warning, and feedback; Canvas draws the board and tile highlight. The highlight shows only tiles the server would currently allow the player to build on under the accepted D1 economy/radius rule. The front tile gets an extra outline so pressing 1 or 2 has an obvious target. A dim or crossed-out shop item still shows its key and price; an unaffordable action reports why it failed. Next-level upgrade prices follow the [shop table](../GAME_DESIGN.md#the-shop); capped upgrades show “MAX” and never suggest another purchase.
+The HUD uses DOM text for time, health, scrap, roster, shop, warning, and feedback; Canvas draws the board and tile highlight. The `Scrap 50*` wireframe is an example after harvesting; every player starts at 0 scrap. The highlight predicts legal structure tiles from the latest authoritative state received by the client under the accepted D1 economy/radius rule. A state change or network delay can make that prediction stale: the server remains the final authority, and a rejected request updates the highlight and gives a visible reason. The front tile gets an extra outline so pressing 1 or 2 has an obvious target. A dim or crossed-out shop item still shows its key and price; an unaffordable action reports why it failed. Next-level upgrade prices follow the [shop table](../GAME_DESIGN.md#the-shop); capped upgrades show “MAX” and never suggest another purchase.
 
 The build view can show map dimensions, own sector, and the lethal Belt edge. The roster shows nickname, BOT label, and a core-active/destroyed marker as text. It does not reveal an enemy sector's ship position, structures, deposits, pickups, core health, or build choices; hiding pixels is insufficient if the server sent those entities. An unowned sector is hidden until battle too. QA checks received state under A04.
 
@@ -90,6 +90,6 @@ Tab moves through controls only when focus leaves the game surface; typing into 
 1. **A01/A02:** Given a keyboard user on the start page, when they enter a valid nickname and activate Quick Play, then they can identify the objective and reach a connected lobby with visible participant count and server countdown. A single human sees the bot policy before start.
 2. **A04:** Given a build-phase player, when they inspect the display and received state, then only their sector entities are available; the roster contains public labels/status but no hidden enemy layout or health.
 3. **A05:** Given insufficient scrap for Wall, when the user presses 1, then a text reason appears, the price remains visible, and scrap is unchanged. Given an occupied or out-of-radius front tile, 1 or 2 reports the applicable reason and performs no purchase.
-4. **A05:** Given a legal structure tile at the accepted radius boundary, when the player aims at it, then its eligibility highlight and resulting purchase agree with the server. D1 economy must settle the radius metric before this can be scored.
+4. **A05:** Given a legal structure tile at Manhattan distance 8 from the core and an up-to-date authoritative state, when the player aims at it, then the eligibility highlight and resulting purchase agree with the server. At distance 9 the tile is not highlighted as eligible. If a later server change invalidates a highlighted tile, the purchase is rejected without a scrap deduction, the highlight refreshes, and the player sees the reason.
 
 These wireframes assume a desktop keyboard and a readable typical laptop viewport. Engineering must verify actual layout, focus, contrast, and text reflow in built browsers with QA; this document is not visual or accessibility test evidence.

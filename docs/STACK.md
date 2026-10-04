@@ -1,6 +1,6 @@
 # Stack
 
-Planned stack, not installed dependencies. Only documentation and repository CI exist today. Validate package APIs, supported runtime versions, pricing, and capacity during implementation.
+The E0 workspace now pins Node 24.21.0, npm 11.19.0, Vite, Colyseus 0.18 components, the SDK, and test tools. Gameplay and deployment choices below are still plans. Validate hosting pricing and capacity during implementation.
 
 ## Overview
 
@@ -16,7 +16,7 @@ A static canvas client on Vercel talks over `wss://` to Colyseus game servers, o
 | Rendering | Canvas 2D, drawn with simple shapes | A top-down grid of ships, blocks, and beams needs nothing more. There is no art pipeline to maintain and no rendering library to learn in a one-month build. |
 | UI framework | None | The start page is a nickname field, two buttons, a match list, and a region picker. Plain DOM code handles that without adding React to the bundle. |
 | Client hosting | Vercel | It serves static files from a CDN; GitHub-gated CLI deployments target separate development and production projects. It never carries game traffic, so its WebSocket limits do not apply. |
-| Game server | Node (pinned supported LTS) with Colyseus 0.18 | Rooms, the 5-player cap, matchmaking, reconnection, and per-client state filtering are built in. Writing those by hand on plain `ws` would use up much of the month. |
+| Game server | Node 24.21.0 with Colyseus 0.18 | Rooms, the 5-player cap, matchmaking, reconnection, and per-client state filtering are built in. Writing those by hand on plain `ws` would use up much of the month. |
 | WebSocket transport | Colyseus default (`ws`) | It is pure JavaScript, so the server bundles into one file. The faster uWebSockets transport is a native module and would complicate builds for speed this game does not need. |
 | Bot | Server-side, inside the room | The bot calls the same action functions a human's messages do. It needs no extra process or connection. |
 | Persistence | None | There are no accounts or scores to store. Match state lives in memory and is gone when the match ends. |
@@ -36,11 +36,13 @@ A static canvas client on Vercel talks over `wss://` to Colyseus game servers, o
 
 | Workspace | Packages |
 |---|---|
-| `server` | `colyseus`, `@colyseus/schema` |
+| `server` | `@colyseus/core`, `@colyseus/ws-transport`, `@colyseus/schema` |
 | `client` | `@colyseus/sdk` |
 | Dev tooling | `typescript`, `vite`, `esbuild`, `vitest`, `tsx` |
 
 **Why so few:** every dependency is code to audit and keep up to date. A short list is also easier for contributors to an open-source project to follow.
+
+E0 uses the focused Colyseus core and WebSocket packages instead of the `colyseus` umbrella package, which also installs unused auth, monitoring, playground, and Redis modules. Server/core 0.18.18, transport 0.18.4, schema 5.0.36, and SDK 0.18.5 are pinned and tested together.
 
 **Version policy:** pin exact versions in `package.json` and commit the lockfile. Colyseus has not reached 1.0, so minor versions can change APIs. Use a documented compatible Colyseus server/schema/SDK set; package version numbers need not be identical. Test it end to end before upgrades.
 
@@ -69,4 +71,4 @@ packet-scrapp/
 
 ## Delivery and dependency maintenance
 
-Main deploys only to development; published stable releases deploy to production through environment approval. See [DEPLOYMENT.md](DEPLOYMENT.md). Pin the Node/npm toolchain alongside the lockfile and CI/runtime configuration. Dependabot currently covers Actions; add npm workspace updates when manifests exist. Treat the single-file server bundle as a requirement to verify: test for dynamic imports, native dependencies, and runtime assets before assuming a bare Node runtime is enough.
+Main deploys only to development once delivery exists; published stable releases deploy to production through environment approval. See [DEPLOYMENT.md](DEPLOYMENT.md). The Node/npm toolchain, lockfile, CI, and npm Dependabot updates are configured. The E0 server bundle starts on pinned Node from an empty directory and accepts a real SDK client; repeat that check when runtime dependencies change.

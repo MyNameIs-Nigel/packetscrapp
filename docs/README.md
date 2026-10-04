@@ -1,6 +1,6 @@
 # Packet Scrapp docs
 
-Packet Scrapp is a planned space-themed multiplayer browser game targeting `packetscr.app`. The repository currently contains design documents and repository checks only. These documents specify intended behavior, not verified implementation or live infrastructure.
+Packet Scrapp is a planned space-themed multiplayer browser game targeting `packetscr.app`. The repository has design documents and an E0 connection harness. The game rules, player journeys, and live infrastructure remain unverified and unimplemented.
 
 ## Reading order
 
