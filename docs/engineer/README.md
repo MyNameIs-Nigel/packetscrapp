@@ -1,6 +1,6 @@
 # Engineering / Programming team phases
 
-Status: all phases planned; no application code is delivered by this roadmap. Branches use `engineer/summary-of-branch`. Follow [shared gates and dependencies](../DELIVERY_PLAN.md), [engineering practices](../ENGINEERING.md), and the [QA acceptance matrix](../qa/ACCEPTANCE_MATRIX.md).
+Status: E0 foundation is implemented on the engineering branch and awaits CI plus cross-team review; E1–E7 remain planned. The transport-only room and connection harness are not a playable game. Branches use `engineer/summary-of-branch`. Follow [shared gates and dependencies](../DELIVERY_PLAN.md), [engineering practices](../ENGINEERING.md), and the [QA acceptance matrix](../qa/ACCEPTANCE_MATRIX.md).
 
 ## Responsibility and implementation boundaries
 

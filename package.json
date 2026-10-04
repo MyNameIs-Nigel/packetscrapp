@@ -1,0 +1,41 @@
+{
+  "name": "packet-scrapp",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "client",
+    "server",
+    "shared"
+  ],
+  "engines": {
+    "node": "24.21.0",
+    "npm": "11.19.0"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "format:check": "prettier --check client server shared tests scripts/*.mjs eslint.config.mjs playwright.config.ts tsconfig.base.json package.json",
+    "lint": "eslint client/src server/src shared/src tests scripts/*.mjs",
+    "typecheck": "tsc -p shared/tsconfig.json --noEmit && tsc -p server/tsconfig.json --noEmit && tsc -p client/tsconfig.json --noEmit && tsc -p tests/tsconfig.json --noEmit",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "pretest:e2e": "npm run build",
+    "test:e2e": "playwright test",
+    "smoke:artifact": "node scripts/smoke-artifact.mjs",
+    "build": "node scripts/build.mjs"
+  },
+  "devDependencies": {
+    "@colyseus/sdk": "0.18.5",
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.63.0",
+    "@types/node": "24.19.1",
+    "esbuild": "0.28.2",
+    "eslint": "10.12.0",
+    "prettier": "3.9.9",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.0",
+    "vite": "8.3.2",
+    "vitest": "5.0.3"
+  }
+}

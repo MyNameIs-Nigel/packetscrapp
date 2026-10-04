@@ -1,0 +1,10 @@
+{
+  "name": "@packetscrapp/client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@colyseus/sdk": "0.18.5",
+    "@packetscrapp/shared": "0.0.0"
+  }
+}

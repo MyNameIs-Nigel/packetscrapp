@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping build Packet Scrapp. The repository currently contains design documents and repository checks; application commands are specified in [engineering practices](docs/ENGINEERING.md) but are not available yet.
+Thanks for helping build Packet Scrapp. The E0 workspace and connection harness are available; gameplay and deployment remain planned. Use the root application commands in [engineering practices](docs/ENGINEERING.md).
 
 ## Workflow
 

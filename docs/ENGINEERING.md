@@ -2,7 +2,7 @@
 
 ## Status and quality standard
 
-These are acceptance criteria for implementation. Today only the documentation checker runs; application commands below must be added with the first workspace scaffold. A passing documentation check does not mean the game works. Aim for small, verifiable changes and recoverable failures, not a promise of defect-free software.
+These are acceptance criteria for implementation. E0 adds a runnable workspace and application checks. They currently cover configuration, a transport-only room, a real SDK join, and a built-browser connection. Passing them does not mean gameplay or delivery works. Aim for small, verifiable changes and recoverable failures, not a promise of defect-free software.
 
 Implementation is divided into [Engineering team phases](engineer/README.md), with independent [QA phases](qa/README.md) and [Design contracts](design/README.md). The [shared delivery plan](DELIVERY_PLAN.md) controls cross-team handoffs and gates; the [acceptance matrix](qa/ACCEPTANCE_MATRIX.md) links each requirement to its evidence. Engineering branches use `engineer/summary-of-branch`; QA branches use `qa/summary-of-branch`; Design branches use `design/summary-of-branch`.
 
@@ -21,9 +21,11 @@ python3 scripts/check_docs.py
 git diff --check
 ```
 
-### Application command contract (not implemented)
+### Application command contract (E0 harness implemented)
 
 Use root npm scripts so contributors and CI run the same commands. Pin Node and npm versions, exact direct dependency versions, and the workspace lockfile. CI installs with `npm ci`.
+
+Use Node 24.21.0 and npm 11.19.0. `npm run dev` starts a local-only Colyseus transport room on `127.0.0.1:2567` and the Vite connection harness on `127.0.0.1:5173`. `npm run test:e2e` first builds local artifacts; install Chromium with `npx playwright install chromium`. Run `npm run smoke:artifact` after a build to verify digests and a real SDK join with the standalone server bundle on the pinned runtime. Non-local artifacts require `PACKET_BUILD_ENV=development` or `production` and a clean checkout. Runtime configuration uses `PACKET_ENV`, `PACKET_REGION`, `PACKET_HOST`, and `PACKET_PORT`; see [server/.env.example](../server/.env.example).
 
 | Command | Required behavior |
 |---|---|
