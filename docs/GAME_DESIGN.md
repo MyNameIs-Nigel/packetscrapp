@@ -82,7 +82,7 @@ Movement uses four cardinal directions. The client maps WASD and arrow keys to t
 
 All movement intents on a tick use positions at the start of that tick. A ship cannot enter a tile occupied by another ship at that point, even if the occupant also intends to leave; swaps and two ships aiming at one tile both fail. A core, deposit, turret, and enemy wall block entry. An owned wall is passable to its owner. A scrap pickup is passable and is collected under the tick-order rule. A ship may step into a Belt cell during build; that step succeeds and the Belt kills the ship in the damage/death stage of the same tick. A step beyond the world is rejected, leaving position and facing unchanged. Facing changes only after a successful step, including a lethal Belt step; holding fire while stopped uses the last successful facing.
 
-**Decision:** shots fired during build stop at the first Belt cell and cannot hit a neighboring sector. **Why:** the lethal crossing hazard must not let a player raid an unseen base from safety. Full beam collision priority belongs to D2; this boundary rule is enough for E1 visibility and E3 harvest preparation.
+**Decision:** shots fired during build stop at the first Belt cell and cannot hit a neighboring sector. **Why:** the lethal crossing hazard must not let a player raid an unseen base from safety. Full beam collision priority is in the [D2 combat contract](#d2-combat-collision-and-targeting-contract--revision-1); this boundary rule remains enough for E1 visibility and E3 harvest preparation.
 
 Observable examples for A02–A04:
 
@@ -172,10 +172,10 @@ These rules are the Engineering/QA contract with the deposit budget above. They 
 
 - A purchase uses the ship's facing and position at the **start of the tick**, before that tick's movement. Keys `1` and `2` target exactly the cell immediately in front of the ship. `Q` and `E` affect that player's ship, wherever it is. The ship must be alive. The server is the only authority for price, position, ownership, level, and scrap.
 - The build radius is **Manhattan distance** `|x - coreX| + |y - coreY| ≤ 8`, inclusive. The target must lie inside the player's own sector and off the Belt. The core and reserved spawn tile are never buildable. A target occupied by any core, deposit, wall, turret, ship, or scrap pickup is rejected. No structure replaces another. A living core is required to build a wall or turret; building is allowed in build and battle, but not sudden death or results.
-- Upgrade costs are the listed next-level price: blaster 50/100/150 and hull 40/80/120 for levels 1/2/3. Level 3 is the cap. Upgrades are allowed while alive in build, battle, and sudden death and survive a respawn. Hull-upgrade healing is a D2 decision; this proposal only increases maximum hull.
+- Upgrade costs are the listed next-level price: blaster 50/100/150 and hull 40/80/120 for levels 1/2/3. Level 3 is the cap. Upgrades are allowed while alive in build, battle, and sudden death and survive a respawn. Hull-upgrade healing is specified in the [D2 combat contract](#d2-combat-collision-and-targeting-contract--revision-1): max hull rises by the level bonus and current hull rises by the same amount, capped at the new max.
 - The server applies at most one valid build and one valid upgrade request per player per tick, in that order, against the current scrap balance. For each kind, the earliest valid request received before the tick is the candidate; later requests of that kind are ignored. A successful request creates exactly one item or level and deducts its cost once. An invalid or unaffordable request changes neither balance nor world. Scrap earned by fire or pickup later in a tick becomes spendable on the next tick. Concurrent client input does not permit two purchases with the same funds.
-- An owned wall is passable by its owner's ship and beam; an enemy ship cannot pass it, and an enemy beam hits and damages it before anything behind it. A turret blocks movement for every ship. Full turret targeting and beam tie rules belong to D2.
-- Destroying a small or large deposit awards its 10 or 40 scrap **once** to the player credited with the final hit; partial damage pays nothing. The deposit disappears and does not regrow. D2 resolves simultaneous final hits and pickup ties in the combat tick order.
+- An owned wall is passable by its owner's ship and beam; an enemy ship cannot pass it, and an enemy beam hits and damages it before anything behind it. A turret blocks movement for every ship. Beam pass-through, turret targeting, occlusion, and seat ties are specified in the [D2 combat contract](#d2-combat-collision-and-targeting-contract--revision-1).
+- Destroying a small or large deposit awards its 10 or 40 scrap **once** to the player credited with the final hit; partial damage pays nothing. The deposit disappears and does not regrow. Simultaneous final hits and pickup merges follow the D2 combat damage-stage order.
 
 **Decision:** treat failed purchases as no-ops with a visible reason. **Why:** a player should never lose scrap when placement, range, occupancy, or a cap prevents the intended item, and QA can verify conservation from server state.
 
@@ -202,6 +202,68 @@ Observable A03/A05 examples:
 - There are no teams, so every other player is an enemy.
 
 **Why a beam and not a moving projectile:** a beam resolves in a single tick. There are no bullet objects for the server to track and send, which keeps both the rules and the network traffic small.
+
+### D2 combat collision and targeting contract — revision 1
+
+This Design rule contract is for E4 and Q3 preparation (A06). It does not claim implemented or verified behavior. It freezes package-1 combat ambiguities called out by the [delivery decision register](DELIVERY_PLAN.md): beam priority, turret selection/occlusion/ties, hull-upgrade healing, and simultaneous deposit/pickup credit. Contender, win/draw, sudden-death duration, and combat UI remain later D2 packages. Starting damage, range, cooldown, and health numbers stay hypotheses in [Starting numbers](#starting-numbers) until playtests.
+
+Positions, facings, structure placement, and alive/dead flags used for combat are those **after** that tick's movement stage and **before** fire resolution, matching [ARCHITECTURE.md](ARCHITECTURE.md) tick order (actions → move → fire → damage/deaths/drops/pickups → timers).
+
+#### Blaster beams
+
+- A living ship may queue at most one `fire` per tick. The shot resolves only if the ship's blaster cooldown has expired at the start of the fire stage. Cooldown is measured in whole ticks from the config fire rate (starting value: 3 shots/s at 15 Hz → **5 ticks** between accepted shots). A rejected or empty shot does not refresh cooldown.
+- The beam is a **cardinal ray** from the ship's facing at fire time. It never travels diagonally. Tile 1 is the adjacent cell in that facing; tiles continue through inclusive range `R` (starting blaster range 8). The ship's own tile is not a hit candidate.
+- Build-phase Belt rule from D1 still applies: the beam stops at the first Belt cell and cannot affect a cell beyond it. After the Belt drops, rays use the ordinary occupancy rules below with no Belt stopper.
+- Walk the ray from near to far. The first **blocking** occupant stops the beam and is the only combat target of that shot. Occupants are classified as:
+
+| Occupant | Effect on the shooter's beam |
+|---|---|
+| Empty cell; scrap pickup | Pass through; pickups take no beam damage |
+| Owned wall (shooter's wall) | Pass through; wall takes no damage |
+| Owned turret (shooter's turret) | Block; turret takes no damage |
+| Own core | Block; core takes no damage |
+| Enemy ship, enemy wall, any deposit, enemy turret, enemy core | Block and become the shot's target |
+
+- There is no friendly-fire damage to the shooter's own ship, walls, turrets, or core. Enemy walls always block before anything behind them, including a ship on a farther tile.
+- Range boundary: a target on tile `R` may be hit; a target on tile `R + 1` may not. A wall on tile `R` blocks the beam there even if a ship sits on `R + 1`.
+- Damage equals the shooter's current blaster damage from config/upgrades. The fire stage only records `(attackerSeat, targetRef, damage)`. The damage stage applies recorded hits.
+
+#### Turrets
+
+- Each living enemy-owned turret may fire at most once per tick when its cooldown has expired (starting value: 2 shots/s → **8 ticks** between accepted shots). Turrets never fire in `waiting` or `ended`. They fire in build, battle, and sudden death.
+- Eligible targets are **living enemy ships** only. Turrets never target structures, deposits, cores, scrap, or the turret's owner.
+- Range uses **Chebyshev** distance `max(|dx|, |dy|)` and is inclusive of the configured turret range (starting value 6).
+- Line of sight is required. Trace discrete cells from the turret tile to the target tile with a grid line that steps through orthogonal neighbors (no corner cutting: a diagonal step requires both adjacent orthogonal cells to be clear of blockers). Blockers are enemy walls, any turret, any core, any deposit, and any ship other than the chosen target. Scrap pickups and the turret owner's walls do not block. If LOS fails, that ship is ineligible.
+- Among eligible ships, choose the smallest Chebyshev distance. Distance ties break to the **lowest seatIndex**. If no eligible ship remains, the turret skips the tick and does not refresh cooldown.
+- A turret shot is a beam that damages only the chosen ship for configured turret damage. It does not continue past the ship and does not damage intervening pass-through cells (LOS already required them to be clear of blockers).
+
+**Decision:** turrets use Chebyshev range plus blocked grid LOS, with seatIndex as the only distance tie-break. **Why:** players can predict the square aura and a single nearest target without reading floating-point geometry, and Engineering can test ties without recording placement timestamps.
+
+#### Damage stage, last-hit credit, and pickups
+
+- Apply all blaster hits this tick in ascending **attacker seatIndex**, then all turret hits in ascending **(ownerSeatIndex, structureId)** where `structureId` is the server's stable placement id. Each hit subtracts from the target's current health after earlier hits in this stage.
+- When a hit reduces a deposit, wall, turret, ship, or core to health ≤ 0, that attacker receives last-hit credit for the destruction. Earlier hits the same tick still apply their damage but do not share payout. Deposit payout follows the D1 once-only scrap rule.
+- Destroyed ships are removed before scrap drops resolve. The death drop creates one pickup on the death tile holding all unspent scrap. If that tile already holds a pickup, **merge** the amounts into a single pickup on that tile.
+- After drops, each living ship occupying a tile that holds a pickup collects it: add the pickup scrap to that seat and remove the pickup. Movement already forbids two ships on one tile, so pickup collection needs no seat tie-break. A ship that dies on a tile does not collect a pickup on that tile in the same tick.
+
+**Decision:** sequential seat-ordered damage inside one tick, not summed simultaneous HP math. **Why:** last-hit credit, overkill, and mid-tick destruction stay one rule for ships, structures, and deposits, and QA can step a single ordered list.
+
+#### Hull-upgrade healing
+
+- A successful hull upgrade increases maximum hull by the configured per-level bonus (starting value +50) and **restores current hull by the same bonus**, capped at the new maximum. Blaster upgrades do not change hull.
+- If current hull was already at the old maximum, the ship becomes full at the new maximum. If damaged, the heal equals the max increase and does not fully repair prior damage beyond that bonus.
+
+**Decision:** hull upgrades heal by the max-HP gain. **Why:** spending scrap on hull while wounded should still help immediately; a max-only increase would punish the upgrade timing without adding a readable tradeoff.
+
+Observable A06 examples:
+
+1. Given a shooter facing east with range 8 and an enemy wall on tile 3 with an enemy ship on tile 5, when the blaster fires, then only the wall is hit; the ship takes no damage.
+2. Given the same geometry but the wall on tile 3 is owned by the shooter, when the blaster fires, then the beam passes the wall and damages the enemy ship on tile 5.
+3. Given an enemy ship on tile 8 and another on tile 9, when the blaster fires at range 8, then the ship on tile 8 may be hit and the ship on tile 9 may not.
+4. Given a build-phase ray whose first Belt cell is tile 2 and an enemy deposit on tile 3 beyond that Belt, when the blaster fires, then nothing beyond the Belt is damaged.
+5. Given a turret and two enemy ships at Chebyshev distance 4 with clear LOS, seats 2 and 0, when the turret fires, then seat 0 is hit. If seat 0 is behind an enemy wall on the LOS path and seat 2 is clear, then seat 2 is hit.
+6. Given a deposit at 10 health and two blaster hits of 10 damage from seats 3 then 1 recorded this tick, when damage applies in seat order, then seat 1's hit is applied first and receives the deposit payout; seat 3's hit finds no deposit.
+7. Given 40 current hull, max 100, and a successful hull upgrade that adds 50 max, when the upgrade resolves, then max becomes 150 and current becomes 90.
 
 ## Cores, death, and respawn
 
