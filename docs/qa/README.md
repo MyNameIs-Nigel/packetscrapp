@@ -1,6 +1,6 @@
 # QA team phases
 
-Status: the [Q0 baseline and Q1 catalog](Q0_Q1_PLAN.md) have an independent [supplement review](Q0_REVIEW.md). The [gate audit](../PROGRESS.md) records independent E0 foundation checks and original CI evidence; E1 gameplay, later QA phases, and full acceptance rows remain unverified. Branches use `qa/summary-of-branch`. Start with the [parallel plan](../DELIVERY_PLAN.md), [acceptance matrix](ACCEPTANCE_MATRIX.md), and existing [testing practices](../ENGINEERING.md).
+Status: the [Q0 baseline and Q1 catalog](Q0_Q1_PLAN.md) have an independent [supplement review](Q0_REVIEW.md) and a [sector-assignment pin recheck](Q1_SECTOR_PIN_RECHECK.md). The [gate audit](../PROGRESS.md) records independent E0 foundation checks and original CI evidence; E1 gameplay, later QA phases, and full acceptance rows remain unverified. Branches use `qa/summary-of-branch`. Start with the [parallel plan](../DELIVERY_PLAN.md), [acceptance matrix](ACCEPTANCE_MATRIX.md), and existing [testing practices](../ENGINEERING.md).
 
 ## Responsibility and verification policy
 

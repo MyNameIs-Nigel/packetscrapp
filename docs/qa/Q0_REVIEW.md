@@ -19,7 +19,7 @@ Review date: 2026-10-04. Base: `3f5458aceadf7960cc8da121aba2c6c20ec124ca` (curre
 | Supplement row | QA result | Oracle used for later execution |
 |---|---|---|
 | Replay stream | Oracle accepted | Mulberry32 revision 1 and seeds `0`, `1`, `42`, `4294967295`, as already implemented. Invalid and fractional seeds fail. The generator stays out of identity and token code. |
-| Sector assignment | Exact seat permutation **Ready** after Engineering pin #21; runtime still Blocked on E1.2 | Zero-based row-major indexes, Durstenfeld `j = floor(next() * (i + 1))` descending, and worked examples are in the handoff and `assignSectorSlots`. This review's original blocker is addressed by that later Engineering package; independent QA still rechecks the vectors. |
+| Sector assignment | Exact seat permutation **Ready** after Engineering pin #21; independent QA recheck in [Q1_SECTOR_PIN_RECHECK.md](Q1_SECTOR_PIN_RECHECK.md) under [#23](https://github.com/MyNameIs-Nigel/packetscrapp/issues/23); runtime still Blocked on E1.2 | Zero-based row-major indexes, Durstenfeld `j = floor(next() * (i + 1))` descending, and worked examples are in the handoff and `assignSectorSlots`. This review's original blocker is addressed by that later Engineering package; the deferred independent vector recheck is recorded separately. |
 | Identity and name | Oracle accepted for E1.1 | Strip U+0000–001F and U+007F–009F, NFC, trim, then 1–16 Unicode code points; reject overlength instead of truncating. Server identity only. Render as text. |
 | Movement payload | Oracle accepted | Exact `direction` enum or `none`. Extra or forged fields do not change the stored intent. One intent per seat. |
 | Key focus | Oracle accepted | Restates accepted D1 and the D1 UI: WASD and arrows match; latest held direction wins; release, blur, hide, and disconnect clear. Gameplay keys apply only on the focused game surface. |
@@ -33,7 +33,7 @@ Review date: 2026-10-04. Base: `3f5458aceadf7960cc8da121aba2c6c20ec124ca` (curre
 
 The original #19 review blocked M03's exact permutation until Engineering named the index origin and Fisher–Yates formula. [#21](https://github.com/MyNameIs-Nigel/packetscrapp/issues/21) supplies that pin: zero-based row-major slots, center-column candidates `[1, 4]` for five players, Durstenfeld descending `j = floor(next() * (i + 1))`, and recomputable unit vectors including five players / seed `42` → unowned `4`, owned `[1, 0, 5, 3, 2]`.
 
-This Q0 document remains the #19 review record. It does not re-run an independent QA oracle check of #21; that belongs to a later QA reading of the pin or to M03 execution. Geometry checks from D1 stay Ready. Map-generator retries and deposit placement stay in the economy contract for E3/Q2.
+This Q0 document remains the #19 review record. The deferred independent QA oracle check of #21 is recorded in [Q1_SECTOR_PIN_RECHECK.md](Q1_SECTOR_PIN_RECHECK.md) under [#23](https://github.com/MyNameIs-Nigel/packetscrapp/issues/23): a Python uint32 recomputation matched the handoff worked examples and all sixteen published vectors without treating the TypeScript helper output as authority. Geometry checks from D1 stay Ready. Map-generator retries and deposit placement stay in the economy contract for E3/Q2. Runtime M03 execution still waits for E1.2.
 
 ## Other bounds that stay testable
 
@@ -57,9 +57,10 @@ G1 stays blocked on implementation plus independent execution. F01–F03 stay E0
 
 | Need | Owner | Unblocks |
 |---|---|---|
-| Independent QA recheck of the #21 sector-assignment vectors against the handoff | QA | Confidence that M03 oracles match the published pin |
 | Record whether the QA oracles above authorize E1.1 admission work | Maintainer, on #14 | E1.1 start |
 | Change nickname counting only if code points are the wrong player rule | Design, at D3 nickname validation | A revised J02 oracle |
 | Implement E1.1–E1.3 and execute Q1 on one immutable candidate | Engineering then QA | G1 evidence, still with Design control review |
+
+Independent QA recheck of the #21 sector-assignment vectors is complete under [#23](https://github.com/MyNameIs-Nigel/packetscrapp/issues/23).
 
 No product rule was changed in this review.
