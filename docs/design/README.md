@@ -32,6 +32,8 @@ Small work packages:
 
 **Outcome:** a player can learn move/shoot/build and choose a meaningful use for limited scrap.
 
+The [D1 UI wireframes](D1_UI.md) draft the start, lobby, and build HUD while movement/map and economy rules are reviewed in separate slices.
+
 **Entry:** D0 scope; E0 need not be finished. Split movement/map decisions from the later economy handoff so E1 can start early.
 
 Small work packages:

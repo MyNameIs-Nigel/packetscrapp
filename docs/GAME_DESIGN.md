@@ -170,6 +170,7 @@ Building rules:
 
 ## Screen layout
 
+- The [D1 text wireframes](design/D1_UI.md) propose start, lobby, and build-HUD states for Engineering/QA review; they are not browser evidence.
 - Top center: the phase name and the clock, for example "WALLS DROP 0:47".
 - Top left: hull bar and core health bar.
 - Top right: the other players, with a marker showing whether each core is alive.
