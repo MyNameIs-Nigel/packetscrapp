@@ -16,7 +16,7 @@
     "dev": "node scripts/dev.mjs",
     "format:check": "prettier --check client server shared tests scripts/*.mjs eslint.config.mjs playwright.config.ts tsconfig.base.json package.json",
     "lint": "eslint client/src server/src shared/src tests scripts/*.mjs",
-    "typecheck": "tsc -p shared/tsconfig.json --noEmit && tsc -p server/tsconfig.json --noEmit && tsc -p client/tsconfig.json --noEmit && tsc -p tests/tsconfig.json --noEmit",
+    "typecheck": "node node_modules/typescript7/bin/tsc -p shared/tsconfig.json --noEmit && node node_modules/typescript7/bin/tsc -p server/tsconfig.json --noEmit && node node_modules/typescript7/bin/tsc -p client/tsconfig.json --noEmit && node node_modules/typescript7/bin/tsc -p tests/tsconfig.json --noEmit",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
     "pretest:e2e": "npm run build",
@@ -33,8 +33,9 @@
     "eslint": "10.12.0",
     "prettier": "3.9.9",
     "tsx": "4.23.15",
-    "typescript": "7.0.2",
+    "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-eslint": "8.71.0",
+    "typescript7": "npm:typescript@7.0.2",
     "vite": "8.3.2",
     "vitest": "5.0.3"
   }
