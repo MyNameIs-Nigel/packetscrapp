@@ -83,6 +83,23 @@ Scrap is the only resource.
 
 **Why deposits do not regrow:** a finite supply makes every purchase a real tradeoff, and it pushes players out of their sector once it is mined out.
 
+### D1 deposit budget and generation — proposed revision 1
+
+This Design proposal depends on review of the [D1 movement/map proposal](https://github.com/MyNameIs-Nigel/packetscrapp/pull/4), including its 24 × 24 sectors and mirrored core coordinates. It is not an accepted generator or a measured balance result. Engineering chooses and pins a deterministic random algorithm; a recorded player count, map seed, and config revision must reproduce the same deposit cells and types. QA must inspect the generated state, not infer fairness from a drawing.
+
+| Sector | Small deposits | Large deposits | Maximum scrap created by deposits |
+|---|---:|---:|---:|
+| Each owned sector | 8 × 10 scrap | 2 × 40 scrap | 160 |
+| One unowned sector, when present | 12 × 10 scrap | 4 × 40 scrap | 280 |
+
+The room starts every participant at **0 scrap**. No deposit respawns. The maximum deposit-created scrap is 320, 760, 640, or 1,080 for 2, 3, 4, or 5 participants respectively. These amounts exclude scrap transferred through death drops or pickups; transferring scrap must never create a second copy. Spending removes scrap from the match. All values are tuning hypotheses for D4.
+
+Generate one canonical owned-sector template per room seed, then mirror it horizontally and/or vertically to match each sector's proposed core offset. Every owned sector receives the same number, types, payouts, and multiset of Manhattan distances from its core. Use these candidate bands in the canonical 24 × 24 sector: two small deposits at core distance 3–4, four at 5–7, two at 8–10; one large at 5–7 and one at 8–10. Each deposit occupies a unique cell inside local `x,y = 2..21`, outside any Belt cell, core cell, reserved spawn cell, or other structure. Reserve all four cells adjacent to the core while generating so every sector's selected spawn remains clear. At least one small deposit must be reachable from the spawn within four cardinal steps to a legal firing tile. Every deposit must be reachable from that sector's spawn by a cardinal path to a legal firing tile, treating deposits and the core as obstacles and the build-phase Belt as lethal. A legal firing tile has an unobstructed cardinal blaster line to the deposit within the current eight-tile range. If a candidate template fails an invariant, generate another from the seeded stream; Engineering must bound retries and supply a verified fallback template.
+
+Unowned sectors use the same seed stream after the owned template. Their deposits occupy unique non-Belt interior cells and leave a cardinal path from at least one boundary entry to a firing tile for every deposit after the Belt drops. The four-player map has no unowned budget. The three- and five-player layouts offer extra contested scrap after battle, but travel distance and encounter exposure are unequal; D4 records seat advantage rather than calling the maps symmetric.
+
+**Decision:** use equal mirrored starting budgets and a richer unowned sector. **Why:** each ship can earn the same amount without crossing the build-phase Belt, while an odd-player map gains a contested post-Belt objective. Equal resource opportunity does not prove equal battle position.
+
 ## The shop
 
 | Item | Type | Effect | Cost |
@@ -97,6 +114,28 @@ Building rules:
 - Structures can only be placed within 8 tiles of the player's own core. The buildable area is highlighted.
 - Structures can be built in both the build and battle phases.
 - Upgrades apply at once and survive respawns.
+
+### D1 purchase and placement contract — proposed revision 1
+
+These rules are proposed for Engineering/QA review with the deposit budget above. They clarify the shop table; costs, health, damage, and level limits remain starting values until playtests.
+
+- A purchase uses the ship's facing and position at the **start of the tick**, before that tick's movement. Keys `1` and `2` target exactly the cell immediately in front of the ship. `Q` and `E` affect that player's ship, wherever it is. The ship must be alive. The server is the only authority for price, position, ownership, level, and scrap.
+- The build radius is **Manhattan distance** `|x - coreX| + |y - coreY| ≤ 8`, inclusive. The target must lie inside the player's own sector and off the Belt. The core and reserved spawn tile are never buildable. A target occupied by any core, deposit, wall, turret, ship, or scrap pickup is rejected. No structure replaces another. A living core is required to build a wall or turret; building is allowed in build and battle, but not sudden death or results.
+- Upgrade costs are the listed next-level price: blaster 50/100/150 and hull 40/80/120 for levels 1/2/3. Level 3 is the cap. Upgrades are allowed while alive in build, battle, and sudden death and survive a respawn. Hull-upgrade healing is a D2 decision; this proposal only increases maximum hull.
+- The server applies at most one valid build and one valid upgrade request per player per tick, in that order, against the current scrap balance. For each kind, the earliest valid request received before the tick is the candidate; later requests of that kind are ignored. A successful request creates exactly one item or level and deducts its cost once. An invalid or unaffordable request changes neither balance nor world. Scrap earned by fire or pickup later in a tick becomes spendable on the next tick. Concurrent client input does not permit two purchases with the same funds.
+- An owned wall is passable by its owner's ship and beam; an enemy ship cannot pass it, and an enemy beam hits and damages it before anything behind it. A turret blocks movement for every ship. Full turret targeting and beam tie rules belong to D2.
+- Destroying a small or large deposit awards its 10 or 40 scrap **once** to the player credited with the final hit; partial damage pays nothing. The deposit disappears and does not regrow. D2 resolves simultaneous final hits and pickup ties in the combat tick order.
+
+**Decision:** treat failed purchases as no-ops with a visible reason. **Why:** a player should never lose scrap when placement, range, occupancy, or a cap prevents the intended item, and QA can verify conservation from server state.
+
+Observable A03/A05 examples:
+
+1. Given an owned sector generated from a fixed seed, when the map starts, then its deposit count and gross budget are 8 small + 2 large = 160 scrap; each other owned sector has the same core-distance multiset and a reachable firing tile for every deposit. Three fixed seeds per player count plus property checks exercise this invariant.
+2. Given 0 scrap and a 10-scrap small deposit at 10 health, when a legal shot destroys it, then the deposit vanishes and the shooter has 10 scrap; another shot or duplicate event pays nothing. A 40-scrap large deposit follows the same once-only rule.
+3. Given exactly 10 scrap, a live core, and an empty front cell at Manhattan distance 8 in the owner's non-Belt sector, when the player builds a Wall, then one Wall appears and scrap becomes 0. At distance 9, the same request creates nothing and leaves 10 scrap.
+4. Given 40 scrap and a front cell occupied by a pickup, enemy ship, core, turret, or deposit, when the player requests a Turret, then the request fails, the cell stays unchanged, and scrap remains 40. The same is true for a Belt cell or a cell in another sector.
+5. Given 50 scrap and simultaneous `build Wall` plus `upgrade Blaster` requests, when the purchase stage runs, then Wall costs 10 first and the unaffordable Blaster is rejected; exactly 40 scrap remains. Repeating either action cannot spend the original 50 again.
+6. Given a level-3 upgrade and sufficient scrap, when the player requests the same upgrade, then level and scrap remain unchanged and the HUD reports “MAX.” Given a destroyed core in battle, a build request is rejected even if the ship and scrap remain.
 
 **Why only four items:** two fortify options and two arm options make the tradeoff readable from the shop bar alone. More items would need explaining.
 

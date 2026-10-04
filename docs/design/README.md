@@ -32,6 +32,8 @@ Small work packages:
 
 **Outcome:** a player can learn move/shoot/build and choose a meaningful use for limited scrap.
 
+The [deposit budget](../GAME_DESIGN.md#d1-deposit-budget-and-generation--proposed-revision-1) and [purchase/placement contract](../GAME_DESIGN.md#d1-purchase-and-placement-contract--proposed-revision-1) are proposed D1 economy slices. They depend on an accepted map contract and Engineering/QA review before E3 uses them.
+
 **Entry:** D0 scope; E0 need not be finished. Split movement/map decisions from the later economy handoff so E1 can start early.
 
 Small work packages:
