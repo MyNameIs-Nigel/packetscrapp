@@ -7,6 +7,8 @@ A space-themed multiplayer browser game for 2–5 players. Harvest scrap, fortif
 
 **Status: engineering foundation.** The npm workspaces, a Colyseus transport room, and a browser connection harness exist. Gameplay and deployment are not implemented; `packetscr.app` is the planned public site, and this is not yet a playable game.
 
+The [development/gate audit](docs/PROGRESS.md) records accepted D0/D1 inputs and E0 evidence; the [E1 handoff](docs/engineer/E1_HANDOFF.md) and [Q0/Q1 case catalog](docs/qa/Q0_Q1_PLAN.md) define the next authoritative-movement milestone.
+
 ## Planned stack
 
 TypeScript, Canvas 2D, Vite, and authoritative Colyseus servers. A static client on Vercel connects to independent game regions over WebSockets. Matches live in memory; no accounts or database are planned.

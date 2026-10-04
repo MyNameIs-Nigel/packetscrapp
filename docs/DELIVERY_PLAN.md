@@ -1,6 +1,6 @@
 # Parallel delivery plan
 
-Status: shared planning and gates remain in force. Engineering's E0 harness is in progress; its local checks do not complete E0, G0, or G1. No gameplay or infrastructure has been verified. This plan coordinates three teams; it does not approve a release.
+Status: D0 and D1 contracts plus the E0 harness are merged. The [2026-10-04 gate audit](PROGRESS.md) records accepted source revisions, E0 verification, the Q0 review package, and remaining gates. G0 is ready for prerequisite review; G1 still needs E1 implementation and independent Q1 evidence. No gameplay or infrastructure has been verified. This plan coordinates three teams; it does not approve a release.
 
 ## Outcome and scope
 
@@ -71,6 +71,8 @@ IDs refer to headings in the team plans. These are partial-order dependencies, n
 For example, while E3 builds harvesting, Design can resolve D2 combat edges, QA can verify E1 joins, and Engineering's delivery work can progress in E2. E5 private-lobby work need not wait for E4 combat. Each slice still obeys its own listed inputs.
 
 ## Shared checkpoints
+
+Current states, evidence and owners are in [PROGRESS.md](PROGRESS.md#shared-gates). The [E1 handoff](engineer/E1_HANDOFF.md) and [Q0/Q1 catalog](qa/Q0_Q1_PLAN.md) make the next slices reviewable under [#13](https://github.com/MyNameIs-Nigel/packetscrapp/issues/13) and executable under [#14](https://github.com/MyNameIs-Nigel/packetscrapp/issues/14). The criteria below remain the gate definitions.
 
 | Gate | Measurable checkpoint | Evidence / sign-off |
 |---|---|---|

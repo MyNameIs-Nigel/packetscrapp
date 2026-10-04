@@ -1,6 +1,6 @@
 # Design team phases
 
-Status: all phases planned. Use [parallel delivery and shared gates](../DELIVERY_PLAN.md) for scheduling and [QA acceptance IDs](../qa/ACCEPTANCE_MATRIX.md) for traceability. Branches use `design/summary-of-branch`.
+Status: D0 scope and D1 movement/map, economy and UI contracts are merged; PRs #3/#4 record acceptance of the immediate E1 inputs. D4's playtest protocol is prepared; runtime Design acceptance and D2–D5 completion remain open. See the [gate audit](../PROGRESS.md). Use [parallel delivery and shared gates](../DELIVERY_PLAN.md) for scheduling and [QA acceptance IDs](../qa/ACCEPTANCE_MATRIX.md) for traceability. Branches use `design/summary-of-branch`.
 
 ## Responsibility and working method
 
@@ -14,7 +14,7 @@ Every phase below produces documentation and review evidence. A future playable 
 
 **Outcome:** all teams can explain what October ships and how success is measured.
 
-The [D0 scope and entry record](D0_SCOPE.md) is a Design proposal for this phase. Engineering and QA review and runtime evidence remain open.
+The [D0 scope and entry record](D0_SCOPE.md) is accepted revision 1 under merged PR #3, whose checklist records Engineering/QA acceptance. Runtime timing and comprehension evidence remain open; Q0 baseline review is tracked separately in the [gate audit](../PROGRESS.md).
 
 **Entry:** existing vision and source specifications; no running build needed. Run alongside E0 and Q0.
 

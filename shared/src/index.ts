@@ -1,5 +1,7 @@
 export const PROTOCOL_VERSION = 1;
 
+export { createSeededRandom } from "./random.ts";
+
 export interface Clock {
   now(): number;
 }
