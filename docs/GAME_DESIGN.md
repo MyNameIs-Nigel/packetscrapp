@@ -41,6 +41,57 @@ The map is a grid of square sectors. Each player owns one sector, with their cor
 
 **Why unowned sectors are rich:** they give players a reason to leave their base after the Belt drops, and they stop an odd player count from leaving dead space on the map.
 
+### D1 movement and map contract — proposed revision 1
+
+The following is a Design proposal for E1 and Q1 review, not an implemented or accepted rule. Coordinates are zero-based `(x, y)`, with `(0, 0)` at the top-left and `y` increasing downward. A sector occupies exactly 24 × 24 cells. The room records one server-chosen seed before assigning sector seats; the same player count and seed reproduce the same unowned slot and seat order. The economy contract will separately define deposits and their seed use.
+
+These diagrams show one canonical seat arrangement. `A`–`E` are player sectors, `U` is an unowned sector, `||` and `==` are the two-tile lethal Belt between sectors during build. Labels are examples, not fixed player identities.
+
+```text
+2 players, 48 × 24:       [ A ] || [ B ]
+
+3 players, 48 × 48:       [ A ] || [ B ]
+                           ==     ==
+                          [ C ] || [ U ]
+
+4 players, 48 × 48:       [ A ] || [ B ]
+                           ==     ==
+                          [ C ] || [ D ]
+
+5 players, 72 × 48:       [ A ] || [ U ] || [ B ]
+                           ==     ==     ==
+                          [ C ] || [ D ] || [ E ]
+```
+
+| Players | World cells | Unowned-slot selection | Internal Belt cells during build |
+|---|---|---|---|
+| 2 | 48 × 24 | None | `x = 23, 24` |
+| 3 | 48 × 48 | Seed selects one of four sector slots | `x = 23, 24` and `y = 23, 24` |
+| 4 | 48 × 48 | None | `x = 23, 24` and `y = 23, 24` |
+| 5 | 72 × 48 | Seed selects either center-column slot | `x = 23, 24, 47, 48` and `y = 23, 24` |
+
+The intersection of horizontal and vertical bands is Belt too. The outer map edge has no build-phase Belt; a move beyond it is rejected. Every sector owns its full 24 × 24 coordinate block, including its half of each adjacent Belt. The Belt is a hazard, not a second claim or a free lane. The client may show the map shape and sector boundaries during build, but must not receive or draw another sector's deposits, structures, ships, pickups, or core health. Public roster data may include nickname, bot label, and core-alive marker; detailed enemy state waits until battle. Engineering and QA must review the exact serialized-state split against [A04](qa/ACCEPTANCE_MATRIX.md).
+
+**Decision:** a shared boundary is two cells total, one from each neighboring sector. **Why:** all four layouts then have the same crossing hazard and a sector never loses more buildable width merely because it has a neighbor on one side.
+
+The core is a single impassable tile near the sector center. For a left-column sector its local `x` is 12; for a right-column sector it is 11; a center-column sector uses 11. A top-row sector uses local `y = 12`, a bottom-row sector uses 11, and the single-row map uses 11. For example, the two-player cores are at world `(12, 11)` and `(35, 11)`. The initial ship spawn is the neighboring tile toward the map center: right of a left-column core, left of a right-column core, below a top-row center-column core, or above a bottom-row center-column core. This tile and the core tile are clear of deposits and cannot be built on. The ship initially faces from its core toward that spawn tile.
+
+**Decision:** mirror core and spawn offsets at opposite edges. **Why:** each paired outer sector starts the same distance from its nearest internal Belt. The three- and five-player maps still have unequal battle routes; D4 must test those advantages rather than call the layouts symmetric.
+
+Movement uses four cardinal directions. The client maps WASD and arrow keys to the same directions and sends `move` with the most recently pressed direction that remains held; releasing the last held direction sends `none` immediately. If two key events have the same timestamp, their observed event order decides. There is no diagonal move. The server stores only the latest valid direction or `none`, clears it on death or disconnect, and attempts at most one tile move on even-numbered match ticks (2, 4, 6, ...) after build starts. Other ticks do not move a ship. A valid direction persists until changed or stopped; a rejected attempted step does not erase the held intent.
+
+All movement intents on a tick use positions at the start of that tick. A ship cannot enter a tile occupied by another ship at that point, even if the occupant also intends to leave; swaps and two ships aiming at one tile both fail. A core, deposit, turret, and enemy wall block entry. An owned wall is passable to its owner. A scrap pickup is passable and is collected under the tick-order rule. A ship may step into a Belt cell during build; that step succeeds and the Belt kills the ship in the damage/death stage of the same tick. A step beyond the world is rejected, leaving position and facing unchanged. Facing changes only after a successful step, including a lethal Belt step; holding fire while stopped uses the last successful facing.
+
+**Decision:** shots fired during build stop at the first Belt cell and cannot hit a neighboring sector. **Why:** the lethal crossing hazard must not let a player raid an unseen base from safety. Full beam collision priority belongs to D2; this boundary rule is enough for E1 visibility and E3 harvest preparation.
+
+Observable examples for A02–A04:
+
+1. Given the left ship on `(22, 11)` in a two-player build, when it moves right on a movement tick, then it enters Belt cell `(23, 11)` and dies that tick. No ship reaches `(24, 11)` before battle.
+2. Given a ship at `(0, 8)` facing left, when it holds left, then position and facing remain unchanged; when it subsequently moves down to `(0, 9)`, facing becomes down.
+3. Given adjacent ships trying to swap tiles on the same tick, then neither moves. Given two ships targeting the same empty tile, neither moves.
+4. Given a player firing east at a deposit in their own sector with the Belt behind it, then the deposit may take a legal hit; a target beyond the first Belt cell takes none.
+5. Given fixed seeds for each participant count and a new build-phase client, then the advertised world size, owned sector, reserved core/spawn cells, and Belt coordinates match the table; received state contains no enemy-sector entities. At battle reveal, the Belt disappears and the full map becomes visible.
+
 ## The Belt
 
 During the build phase, bands of asteroids two tiles thick run along every sector border. A ship that enters a Belt tile is destroyed at once.
