@@ -14,6 +14,8 @@ Every phase below produces documentation and review evidence. A future playable 
 
 **Outcome:** all teams can explain what October ships and how success is measured.
 
+The [D0 scope and entry record](D0_SCOPE.md) is a Design proposal for this phase. Engineering and QA review and runtime evidence remain open.
+
 **Entry:** existing vision and source specifications; no running build needed. Run alongside E0 and Q0.
 
 Small work packages:
@@ -90,6 +92,8 @@ Small work packages:
 ## D4 — Playtests and balance iterations
 
 **Outcome:** the documented rules produce understandable choices and a complete match at every player count.
+
+The [playtest protocol and notes template](PLAYTEST_PROTOCOL.md) can be prepared now. Its coverage and targets require a playable, QA-qualified candidate before they can be scored.
 
 **Entry:** paper walkthrough after D1; build-loop review after E3; full-match sessions after E4/E5 and passing critical Q3 checks. Never use a known game-breaking candidate to evaluate balance.
 

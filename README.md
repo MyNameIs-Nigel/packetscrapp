@@ -5,7 +5,7 @@
 
 A space-themed multiplayer browser game for 2–5 players. Harvest scrap, fortify your core, and fight to be the last ship standing when the asteroid belt drops.
 
-**Status: design and repository foundation.** The game, npm workspaces, and deployment scripts are not implemented yet. `packetscr.app` is the planned public site; this repository does not yet provide a playable build.
+**Status: engineering foundation.** The npm workspaces, a Colyseus transport room, and a browser connection harness exist. Gameplay and deployment are not implemented; `packetscr.app` is the planned public site, and this is not yet a playable game.
 
 ## Planned stack
 
@@ -17,16 +17,30 @@ Start with the [documentation index](docs/README.md), [game design](docs/GAME_DE
 
 Development is planned across three concurrent teams: [Design](docs/design/README.md), [Engineering / Programming](docs/engineer/README.md), and [QA](docs/qa/README.md). The [delivery plan](docs/DELIVERY_PLAN.md) defines small work packages, dependencies, and measurable shared checkpoints. Team branches use `design/summary-of-branch`, `engineer/summary-of-branch`, and `qa/summary-of-branch` respectively. These plans are not completed milestones.
 
-To check the current repository (Python 3.9+):
+To run the connection harness, use Node 24.21.0 and npm 11.19.0:
 
 ```sh
 git clone https://github.com/MyNameIs-Nigel/packetscrapp.git
 cd packetscrapp
 python3 scripts/check_docs.py
+npm ci
+npm run dev
+```
+
+Open `http://127.0.0.1:5173`, then choose **Connect**. For the full local checks:
+
+```sh
+npm run format:check
+npm run lint
+npm run typecheck
+npm run test:unit
+npm run test:integration
+npm run test:e2e
+npm run smoke:artifact
 git diff --check
 ```
 
-Application setup commands will be added with the first runnable implementation.
+`test:e2e` builds its own local artifact and needs Playwright Chromium (`npx playwright install chromium`). `smoke:artifact` uses that build, starts the server bundle in an empty temporary directory, and requires the pinned Node version.
 
 ## Delivery model
 
@@ -36,7 +50,7 @@ Application setup commands will be added with the first runnable implementation.
 | Push to `main` | Build, test, and deploy to **development** (planned) |
 | Published stable GitHub Release, e.g. `v0.3.0` | Validate the tag, approve, and deploy to **production** (planned) |
 
-See [deployment and GitHub setup](docs/DEPLOYMENT.md), [testing and coding practices](docs/ENGINEERING.md), and the [operations runbook](docs/OPERATIONS.md). Only repository checks run today.
+See [deployment and GitHub setup](docs/DEPLOYMENT.md), [testing and coding practices](docs/ENGINEERING.md), and the [operations runbook](docs/OPERATIONS.md). Repository and application checks run in CI; deployment remains planned.
 
 ## Community
 

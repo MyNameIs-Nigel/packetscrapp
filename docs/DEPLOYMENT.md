@@ -2,7 +2,7 @@
 
 ## Current status
 
-This is the delivery contract for the planned application. Only `.github/workflows/ci.yml` (repository checks) exists today. No game source, package manifest, build, server provisioning, updater, or application deployment workflow exists. GitHub settings alone will not deploy a game; complete the implementation checklist below first.
+This is the delivery contract for the planned application. `.github/workflows/ci.yml` now checks the E0 application harness and builds client/server artifacts. The workspace produces a digest manifest and a standalone server bundle, but no game, server provisioning, updater, or application deployment workflow exists. GitHub settings alone will not deploy a game; complete the implementation checklist below first.
 
 ## Environments and triggers
 
