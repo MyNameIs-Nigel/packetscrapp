@@ -1,6 +1,6 @@
 # E1 implementation handoff
 
-Status: prerequisite package prepared under [#13](https://github.com/MyNameIs-Nigel/packetscrapp/issues/13); review this technical supplement before dependent implementation. [#14](https://github.com/MyNameIs-Nigel/packetscrapp/issues/14) tracks E1 and G1. No E1 runtime criterion has passed. The [gate audit](../PROGRESS.md), [Q0/Q1 plan](../qa/Q0_Q1_PLAN.md), and source specifications control acceptance.
+Status: QA reviewed this supplement in [Q0_REVIEW.md](../qa/Q0_REVIEW.md) under [#19](https://github.com/MyNameIs-Nigel/packetscrapp/issues/19). That review is not implementation and does not verify G0 or G1. Exact sector-assignment replay stays blocked until Engineering pins slot-index origin and the Fisher–Yates variant here. The other decision rows have QA test oracles; the maintainer records whether E1.1 may start. [#14](https://github.com/MyNameIs-Nigel/packetscrapp/issues/14) tracks E1 and G1. No E1 runtime criterion has passed. The [gate audit](../PROGRESS.md), [Q0/Q1 plan](../qa/Q0_Q1_PLAN.md), and source specifications control acceptance.
 
 ## Accepted inputs
 
