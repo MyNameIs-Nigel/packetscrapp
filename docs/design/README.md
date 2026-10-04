@@ -14,6 +14,8 @@ Every phase below produces documentation and review evidence. A future playable 
 
 **Outcome:** all teams can explain what October ships and how success is measured.
 
+The [D0 scope and entry record](D0_SCOPE.md) is a Design proposal for this phase. Engineering and QA review and runtime evidence remain open.
+
 **Entry:** existing vision and source specifications; no running build needed. Run alongside E0 and Q0.
 
 Small work packages:
@@ -32,7 +34,7 @@ Small work packages:
 
 **Outcome:** a player can learn move/shoot/build and choose a meaningful use for limited scrap.
 
-The [deposit budget](../GAME_DESIGN.md#d1-deposit-budget-and-generation--proposed-revision-1) and [purchase/placement contract](../GAME_DESIGN.md#d1-purchase-and-placement-contract--proposed-revision-1) are proposed D1 economy slices. They depend on an accepted map contract and Engineering/QA review before E3 uses them.
+The [movement and map contract](../GAME_DESIGN.md#d1-movement-and-map-contract--revision-1) is the first D1 slice for E1/Q1. The [deposit budget](../GAME_DESIGN.md#d1-deposit-budget-and-generation--revision-1) and [purchase/placement contract](../GAME_DESIGN.md#d1-purchase-and-placement-contract--revision-1) complete the economy slice for E3/Q2. The UI contract remains a separate D1 package.
 
 **Entry:** D0 scope; E0 need not be finished. Split movement/map decisions from the later economy handoff so E1 can start early.
 
@@ -90,6 +92,8 @@ Small work packages:
 ## D4 — Playtests and balance iterations
 
 **Outcome:** the documented rules produce understandable choices and a complete match at every player count.
+
+The [playtest protocol and notes template](PLAYTEST_PROTOCOL.md) can be prepared now. Its coverage and targets require a playable, QA-qualified candidate before they can be scored.
 
 **Entry:** paper walkthrough after D1; build-loop review after E3; full-match sessions after E4/E5 and passing critical Q3 checks. Never use a known game-breaking candidate to evaluate balance.
 

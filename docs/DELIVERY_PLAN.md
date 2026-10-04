@@ -1,6 +1,6 @@
 # Parallel delivery plan
 
-Status: planning only. No phase is complete and no application or infrastructure has been verified. This plan coordinates three teams; it does not add implementation or approve a release.
+Status: shared planning and gates remain in force. Engineering's E0 harness is in progress; its local checks do not complete E0, G0, or G1. No gameplay or infrastructure has been verified. This plan coordinates three teams; it does not approve a release.
 
 ## Outcome and scope
 

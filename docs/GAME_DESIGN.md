@@ -41,6 +41,57 @@ The map is a grid of square sectors. Each player owns one sector, with their cor
 
 **Why unowned sectors are rich:** they give players a reason to leave their base after the Belt drops, and they stop an odd player count from leaving dead space on the map.
 
+### D1 movement and map contract — revision 1
+
+This is the Design rule contract for E1 and Q1; it does not claim implemented or verified behavior. Coordinates are zero-based `(x, y)`, with `(0, 0)` at the top-left and `y` increasing downward. A sector occupies exactly 24 × 24 cells. The room records one server-chosen seed before assigning sector seats. The same player count and seed reproduce the unowned slot and sector-slot ordering; reproducing which participant receives each slot also requires the participant join order. The economy contract separately defines deposits and their seed use.
+
+These diagrams show one canonical seat arrangement. `A`–`E` are player sectors, `U` is an unowned sector, `||` and `==` are the two-tile lethal Belt between sectors during build. Labels are examples, not fixed player identities.
+
+```text
+2 players, 48 × 24:       [ A ] || [ B ]
+
+3 players, 48 × 48:       [ A ] || [ B ]
+                           ==     ==
+                          [ C ] || [ U ]
+
+4 players, 48 × 48:       [ A ] || [ B ]
+                           ==     ==
+                          [ C ] || [ D ]
+
+5 players, 72 × 48:       [ A ] || [ U ] || [ B ]
+                           ==     ==     ==
+                          [ C ] || [ D ] || [ E ]
+```
+
+| Players | World cells | Unowned-slot selection | Internal Belt cells during build |
+|---|---|---|---|
+| 2 | 48 × 24 | None | `x = 23, 24` |
+| 3 | 48 × 48 | Seed selects one of four sector slots | `x = 23, 24` and `y = 23, 24` |
+| 4 | 48 × 48 | None | `x = 23, 24` and `y = 23, 24` |
+| 5 | 72 × 48 | Seed selects either center-column slot | `x = 23, 24, 47, 48` and `y = 23, 24` |
+
+The intersection of horizontal and vertical bands is Belt too. The outer map edge has no build-phase Belt; a move beyond it is rejected. Every sector owns its full 24 × 24 coordinate block, including its half of each adjacent Belt. The Belt is a hazard, not a second claim or a free lane. The client may show the map shape and sector boundaries during build, but must not receive or draw another sector's deposits, structures, ships, pickups, or core health; unowned-sector entities are hidden too. Public roster data may include nickname, bot label, and core-alive marker; detailed enemy state waits until battle. Engineering and QA verify the exact serialized-state split against [A04](qa/ACCEPTANCE_MATRIX.md).
+
+**Decision:** a shared boundary is two cells total, one from each neighboring sector. **Why:** all four layouts then have the same crossing hazard and a sector never loses more buildable width merely because it has a neighbor on one side.
+
+The core is a single impassable tile near the sector center. For a left-column sector its local `x` is 12; for a right-column sector it is 11; a center-column sector uses 11. A top-row sector uses local `y = 12`, a bottom-row sector uses 11, and the single-row map uses 11. For example, the two-player cores are at world `(12, 11)` and `(35, 11)`. The initial ship spawn is the neighboring tile toward the map center: right of a left-column core, left of a right-column core, below a top-row center-column core, or above a bottom-row center-column core. This tile and the core tile are clear of deposits and cannot be built on. The ship initially faces from its core toward that spawn tile.
+
+**Decision:** mirror core and spawn offsets at opposite edges. **Why:** each paired outer sector starts the same distance from its nearest internal Belt. The three- and five-player maps still have unequal battle routes; D4 must test those advantages rather than call the layouts symmetric.
+
+Movement uses four cardinal directions. The client maps WASD and arrow keys to the same directions and sends `move` with the most recently pressed direction that remains held; releasing the last held direction sends `none` immediately. If two key events have the same timestamp, their observed event order decides. There is no diagonal move. The server stores only the latest valid direction enum value or `none`, clears it on death or disconnect, and attempts at most one tile move on even-numbered match ticks (2, 4, 6, ...) after build starts. Other ticks do not move a ship. A valid direction persists until changed or stopped; a rejected attempted step does not erase the held intent.
+
+All movement intents on a tick use positions at the start of that tick. A ship cannot enter a tile occupied by another ship at that point, even if the occupant also intends to leave; swaps and two ships aiming at one tile both fail. A core, deposit, turret, and enemy wall block entry. An owned wall is passable to its owner. A scrap pickup is passable and is collected under the tick-order rule. A ship may step into a Belt cell during build; that step succeeds and the Belt kills the ship in the damage/death stage of the same tick. A step beyond the world is rejected, leaving position and facing unchanged. Facing changes only after a successful step, including a lethal Belt step; holding fire while stopped uses the last successful facing.
+
+**Decision:** shots fired during build stop at the first Belt cell and cannot hit a neighboring sector. **Why:** the lethal crossing hazard must not let a player raid an unseen base from safety. Full beam collision priority belongs to D2; this boundary rule is enough for E1 visibility and E3 harvest preparation.
+
+Observable examples for A02–A04:
+
+1. Given the left ship on `(22, 11)` in a two-player build, when it moves right on a movement tick, then it enters Belt cell `(23, 11)` and dies that tick. No ship reaches `(24, 11)` before battle.
+2. Given a ship at `(0, 8)` facing left, when it holds left, then position and facing remain unchanged; when it subsequently moves down to `(0, 9)`, facing becomes down.
+3. Given adjacent ships trying to swap tiles on the same tick, then neither moves. Given two ships targeting the same empty tile, neither moves.
+4. Given a player firing east at a deposit in their own sector with the Belt behind it, then the deposit may take a legal hit; a target beyond the first Belt cell takes none.
+5. Given fixed seeds, participant join order, and each player count, then the advertised world size, sector assignment, reserved core/spawn cells, and Belt coordinates match the table. A new build-phase client's received state contains no enemy or unowned-sector entities. At battle reveal, the Belt disappears and the full map becomes visible.
+
 ## The Belt
 
 During the build phase, bands of asteroids two tiles thick run along every sector border. A ship that enters a Belt tile is destroyed at once.
@@ -83,9 +134,9 @@ Scrap is the only resource.
 
 **Why deposits do not regrow:** a finite supply makes every purchase a real tradeoff, and it pushes players out of their sector once it is mined out.
 
-### D1 deposit budget and generation — proposed revision 1
+### D1 deposit budget and generation — revision 1
 
-This Design proposal depends on review of the [D1 movement/map proposal](https://github.com/MyNameIs-Nigel/packetscrapp/pull/4), including its 24 × 24 sectors and mirrored core coordinates. It is not an accepted generator or a measured balance result. Engineering chooses and pins a deterministic random algorithm; a recorded player count, map seed, and config revision must reproduce the same deposit cells and types. QA must inspect the generated state, not infer fairness from a drawing.
+This Design rule contract uses the accepted [D1 movement/map contract](https://github.com/MyNameIs-Nigel/packetscrapp/pull/4), including its 24 × 24 sectors and mirrored core coordinates. It does not claim an implemented generator or a measured balance result. Engineering chooses and pins a deterministic random algorithm; a recorded player count, map seed, and config revision must reproduce the same deposit cells and types. QA must inspect the generated state, not infer fairness from a drawing.
 
 | Sector | Small deposits | Large deposits | Maximum scrap created by deposits |
 |---|---:|---:|---:|
@@ -96,7 +147,7 @@ The room starts every participant at **0 scrap**. No deposit respawns. The maxim
 
 Generate one canonical owned-sector template per room seed, then mirror it horizontally and/or vertically to match each sector's proposed core offset. Every owned sector receives the same number, types, payouts, and multiset of Manhattan distances from its core. Use these candidate bands in the canonical 24 × 24 sector: two small deposits at core distance 3–4, four at 5–7, two at 8–10; one large at 5–7 and one at 8–10. Each deposit occupies a unique cell inside local `x,y = 2..21`, outside any Belt cell, core cell, reserved spawn cell, or other structure. Reserve all four cells adjacent to the core while generating so every sector's selected spawn remains clear. At least one small deposit must be reachable from the spawn within four cardinal steps to a legal firing tile. Every deposit must be reachable from that sector's spawn by a cardinal path to a legal firing tile, treating deposits and the core as obstacles and the build-phase Belt as lethal. A legal firing tile has an unobstructed cardinal blaster line to the deposit within the current eight-tile range. If a candidate template fails an invariant, generate another from the seeded stream; Engineering must bound retries and supply a verified fallback template.
 
-Unowned sectors use the same seed stream after the owned template. Their deposits occupy unique non-Belt interior cells and leave a cardinal path from at least one boundary entry to a firing tile for every deposit after the Belt drops. The four-player map has no unowned budget. The three- and five-player layouts offer extra contested scrap after battle, but travel distance and encounter exposure are unequal; D4 records seat advantage rather than calling the maps symmetric.
+Unowned sectors use the same seed stream after the owned template. Their deposits occupy unique non-Belt interior cells. For every deposit, a cardinal path must run from a traversable entry cell shared with an adjacent sector after the Belt drops to a legal firing tile; an outer map edge does not count as an entry. The four-player map has no unowned budget. The three- and five-player layouts offer extra contested scrap after battle, but travel distance and encounter exposure are unequal; D4 records seat advantage rather than calling the maps symmetric.
 
 **Decision:** use equal mirrored starting budgets and a richer unowned sector. **Why:** each ship can earn the same amount without crossing the build-phase Belt, while an odd-player map gains a contested post-Belt objective. Equal resource opportunity does not prove equal battle position.
 
@@ -115,9 +166,9 @@ Building rules:
 - Structures can be built in both the build and battle phases.
 - Upgrades apply at once and survive respawns.
 
-### D1 purchase and placement contract — proposed revision 1
+### D1 purchase and placement contract — revision 1
 
-These rules are proposed for Engineering/QA review with the deposit budget above. They clarify the shop table; costs, health, damage, and level limits remain starting values until playtests.
+These rules are the Engineering/QA contract with the deposit budget above. They clarify the shop table; costs, health, damage, and level limits remain starting values until playtests.
 
 - A purchase uses the ship's facing and position at the **start of the tick**, before that tick's movement. Keys `1` and `2` target exactly the cell immediately in front of the ship. `Q` and `E` affect that player's ship, wherever it is. The ship must be alive. The server is the only authority for price, position, ownership, level, and scrap.
 - The build radius is **Manhattan distance** `|x - coreX| + |y - coreY| ≤ 8`, inclusive. The target must lie inside the player's own sector and off the Belt. The core and reserved spawn tile are never buildable. A target occupied by any core, deposit, wall, turret, ship, or scrap pickup is rejected. No structure replaces another. A living core is required to build a wall or turret; building is allowed in build and battle, but not sudden death or results.

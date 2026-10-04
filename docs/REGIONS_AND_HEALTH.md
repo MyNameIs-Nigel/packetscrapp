@@ -1,6 +1,6 @@
 # Regions and health checks
 
-Design specification; endpoints and infrastructure are not implemented or verified. The table below describes production. Development uses `nyc-dev.packetscr.app` and `atl-dev.packetscr.app` and its own client at `dev.packetscr.app`.
+Design specification; E0 implements a local `/health` endpoint with environment, region, protocol, and build SHA. Regional readiness, capacity, CORS/origin policy, and infrastructure are not implemented or verified. The table below describes production. Development uses `nyc-dev.packetscr.app` and `atl-dev.packetscr.app` and its own client at `dev.packetscr.app`.
 
 ## Summary
 

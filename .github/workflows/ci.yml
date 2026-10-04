@@ -27,3 +27,44 @@ jobs:
         run: python3 scripts/check_docs.py
       - name: Check whitespace
         run: git -c core.whitespace=trailing-space,space-before-tab diff --check $(git hash-object -t tree /dev/null) HEAD
+
+  application-checks:
+    name: application-checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up pinned Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Check toolchain
+        run: |
+          test "$(node --version)" = "v24.21.0"
+          test "$(npm --version)" = "11.19.0"
+      - name: Install exact dependencies
+        run: npm ci
+      - name: Format, lint, and types
+        run: |
+          npm run format:check
+          npm run lint
+          npm run typecheck
+      - name: Unit and real SDK integration tests
+        run: |
+          npm run test:unit
+          npm run test:integration
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Built browser smoke
+        run: npm run test:e2e
+      - name: Build server and client
+        run: |
+          cp dist/manifest.json "$RUNNER_TEMP/first-manifest.json"
+          npm run build
+          cmp "$RUNNER_TEMP/first-manifest.json" dist/manifest.json
+      - name: Verify bare artifact
+        run: npm run smoke:artifact
