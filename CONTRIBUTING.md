@@ -15,6 +15,16 @@ Do not commit credentials, generated bundles, local environment files, or player
 
 ## Parallel team delivery
 
+### Autonomous agent work
+
+Invoke the repository's [packet-work skill](.agents/skills/packet-work/SKILL.md) with `$packet-work` to discover current ready work, select one team and one focused package, implement/verify it, and open a PR. Optional prompts include `$packet-work team Design`, `$packet-work team Engineering phase E1`, or `$packet-work team QA` with an issue URL.
+
+Run it in separate agent tasks for concurrent workers. Each run owns one team, one package, and one isolated worktree. A shared remote phase claim prevents simultaneous selection; different phases can proceed concurrently. One active package per phase is the conservative default. The skill checks existing issues and PRs too, so it can cooperate with work started outside the skill.
+
+Workers need Git identity, authenticated upstream Git fetch/push, and GitHub issue/PR access through a connector or `gh`. They derive readiness from the current audit, phase entry criteria, accepted contracts, and live evidence. Invocation includes package issue updates, commits, push, and PR creation; merges and releases remain maintainer-owned. See the skill's [coordination protocol](.agents/skills/packet-work/references/coordination.md) for claim recovery and interrupted runs.
+
+### Team contracts and evidence
+
 Use the [shared delivery plan](docs/DELIVERY_PLAN.md) and the [Design](docs/design/README.md), [Engineering / Programming](docs/engineer/README.md), and [QA](docs/qa/README.md) phase plans. Teams work concurrently against accepted contracts; Design and QA participate before implementation, and QA verifies each usable increment. Keep each issue and PR small enough to have one observable outcome and a measurable checkpoint.
 
 Team branches always use `design/`, `engineer/`, or `qa/`, including tests and documentation. These are naming conventions, not automated enforcement. The overseeing phase-documentation task is explicitly authorized to commit and push on the existing `docs/phases` branch; that task-specific exception does not change the team workflow or authorize merging/releasing.

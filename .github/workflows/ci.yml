@@ -25,6 +25,8 @@ jobs:
           persist-credentials: false
       - name: Check documentation and repository files
         run: python3 scripts/check_docs.py
+      - name: Verify autonomous phase claims
+        run: python3 .agents/skills/packet-work/scripts/test_claim_phase.py
       - name: Check whitespace
         run: git -c core.whitespace=trailing-space,space-before-tab diff --check $(git hash-object -t tree /dev/null) HEAD
 

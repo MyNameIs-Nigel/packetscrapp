@@ -1,0 +1,4 @@
+interface:
+  display_name: "Packet Scrapp: deliver one package"
+  short_description: "Claim one team phase, implement it, and open a PR"
+  default_prompt: "Use $packet-work to choose one team, deliver one ready documented work package, validate it, and open a PR."

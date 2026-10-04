@@ -23,7 +23,7 @@ def check(root: Path) -> list[str]:
         if not (root / name).is_file():
             errors.append(f"missing required file: {name}")
     paths = list(root.glob("*.md"))
-    for directory in ("docs", ".github"):
+    for directory in ("docs", ".github", ".agents/skills"):
         paths.extend((root / directory).rglob("*.md"))
     for path in sorted(paths):
         relative = path.relative_to(root)
