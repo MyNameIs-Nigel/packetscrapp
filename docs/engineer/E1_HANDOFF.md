@@ -1,6 +1,6 @@
 # E1 implementation handoff
 
-Status: QA reviewed this supplement in [Q0_REVIEW.md](../qa/Q0_REVIEW.md) under [#19](https://github.com/MyNameIs-Nigel/packetscrapp/issues/19). That review is not implementation and does not verify G0 or G1. [#21](https://github.com/MyNameIs-Nigel/packetscrapp/issues/21) pins slot-index origin and the Fisher–Yates variant below so M03 can name expected seats; it does not implement rooms or movement. The other decision rows have QA test oracles; the maintainer records whether E1.1 may start. [#14](https://github.com/MyNameIs-Nigel/packetscrapp/issues/14) tracks broader E1 and G1. No E1 runtime criterion has passed. The [gate audit](../PROGRESS.md), [Q0/Q1 plan](../qa/Q0_Q1_PLAN.md), and source specifications control acceptance.
+Status: QA reviewed this supplement in [Q0_REVIEW.md](../qa/Q0_REVIEW.md) under [#19](https://github.com/MyNameIs-Nigel/packetscrapp/issues/19). That review is not implementation and does not verify G0 or G1. [#21](https://github.com/MyNameIs-Nigel/packetscrapp/issues/21) pins slot-index origin and the Fisher–Yates variant below so M03 can name expected seats; [#23](https://github.com/MyNameIs-Nigel/packetscrapp/issues/23) records an independent QA recomputation of those vectors in [Q1_SECTOR_PIN_RECHECK.md](../qa/Q1_SECTOR_PIN_RECHECK.md). Neither package implements rooms or movement. The other decision rows have QA test oracles; the maintainer records whether E1.1 may start. [#14](https://github.com/MyNameIs-Nigel/packetscrapp/issues/14) tracks broader E1 and G1. No E1 runtime criterion has passed. The [gate audit](../PROGRESS.md), [Q0/Q1 plan](../qa/Q0_Q1_PLAN.md), and source specifications control acceptance.
 
 ## Accepted inputs
 
@@ -52,7 +52,7 @@ Do not add debug fixture controls to public builds, expose private entities to s
 ## Completion checklist
 
 - [ ] #13 changes integrated; Q0 baseline reviewed; E0 independently repeated on the resulting candidate.
-- [x] Sector-assignment index origin and Fisher–Yates formula pinned with recomputable examples (#21). Runtime map wiring still open under E1.2.
+- [x] Sector-assignment index origin and Fisher–Yates formula pinned with recomputable examples (#21); independent QA recomputation recorded in [#23](https://github.com/MyNameIs-Nigel/packetscrapp/issues/23). Runtime map wiring still open under E1.2.
 - [ ] Two real SDK clients and two independent built-browser contexts agree on movement and identity.
 - [ ] All four seeded layouts and D1 boundary/collision/facing cases pass; forged state cannot change authority.
 - [ ] Five seats work; sixth rejected; final disconnect disposes rooms and counters recover.
