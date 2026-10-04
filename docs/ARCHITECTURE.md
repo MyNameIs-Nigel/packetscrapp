@@ -1,6 +1,6 @@
 # Architecture
 
-Design specification; application code is not implemented yet. The diagram shows the planned production topology. Development uses isolated equivalents described in [DEPLOYMENT.md](DEPLOYMENT.md).
+Design specification; E0 implements only a transport room and local connection harness. Game state, actions, and deployment are not implemented. The diagram shows the planned production topology. Development uses isolated equivalents described in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Components
 
