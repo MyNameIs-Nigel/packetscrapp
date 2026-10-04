@@ -1,6 +1,6 @@
 # Architecture
 
-Design specification; E0 implements only a transport room and local connection harness. Game state, actions, and deployment are not implemented. The diagram shows the planned production topology. Development uses isolated equivalents described in [DEPLOYMENT.md](DEPLOYMENT.md).
+Design specification; E0 implements only a transport room and local connection harness. Game state, actions, and deployment are not implemented. The diagram shows the planned production topology. Development runs the client and one server together on the Atlanta host, as described in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Components
 
@@ -9,13 +9,12 @@ flowchart LR
   B[Browser client]
   V[Vercel CDN<br/>packetscr.app]
   N[New York server<br/>nyc.packetscr.app]
-  A[Atlanta server<br/>atl.packetscr.app]
   B -- static files over HTTPS --> V
   B -- GET /health --> N
-  B -- GET /health --> A
   B -- game traffic over wss --> N
-  B -. failover or manual choice .-> A
 ```
+
+Production starts with one region. Further regions join the client's region list and receive the same health checks; see [REGIONS_AND_HEALTH.md](REGIONS_AND_HEALTH.md).
 
 - **The client** is static files. It draws the game, reads the keyboard, and sends actions.
 - **Each game server** is one Node process running Colyseus. It holds every match on that server in memory.

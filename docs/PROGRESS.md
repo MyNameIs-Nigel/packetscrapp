@@ -20,7 +20,7 @@ Audit date: 2026-10-04 UTC. Repository base: `53c2357e39f57303df2c3095df2eafa0fb
 |---|---|---|
 | G0 contracts ready | Ready for prerequisite-PR review | D0/D1 acceptance already recorded. Review Q0 baseline, fixture changes and E1 technical supplement in #13; maintainer assigns/records review. |
 | G1 connected foundation | Blocked on E1 implementation | Complete #14's admission, pure/server movement, browser controls, validated transport/views/readiness, independent Q1 and Design control review against one SHA. Engineering implements; QA/Design verify. |
-| G2 development delivery | Planned; access unverified | E2 actual isolated HTTPS/WSS, same candidate on both regions/client, failed-rollout restore and Q5 evidence; maintainer supplies access. E2 preparation can run during E1. |
+| G2 development delivery | Planned; access unverified | E2 actual isolated HTTPS/WSS, same candidate on the Atlanta development server and client, failed-rollout restore and Q5 evidence; maintainer supplies access. E2 preparation can run during E1. |
 | G3 build loop | Planned | E3/Q2 all player counts, resources/purchases/privacy/timers and Design review. D2 build-death/respawn contract is still needed for that slice. |
 | G4 complete match | Planned | Accepted D2 lifecycle, E4/Q3 deterministic combat, contenders, results and duration proof. |
 | G5 player journeys | Planned | Accepted D3, E5/E6/Q4, actual D4 playtests and Design acceptance. |
@@ -52,7 +52,7 @@ Dirty working-tree runs are development feedback only. New changes in this audit
 | Economy/radius/generation/UI | D1 contracts merged; full runtime qualification at E3/Q2 | Design/Engineering/QA |
 | Build deaths, pending respawns, combat/tick ending, finite match duration | D2 still required before E3 death slice/E4 | Design and Engineering; freeze at dependent slice entry |
 | Host/bot/reconnect/spectator journeys | D3 still required before dependent E5/E6 slices | Design and Engineering; freeze at dependent slice entry |
-| Hosting/Tunnel/SSH/approved channel, credentials, budget | E2 access/provisioning unverified; no E1 local blocker | Maintainer and Engineering; resolve before E2 application deployment |
+| Hosting/Tunnel/SSH/Atlanta builder, credentials, budget | E2 access/provisioning unverified; no E1 local blocker | Maintainer and Engineering; resolve before E2 application deployment |
 | Operational workload and safe capacity | Q0 provisional targets documented; actual measurements required before E7/G6 | Engineering/QA; qualify on intended hosts |
 
 E1's immediate implementation inputs are present. Integrating and reviewing #13 closes the prerequisite handoff; #14 is the next development package. Keep G1 open until actual authoritative movement and independent evidence satisfy its checklist.

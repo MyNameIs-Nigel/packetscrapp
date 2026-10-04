@@ -11,7 +11,7 @@ The [development/gate audit](docs/PROGRESS.md) records accepted D0/D1 inputs and
 
 ## Planned stack
 
-TypeScript, Canvas 2D, Vite, and authoritative Colyseus servers. A static client on Vercel connects to independent game regions over WebSockets. Matches live in memory; no accounts or database are planned.
+TypeScript, Canvas 2D, Vite, and authoritative Colyseus servers. In production, a static client on Vercel connects to the New York game server over WebSockets; development runs the whole application on a self-hosted Atlanta host. Matches live in memory; no accounts or database are planned.
 
 ## Get involved
 
@@ -49,8 +49,8 @@ git diff --check
 | Change | Target |
 |---|---|
 | Pull request | Validation only; no deployment credentials |
-| Push to `main` | Build, test, and deploy to **development** (planned) |
-| Published stable GitHub Release, e.g. `v0.3.0` | Validate the tag, approve, and deploy to **production** (planned) |
+| Push to `main` | After CI passes, the Atlanta host builds and deploys it to **development** (planned) |
+| Published stable GitHub Release, e.g. `v0.3.0` | Validate the tag, build on GitHub, approve, and deploy to **production**: New York server, then Vercel client (planned) |
 
 See [deployment and GitHub setup](docs/DEPLOYMENT.md), [testing and coding practices](docs/ENGINEERING.md), and the [operations runbook](docs/OPERATIONS.md). Repository and application checks run in CI; deployment remains planned.
 

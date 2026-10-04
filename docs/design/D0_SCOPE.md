@@ -73,9 +73,9 @@ The seven defaults in the [documentation index](../README.md#open-decisions) rem
 | Index default | Owner and next checkpoint |
 |---|---|
 | Full server is unavailable for automatic selection | Engineering E2/E6 and QA Q5; Design D3 reviews the player notice. |
-| Atlanta accepts traffic through Cloudflare Tunnel | Engineering and maintainer E2; QA Q5 validates actual access. |
-| Atlanta pulls an environment-approved artifact | Engineering and maintainer E2; QA Q5 validates approval and rollback. |
-| New York retains SSH push | Engineering and maintainer E2; QA Q5 validates release/restore. |
+| Atlanta development host accepts traffic through Cloudflare Tunnel | Engineering and maintainer E2; QA Q5 validates actual access. |
+| Atlanta development host pulls and builds green `main` commits | Engineering and maintainer E2; QA Q5 validates check gating and rollback. |
+| New York production receives release builds over SSH | Engineering and maintainer E2/E7; QA Q5 validates release/restore. |
 | Deposits are harvested by shooting | Design D1; Engineering/QA review resource and collision examples. |
 | Sudden death shatters cores and closes the Belt | Design D2; Engineering/QA review tick boundaries and bound. |
 | All unspent scrap drops on death | Design D2/D4; QA records any snowballing in playtests. |
