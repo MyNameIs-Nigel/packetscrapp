@@ -56,3 +56,9 @@ Dirty working-tree runs are development feedback only. New changes in this audit
 | Operational workload and safe capacity | Q0 provisional targets documented; actual measurements required before E7/G6 | Engineering/QA; qualify on intended hosts |
 
 E1's immediate implementation inputs are present. Integrating and reviewing #13 closes the prerequisite handoff; #14 is the next development package. Keep G1 open until actual authoritative movement and independent evidence satisfy its checklist.
+
+## Q0 supplement review
+
+Recorded 2026-10-04 under [#19](https://github.com/MyNameIs-Nigel/packetscrapp/issues/19) in [Q0_REVIEW.md](qa/Q0_REVIEW.md), against base `3f5458aceadf7960cc8da121aba2c6c20ec124ca`. This addendum is the QA reading of the supplement merged in [#15](https://github.com/MyNameIs-Nigel/packetscrapp/pull/15). It does not replace the E0 evidence above, and it does not mark G0 or G1 **Verified**.
+
+The G0 row's next evidence is now that review, not an unstarted reading of #13. QA accepted test oracles for the replay stream, admission, movement payload, focus, even-tick movement, health-field transition, capacity/origins, message-limit approach, and log redaction. Exact sector-assignment replay stays **Blocked**: Engineering must pin slot-index origin and the Fisher–Yates variant before M03 can name expected seats. The maintainer records whether the accepted oracles clear E1.1 under #14. Q1 execution still waits for an implementation candidate.
