@@ -1,6 +1,6 @@
 # Design team phases
 
-Status: D0 scope and D1 movement/map, economy and UI contracts are merged; PRs #3/#4 record acceptance of the immediate E1 inputs. D2 package 1 proposes the combat collision/targeting contract under [#25](https://github.com/MyNameIs-Nigel/packetscrapp/issues/25); contender, sudden-death duration, and combat UI packages remain open. D4's playtest protocol is prepared; runtime Design acceptance and D2–D5 completion remain open. See the [gate audit](../PROGRESS.md). Use [parallel delivery and shared gates](../DELIVERY_PLAN.md) for scheduling and [QA acceptance IDs](../qa/ACCEPTANCE_MATRIX.md) for traceability. Branches use `design/summary-of-branch`.
+Status: D0 scope and D1 movement/map, economy and UI contracts are merged; PRs #3/#4 record acceptance of the immediate E1 inputs. D2 package 1 proposes combat collision/targeting under [#25](https://github.com/MyNameIs-Nigel/packetscrapp/issues/25); D2 package 2 proposes contender/win-draw rules under [#27](https://github.com/MyNameIs-Nigel/packetscrapp/issues/27). Sudden-death duration and combat UI packages remain open. D4's playtest protocol is prepared; runtime Design acceptance and D2–D5 completion remain open. See the [gate audit](../PROGRESS.md). Use [parallel delivery and shared gates](../DELIVERY_PLAN.md) for scheduling and [QA acceptance IDs](../qa/ACCEPTANCE_MATRIX.md) for traceability. Branches use `design/summary-of-branch`.
 
 ## Responsibility and working method
 
@@ -60,11 +60,11 @@ Small work packages:
 Small work packages:
 
 1. Specify beam collision priority, range boundaries, friendly-structure behavior, turret target selection/occlusion/ties, and damage timing. Resolve hull-upgrade healing and simultaneous scrap pickup outcomes. **Proposed revision 1** is in [GAME_DESIGN.md](../GAME_DESIGN.md#d2-combat-collision-and-targeting-contract--revision-1) under [#25](https://github.com/MyNameIs-Nigel/packetscrapp/issues/25); Engineering/QA acceptance is still required.
-2. Define a contender across alive, dead-awaiting-respawn, disconnected, and permanently eliminated states. Resolve core destruction during a respawn wait and reconnect expiry. State precisely when a winner or same-tick draw may be declared; a temporarily absent ship must not accidentally end a match.
+2. Define a contender across alive, dead-awaiting-respawn, disconnected, and permanently eliminated states. Resolve core destruction during a respawn wait and reconnect expiry. State precisely when a winner or same-tick draw may be declared; a temporarily absent ship must not accidentally end a match. **Proposed revision 1** is in [GAME_DESIGN.md](../GAME_DESIGN.md#d2-contender-and-win-draw-contract--revision-1) under [#27](https://github.com/MyNameIs-Nigel/packetscrapp/issues/27); Engineering/QA acceptance is still required.
 3. Specify build/battle/sudden-death boundary ticks, lethal Belt behavior, pending respawns when cores shatter, and final results. Prove a finite bound on every map using the approved dimensions and shrink cadence. Reconcile that bound with the vision's five-to-six-minute target.
 4. Document combat/death/respawn/results UI states and concise feedback. Record hypotheses for upgrade-assisted harvesting, full wall enclosures, and death-drop snowballing, with experiments and allowed tuning levers.
 
-**Deliverables:** lifecycle transition table, combat examples and boundary cases, duration calculation for each map, results wireframe, and A06/A07 acceptance updates. Package 1 delivers the combat collision/targeting examples; packages 2–4 complete the lifecycle exit.
+**Deliverables:** lifecycle transition table, combat examples and boundary cases, duration calculation for each map, results wireframe, and A06/A07 acceptance updates. Packages 1–2 deliver combat targeting and contender/win-draw examples; packages 3–4 complete the lifecycle exit.
 
 **Exit / checkpoint:** QA and Engineering agree on expected outcomes for simultaneous final deaths, no living ships with a respawn pending, core loss during a respawn delay, and disconnect expiry. A paper calculation and expected tick sequence establish the termination bound for each layout. No “decide in code” rule remains in E4's scope. G4 later requires runtime verification too.
 
