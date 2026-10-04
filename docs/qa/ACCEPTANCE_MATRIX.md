@@ -1,0 +1,30 @@
+# Cross-team acceptance matrix
+
+All rows start **Planned**. This is a coverage contract, not a report of passing tests. Each work issue links one or more IDs and records evidence using the [shared handoff record](../DELIVERY_PLAN.md). QA owns verification; Design owns player-rule intent; Engineering owns implementation and developer tests. Phase IDs resolve in the [Design](../design/README.md), [Engineering](../engineer/README.md), and [QA](README.md) plans.
+
+**Decision:** use stable acceptance IDs across teams and track detailed cases in linked issues. **Why:** one feature may land in several PRs and require multiple test layers without losing its original intent.
+
+| ID | Source and observable acceptance | Design input | Engineering phase | QA phase / evidence | Gate |
+|---|---|---|---|---|---|
+| A01 | [Vision](../VISION.md): two people on different networks finish unaided; first-time comprehension meets D4's agreed sample/target; entry timing follows D0's resolved definition | D0, D3, D4 | E1, E4, E5 | Q4/Q6: device/network record, completed match, playtest responses and timing | G5/G6 |
+| A02 | [Joining and controls](../GAME_DESIGN.md): 2–5 player seats, correct private/Quick Play start, lock/host permissions, legal keyboard movement and focus | D1, D3 | E1, E5 | Q1/Q4: real SDK capacity/authorization cases and built-browser journeys | G1 foundation; G5 complete |
+| A03 | [Map and economy](../GAME_DESIGN.md): all four layouts meet approved spawn/resource/ownership invariants; deterministic seeds, reachable deposits and intended odd-player behavior | D1, D4 | E3 | Q2: three fixed seeds per count plus generation properties; D4 observations | G3 |
+| A04 | [Visibility](../ARCHITECTURE.md): no unauthorized build-sector data in player/reconnect/spectator streams; exact reveal and role restrictions | D1, D3 | E1, E3, E5, E6 | Q1/Q2/Q4: inspect actual received serialized state for every role and transition | G3; recheck G5/G6 |
+| A05 | [Shop, scrap, Belt](../GAME_DESIGN.md): payout once, conserved scrap, legal atomic purchases, upgrade limits, radius/occupancy, Belt death and correct HUD feedback | D1, D2 | E3 | Q2: seeded rule boundaries, real transport invalid requests, keyboard/UI checks | G3 |
+| A06 | [Combat and cores](../GAME_DESIGN.md): accepted targeting/damage/cooldowns, core/ship life, drops, persistent upgrades, valid respawn and elimination | D2 | E4 | Q3: deterministic simultaneous/boundary cases plus real SDK matches | G4 |
+| A07 | [Winning and lifecycle](../GAME_DESIGN.md): eligible contenders determine wins/draws; every layout ends within approved bound; results and disposal agree | D2, D4 | E4, E5 | Q3/Q4: tick proofs/tests, real-time match per layout, replay cleanup and playtest durations | G4; replay G5 |
+| A08 | [Bot](../GAME_DESIGN.md): solo start within agreed 20-second measure; at most one labelled bot; legal visible-state actions and usable opponent | D0, D3, D4 | E5 | Q4: action/visibility inspection, three timed solo runs, obstacle cases | G5 |
+| A09 | [Reconnection](../ARCHITECTURE.md): authenticated seat recovery within 20 seconds, damage while absent, expiry and core/respawn handling, safe identity storage | D2, D3 | E5 | Q4: before/at/after boundary SDK and browser cases; replay/token cleanup | G5 |
+| A10 | [Spectators](../GAME_DESIGN.md): live list, metadata-only build view, post-Belt watch, eliminated-player transition, ten-watcher cap and no player authority | D3 | E6 | Q4: received-state/permission tests, cap and browser lifecycle checks | G5 |
+| A11 | [Regions and health](../REGIONS_AND_HEALTH.md): correct public metadata, no-store/origins, fixed priority, timeouts/readiness, manual fallback, room-link binding, no environment crossover | D3 | E1, E2, E6 | Q1/Q4/Q5: fixtures plus actual HTTP/WSS, outage/restore and preference scenarios | G2 delivery; G5 complete |
+| A12 | [Authority and abuse](../ARCHITECTURE.md): no client state authority; bounded messages/queues/rates/connections; sanitized nicknames; wrong role/origin rejected | D1–D3 | E0, E1, E3–E6 | Q1–Q5: malicious inputs through real transport, authorization regression, secret/token log inspection | Every affected gate |
+| A13 | [Operations](../OPERATIONS.md): approved load/soak budgets, evidenced room limit, alerts, bounded drain, incident owner and verified coordinated restore | D2 duration input | E2, E6, E7 | Q5/Q6: target-host metrics, churn/watcher soak, alert receipts, failure/restore drill | G6 |
+| A14 | [Delivery](../DEPLOYMENT.md): pinned reproducible build, exact artifact identity, isolated development, fork/main restrictions, validated release approval, digest/channel/order checks and rollback | D5 acceptance | E0, E2, E7 | Q1/Q5/Q6: clean checkout, workflow negative cases, immutable manifest, development smoke and production-build validation | G2 subset; G6 full |
+
+## Evidence and change rules
+
+- Attach evidence to the implementing issue/PR and a candidate checklist linking every applicable row. Use full SHAs, contract/config revisions, environment, hardware/browser versions, seeds, expected/actual outcomes, and sanitized logs/traces/screenshots as appropriate.
+- Rule tests, SDK tests, browser tests, playtests, and operational drills answer different questions. A pass at one layer does not waive a named second layer.
+- If a source contract changes, Design and Engineering identify affected rows; QA updates expected cases and marks obsolete evidence for retest. Do not rewrite tests simply to match a bug.
+- Rows can pass incrementally at earlier gates, but Q6 checks their complete launch scope. Earlier subset evidence must name what was excluded.
+- No source file, wireframe, mock, published release, or documentation-check result alone proves a runtime acceptance criterion.
