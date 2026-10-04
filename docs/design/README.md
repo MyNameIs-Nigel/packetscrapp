@@ -14,6 +14,8 @@ Every phase below produces documentation and review evidence. A future playable 
 
 **Outcome:** all teams can explain what October ships and how success is measured.
 
+The [D0 scope and entry record](D0_SCOPE.md) is a Design proposal for this phase. Engineering and QA review and runtime evidence remain open.
+
 **Entry:** existing vision and source specifications; no running build needed. Run alongside E0 and Q0.
 
 Small work packages:
