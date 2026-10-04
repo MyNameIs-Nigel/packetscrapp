@@ -260,6 +260,7 @@ Observable A03/A05 examples:
 
 ## Screen layout
 
+- The [D1 text wireframes](design/D1_UI.md) define start, lobby, and build-HUD states for Engineering/QA implementation; they are not browser evidence.
 - Top center: the phase name and the clock, for example "WALLS DROP 0:47".
 - Top left: hull bar and core health bar.
 - Top right: the other players, with a marker showing whether each core is alive.
