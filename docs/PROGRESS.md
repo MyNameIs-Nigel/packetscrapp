@@ -18,7 +18,7 @@ Audit date: 2026-10-04 UTC. Repository base: `53c2357e39f57303df2c3095df2eafa0fb
 
 | Gate | Current state | Exact next evidence / accountable owner |
 |---|---|---|
-| G0 contracts ready | Ready for prerequisite-PR review | D0/D1 acceptance already recorded. Review Q0 baseline, fixture changes and E1 technical supplement in #13; maintainer assigns/records review. |
+| G0 contracts ready | Open; QA supplement review recorded | D0/D1 acceptance recorded. [Q0_REVIEW.md](qa/Q0_REVIEW.md) accepted most oracles; #21 pins sector assignment. Maintainer records E1.1 clearance on #14; G0 is not Verified. |
 | G1 connected foundation | Blocked on E1 implementation | Complete #14's admission, pure/server movement, browser controls, validated transport/views/readiness, independent Q1 and Design control review against one SHA. Engineering implements; QA/Design verify. |
 | G2 development delivery | Planned; access unverified | E2 actual isolated HTTPS/WSS, same candidate on the Atlanta development server and client, failed-rollout restore and Q5 evidence; maintainer supplies access. E2 preparation can run during E1. |
 | G3 build loop | Planned | E3/Q2 all player counts, resources/purchases/privacy/timers and Design review. D2 build-death/respawn contract is still needed for that slice. |
@@ -61,4 +61,8 @@ E1's immediate implementation inputs are present. Integrating and reviewing #13 
 
 Recorded 2026-10-04 under [#19](https://github.com/MyNameIs-Nigel/packetscrapp/issues/19) in [Q0_REVIEW.md](qa/Q0_REVIEW.md), against base `3f5458aceadf7960cc8da121aba2c6c20ec124ca`. This addendum is the QA reading of the supplement merged in [#15](https://github.com/MyNameIs-Nigel/packetscrapp/pull/15). It does not replace the E0 evidence above, and it does not mark G0 or G1 **Verified**.
 
-The G0 row's next evidence is now that review, not an unstarted reading of #13. QA accepted test oracles for the replay stream, admission, movement payload, focus, even-tick movement, health-field transition, capacity/origins, message-limit approach, and log redaction. Exact sector-assignment replay stays **Blocked**: Engineering must pin slot-index origin and the Fisher–Yates variant before M03 can name expected seats. The maintainer records whether the accepted oracles clear E1.1 under #14. Q1 execution still waits for an implementation candidate.
+The G0 row's next evidence is now that review, not an unstarted reading of #13. QA accepted test oracles for the replay stream, admission, movement payload, focus, even-tick movement, health-field transition, capacity/origins, message-limit approach, and log redaction. Exact sector-assignment replay is pinned under [#21](https://github.com/MyNameIs-Nigel/packetscrapp/issues/21) (zero-based indexes, Durstenfeld revision 1, worked examples and `assignSectorSlots`). Independent QA should recheck those vectors. The maintainer records whether the accepted oracles clear E1.1 under #14. Q1 execution still waits for an E1.1–E1.3 implementation candidate.
+
+## E1 sector-assignment pin
+
+Recorded under [#21](https://github.com/MyNameIs-Nigel/packetscrapp/issues/21). Engineering pins zero-based row-major slot indexes, Durstenfeld Fisher–Yates revision 1, and unit oracles in [E1_HANDOFF.md](engineer/E1_HANDOFF.md) plus `shared/src/sectorAssignment.ts`. This clears the M03 exact-permutation documentation blocker from the Q0 review. It is not room admission, movement, or G0/G1 verification. Next: maintainer E1.1 clearance on #14, then E1.1 implementation; QA rechecks the pin when convenient.

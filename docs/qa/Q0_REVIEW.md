@@ -19,7 +19,7 @@ Review date: 2026-10-04. Base: `3f5458aceadf7960cc8da121aba2c6c20ec124ca` (curre
 | Supplement row | QA result | Oracle used for later execution |
 |---|---|---|
 | Replay stream | Oracle accepted | Mulberry32 revision 1 and seeds `0`, `1`, `42`, `4294967295`, as already implemented. Invalid and fractional seeds fail. The generator stays out of identity and token code. |
-| Sector assignment | **Blocked** for exact seat permutation | D1 still supplies world size, Belt coordinates, core/spawn offsets, and which slots may be unowned. The handoff does not yet pin a shuffle two implementations would share. See below. |
+| Sector assignment | Exact seat permutation **Ready** after Engineering pin #21; runtime still Blocked on E1.2 | Zero-based row-major indexes, Durstenfeld `j = floor(next() * (i + 1))` descending, and worked examples are in the handoff and `assignSectorSlots`. This review's original blocker is addressed by that later Engineering package; independent QA still rechecks the vectors. |
 | Identity and name | Oracle accepted for E1.1 | Strip U+0000–001F and U+007F–009F, NFC, trim, then 1–16 Unicode code points; reject overlength instead of truncating. Server identity only. Render as text. |
 | Movement payload | Oracle accepted | Exact `direction` enum or `none`. Extra or forged fields do not change the stored intent. One intent per seat. |
 | Key focus | Oracle accepted | Restates accepted D1 and the D1 UI: WASD and arrows match; latest held direction wins; release, blur, hide, and disconnect clear. Gameplay keys apply only on the focused game surface. |
@@ -29,18 +29,11 @@ Review date: 2026-10-04. Base: `3f5458aceadf7960cc8da121aba2c6c20ec124ca` (curre
 | Message limits | Approach accepted; name the window anchor before A02 | 1 KiB frames rejected before parse; at most 30 accepted actions per window; the 31st is dropped; two consecutive windows over 60 frames disconnect only that connection. |
 | Logs | Oracle accepted | Structured type, environment, region, and SHA. Names, full payloads, addresses, and tokens stay out of logs. |
 
-## Sector assignment is not a replay pin yet
+## Sector assignment pin follow-up
 
-D1 says the same player count and seed reproduce the unowned slot and the sector-slot order, and that join order is also required to know which participant receives which slot. The handoff adds row-major enumeration, `floor(next() * candidates.length)` for the unowned draw, then a Fisher–Yates shuffle of the owned slots in admitted-seat order.
+The original #19 review blocked M03's exact permutation until Engineering named the index origin and Fisher–Yates formula. [#21](https://github.com/MyNameIs-Nigel/packetscrapp/issues/21) supplies that pin: zero-based row-major slots, center-column candidates `[1, 4]` for five players, Durstenfeld descending `j = floor(next() * (i + 1))`, and recomputable unit vectors including five players / seed `42` → unowned `4`, owned `[1, 0, 5, 3, 2]`.
 
-Two gaps keep case M03's exact permutation **Blocked**:
-
-1. **Slot labels.** For five players, D1 allows only a center-column unowned slot. The handoff's example “slot 1 or 4” matches that pair only if indexes are zero-based row-major (top-center = 1, bottom-center = 4). Under one-based numbering those labels are the left column, which D1 forbids. The example never states the index origin. QA will use D1's center-column rule for the permitted set, not the unlabeled numbers.
-2. **Shuffle variant.** Fisher–Yates does not name the loop direction or the integer drawn from `next()` on each swap. Those choices consume the accepted stream differently, so two faithful readings will not assign the same seats. QA will not copy a future implementation's output and call it the oracle.
-
-Candidate order for the unowned draw is specified enough to implement once the index origin is stated: permitted slots, in row-major enumeration order. That does not repair the shuffle.
-
-E1.2 may still test D1 geometry: dimensions, Belt cells, core and spawn offsets, and the permitted unowned-slot set. It must not claim cross-implementation seat replay until Engineering writes the missing pin into the handoff. Map-generator retries and deposit placement stay in the economy contract for E3/Q2.
+This Q0 document remains the #19 review record. It does not re-run an independent QA oracle check of #21; that belongs to a later QA reading of the pin or to M03 execution. Geometry checks from D1 stay Ready. Map-generator retries and deposit placement stay in the economy contract for E3/Q2.
 
 ## Other bounds that stay testable
 
@@ -64,9 +57,9 @@ G1 stays blocked on implementation plus independent execution. F01–F03 stay E0
 
 | Need | Owner | Unblocks |
 |---|---|---|
-| Pin slot-index origin and the Fisher–Yates loop/index formula in the E1 handoff, with one worked seed example QA can recompute | Engineering | M03 exact assignment; E1.2 seat replay |
+| Independent QA recheck of the #21 sector-assignment vectors against the handoff | QA | Confidence that M03 oracles match the published pin |
 | Record whether the QA oracles above authorize E1.1 admission work | Maintainer, on #14 | E1.1 start |
 | Change nickname counting only if code points are the wrong player rule | Design, at D3 nickname validation | A revised J02 oracle |
-| Execute Q1 on one immutable E1 candidate | QA, after that candidate exists | G1 evidence, still with Design control review |
+| Implement E1.1–E1.3 and execute Q1 on one immutable candidate | Engineering then QA | G1 evidence, still with Design control review |
 
 No product rule was changed in this review.

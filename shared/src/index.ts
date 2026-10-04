@@ -1,6 +1,8 @@
 export const PROTOCOL_VERSION = 1;
 
 export { createSeededRandom } from "./random.ts";
+export { assignSectorSlots, fisherYatesShuffle } from "./sectorAssignment.ts";
+export type { PlayerCount, SectorAssignment } from "./sectorAssignment.ts";
 
 export interface Clock {
   now(): number;
