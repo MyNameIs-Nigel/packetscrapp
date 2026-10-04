@@ -284,6 +284,68 @@ Observable A06 examples:
 
 **Why the Belt returns for sudden death:** it reuses a hazard players already understand, so the ending needs no new rule.
 
+### D2 contender and win-draw contract — revision 1
+
+This Design rule contract is D2 package 2 for E3's build-phase death/respawn slice and E4/Q3 lifecycle checks (A06/A07). It does not claim implemented behavior. It freezes who remains eligible to win across alive, respawn-wait, disconnect, and eliminated states. Sudden-death **duration and ring cadence proof** stay in D2 package 3; combat hit resolution stays in the [combat contract](#d2-combat-collision-and-targeting-contract--revision-1). Reconnect token storage details stay with D3/E5; this package only states how disconnect grace affects contender status.
+
+Match tick order remains [ARCHITECTURE.md](ARCHITECTURE.md): actions → move → fire → damage/deaths/drops/pickups → timers (respawns, phase, sudden-death Belt) → send views. Win/draw evaluation runs **once per tick after deaths and after timer advances** that can create or cancel respawns, using the contender set defined below.
+
+#### Seat roles
+
+Every admitted match seat is in exactly one role after each evaluation:
+
+| Role | Meaning |
+|---|---|
+| `alive` | Has a living ship in the world (connected or inside disconnect grace). |
+| `awaiting_respawn` | Ship destroyed this match, core still living, respawn timer running, not yet spawned. |
+| `permanently_eliminated` | Can no longer return a ship or win; becomes a spectator of this match when client connectivity allows. |
+
+Disconnect grace (starting value 20 seconds) is an overlay on `alive`: the seat remains `alive` while the ship stays in the world and can be damaged. It is not a separate win role.
+
+#### Contender set
+
+A seat is a **contender** iff its role is `alive` or `awaiting_respawn`. Spectators who were never players, permanently eliminated seats, and seats whose disconnect grace expired without a living core-backed respawn path are **not** contenders.
+
+**Decision:** pending respawns and disconnect-grace ships stay contenders. **Why:** a player waiting 15 seconds to respawn, or briefly offline with a ship still on the map, must not hand the match to someone else by temporary absence.
+
+#### Transitions
+
+- **Ship destroyed, core living:** role becomes `awaiting_respawn`; start the respawn timer (starting value 15 s). Scrap drop rules from the bullets above apply. Upgrades persist.
+- **Respawn timer completes:** spawn one living ship at the reserved spawn tile (D1), facing the D1 default, hull at current max; role becomes `alive`. Cancel any movement/fire intent.
+- **Ship destroyed, core already destroyed:** role becomes `permanently_eliminated` immediately (no respawn timer).
+- **Core destroyed while `alive`:** core is gone and cannot be repaired; role stays `alive` until the ship dies, then `permanently_eliminated` (the “next death is permanent” rule).
+- **Core destroyed while `awaiting_respawn`:** cancel the respawn timer; role becomes `permanently_eliminated` immediately. **Why:** there is no living ship to continue and no legal respawn without a core; waiting out a timer would falsely keep them a contender.
+- **Disconnect while `alive`:** keep the ship in world for the grace window; seat stays a contender. Damage, Belt, and turrets still apply. No gameplay actions are accepted from the missing client.
+- **Disconnect grace expires while `alive` with core living:** remove the ship without a scrap-drop-on-death (the seat abandoned the ship); do **not** start a respawn; role becomes `permanently_eliminated`. The abandoned core remains an inert damageable target but that seat is no longer a contender. **Why:** reconnect identity is D3, but expiry must not leave an immortal empty contender or let pull-the-plug dodge elimination forever.
+- **Disconnect grace expires while `alive` with core already destroyed:** remove the ship; role `permanently_eliminated` (same end state).
+- **Disconnect while `awaiting_respawn`:** timer continues; seat stays a contender. If the client is still absent when the ship would spawn, spawn anyway and begin a fresh disconnect grace on the new `alive` ship (still a contender). If core is destroyed during that wait, the core-loss rule above eliminates them.
+- **Build-phase Belt death:** same as any ship destruction: `awaiting_respawn` if the core lives. Build continues; this does not end the match by itself.
+
+Permanent elimination never removes other seats' cores or structures except through ordinary combat damage.
+
+#### Win and draw evaluation
+
+Let `C` be the contender set after deaths and timer transitions on this tick.
+
+1. If `|C| = 1`, that seat **wins**. Enter `ended` with a single winner. A sole contender who is `awaiting_respawn` still wins; they do not need a living ship sprite at the declaration tick.
+2. If `|C| = 0`, the match is a **draw** among every seat that **left the contender set on this tick** (same-tick mutual elimination). If somehow no seat left this tick either (should not occur after match start), treat as a draw among all seats that were contenders at match start—an Engineering assert/fixture failure, not a silent continue.
+3. If `|C| ≥ 2`, the match continues. Phase changes (build→battle, battle→sudden_death) do not by themselves declare a winner.
+
+Same-tick example: two final `alive` ships both reach ≤0 hull in one damage stage → both leave contender set on that tick → `|C| = 0` → draw between those two seats, even if their cores still stood.
+
+**Decision:** evaluate win/draw after both the death stage and the timer stage each tick. **Why:** a respawn completing in the timer stage can restore a second contender before `ended` is entered, and a core-loss transition in the same timer stage must be allowed to eliminate a waiting seat before counting `C`.
+
+Results linger for a short configured display window, then the room disposes (existing architecture). Eliminated seats and disconnect-expired seats watch as spectators under D3 capacity rules; they have no gameplay authority.
+
+Observable A06/A07 examples:
+
+1. Given seats 0 and 1 both `alive`, when seat 0's ship dies and its core lives, then seat 0 is `awaiting_respawn` and still a contender; the match does not enter `ended`.
+2. Given seat 0 `awaiting_respawn` and seat 1 `alive` as the only contenders, when seat 1's ship dies and seat 1's core is already destroyed, then seat 1 is `permanently_eliminated`, `|C| = 1`, and seat 0 wins while still awaiting respawn.
+3. Given seats 0 and 1 as the only contenders, both `alive`, when both ships reach 0 hull in the same damage stage, then both leave the contender set on that tick and the result is a draw between seats 0 and 1.
+4. Given seat 0 `awaiting_respawn` with a living core and seat 1 `alive`, when seat 0's core is destroyed before the respawn timer fires, then seat 0 becomes `permanently_eliminated` immediately and, if seat 1 remains the only contender, seat 1 wins.
+5. Given seat 0 `alive` inside disconnect grace with a living core and seat 1 `alive`, when the grace expires, then seat 0's ship is removed, seat 0 is `permanently_eliminated` (not a contender), seat 0's core may remain as a target, and the match ends only if seat 1 is then the sole contender.
+6. Given three contenders and seat 2 permanently eliminated earlier, when only seat 0 remains in `C`, then seat 0 wins; seat 2 is not placed in a draw set.
+
 ## Joining a match
 
 - **No accounts.** A player enters a nickname of up to 16 characters and plays. *Why:* sign-up and sign-in reduce player counts, and the game has nothing to save.
