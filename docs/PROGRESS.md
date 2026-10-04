@@ -13,6 +13,7 @@ Audit date: 2026-10-04 UTC. Repository base: `53c2357e39f57303df2c3095df2eafa0fb
 | E0 workspace/transport | Merged [#9](https://github.com/MyNameIs-Nigel/packetscrapp/pull/9), `3e416d387e86b98736f995d1b9d2422adba083fd`; [#8](https://github.com/MyNameIs-Nigel/packetscrapp/issues/8) remains open for independent acceptance | Implemented; original CI, independent clean-main checks and corrected audit candidate CI pass. New changes need independent review in [#15](https://github.com/MyNameIs-Nigel/packetscrapp/pull/15). |
 | Q0/Q1 preparation | [Q0 baseline and case catalog](qa/Q0_Q1_PLAN.md), [E1 technical handoff](engineer/E1_HANDOFF.md), #13; E1 execution tracked in [#14](https://github.com/MyNameIs-Nigel/packetscrapp/issues/14) | Prepared for review; E1 cases Ready, execution Blocked until implemented. |
 | E1–E7 / Q1 gameplay–Q6 | Phase plans plus #14 | Planned; no real game movement, matches, regional deployment or release evidence. |
+| D2 combat collision/targeting revision 1 | Proposed under [#25](https://github.com/MyNameIs-Nigel/packetscrapp/issues/25) in [GAME_DESIGN.md](GAME_DESIGN.md#d2-combat-collision-and-targeting-contract--revision-1) | Proposed contract for Engineering/QA review; not accepted, not implemented. |
 
 ## Shared gates
 
@@ -50,7 +51,8 @@ Dirty working-tree runs are development feedback only. New changes in this audit
 | Movement/map, facing, simultaneous collision, Belt-shot boundary and public roster | Accepted in #4; implement/test under #14 | Design/Engineering/QA |
 | Exact seed stream, admission/input bounds, prototype fixture scope and health schema transition | Prepared in E1 handoff; review under #13 before implementation | Engineering/QA, maintainer coordinates |
 | Economy/radius/generation/UI | D1 contracts merged; full runtime qualification at E3/Q2 | Design/Engineering/QA |
-| Build deaths, pending respawns, combat/tick ending, finite match duration | D2 still required before E3 death slice/E4 | Design and Engineering; freeze at dependent slice entry |
+| Hull healing, beam priority, turret targeting/ties, simultaneous deposit credit | Proposed D2 combat contract revision 1 under [#25](https://github.com/MyNameIs-Nigel/packetscrapp/issues/25); Engineering/QA acceptance still required before E4 encoding | Design; Engineering/QA review |
+| Build deaths, pending respawns, combat/tick ending, finite match duration | Remaining D2 packages still required before E3 death slice/E4 lifecycle | Design and Engineering; freeze at dependent slice entry |
 | Host/bot/reconnect/spectator journeys | D3 still required before dependent E5/E6 slices | Design and Engineering; freeze at dependent slice entry |
 | Hosting/Tunnel/SSH/Atlanta builder, credentials, budget | E2 access/provisioning unverified; no E1 local blocker | Maintainer and Engineering; resolve before E2 application deployment |
 | Operational workload and safe capacity | Q0 provisional targets documented; actual measurements required before E7/G6 | Engineering/QA; qualify on intended hosts |
@@ -70,3 +72,7 @@ Recorded under [#21](https://github.com/MyNameIs-Nigel/packetscrapp/issues/21). 
 ## Q1 sector-assignment pin recheck
 
 Recorded under [#23](https://github.com/MyNameIs-Nigel/packetscrapp/issues/23) in [Q1_SECTOR_PIN_RECHECK.md](qa/Q1_SECTOR_PIN_RECHECK.md), against pin candidate `f93684523cf4562155f477d1caebf96fac6bae20`. Independent Python uint32 recomputation matched the handoff worked examples and all sixteen published vectors without copying TypeScript helper output. M03's exact-permutation oracle remains Ready; runtime stays Blocked on E1.2. Next: maintainer E1.1 clearance on #14, then E1.1 implementation.
+
+## D2 combat collision and targeting proposal
+
+Recorded under [#25](https://github.com/MyNameIs-Nigel/packetscrapp/issues/25). Design proposes revision 1 of the [combat collision and targeting contract](GAME_DESIGN.md#d2-combat-collision-and-targeting-contract--revision-1): cardinal beam blockers/pass-through, Chebyshev turret range with LOS and seatIndex ties, seat-ordered damage/last-hit credit, pickup merge rules, and hull-upgrade healing equal to the max-HP bonus. Status: **In review** / proposed — not yet accepted by Engineering/QA and not runtime-verified. Contender, sudden-death duration, and combat UI remain later D2 packages. E1.1 clearance on #14 is unchanged.
