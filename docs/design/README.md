@@ -34,6 +34,8 @@ Small work packages:
 
 **Outcome:** a player can learn move/shoot/build and choose a meaningful use for limited scrap.
 
+The [movement and map contract](../GAME_DESIGN.md#d1-movement-and-map-contract--revision-1) is the first D1 slice for E1/Q1. Economy, build placement, and UI contracts remain separate D1 work.
+
 **Entry:** D0 scope; E0 need not be finished. Split movement/map decisions from the later economy handoff so E1 can start early.
 
 Small work packages:
