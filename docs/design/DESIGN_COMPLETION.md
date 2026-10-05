@@ -27,6 +27,20 @@ Reviewed all four packages and J01–J20 against accepted D1 and proposed D2. Ad
 
 Paper walkthroughs cover both bot/start/admission race orders, host transfer, all seven role permission rows, recovery at `d+299`/`d+300`/`d+301`, ten external watchers plus five former players, early-build result filtering, perpendicular bot arrival and blocked facing, fresh replay identity, and region A→fallback B→restored A with stale responses. J01–J21 remain proposed oracles for Engineering/QA acceptance and independent Q4 execution. D3 introduces no runtime protocol change in this PR.
 
+## E1 controls — Design review (#38)
+
+Engineering repair #41 is merged at `3357587e7bdb5203b3ead110965fe84f5bf67834`. The [current control receipt](E1_CONTROL_REVIEW.md#retest-after-merged-engineering-repair) records a clean build at `cf40abb7904fb4ac37fbd763df8814d46935e55e` with identical application/test/configuration content to that merged repair. All 11 existing built system-Chromium journeys pass. Separate Design observation confirms board/Leave focus, off-board input rejection, held-key blur stopping, before-edge two-client convergence, reduced-motion setting and readable light/dark 1280/640-pixel layouts. Screenshots and JSON accompany that receipt.
+
+Design accepts the observed E1 prototype movement/focus intent within this coverage. Original trace access is unavailable, and pinned local browser downloads still fail HTTP 403; neither is described as tested. Independent QA #32 owns origin/raw-frame/browser acceptance and defect disposition. G1 stays open pending that evidence; D4/D5 still require their playable/release inputs.
+
+## Validation and remaining review
+
+Linux, Python 3.12.14, pinned Node 24.21.0/npm 11.19.0. Documentation/whitespace, phase-claim helper (3 tests), formatting, lint, types and 190 unit checks pass. The 11 built browser checks use system Chromium 151.0.7922.173, protocol 2, seed 42, loopback. Head-specific CI is recorded on the PR after publication; another SHA's CI cannot substitute.
+
+Design deliverables for #29/#33 and the scoped #38 observation are complete in this branch. Engineering/QA acceptance of D2/D3, real later-phase implementation, independent QA retest and shared gates retain their existing owners. This is one Design PR with no product/dependency/protocol/deployment/release change.
+
 ## Main synchronization
 
 Initial fetched main was `c057b55d444b81db1cf48988325351acfccca3f4`. Engineering repair #41 merged during discovery; main `3357587e7bdb5203b3ead110965fe84f5bf67834` was incorporated before Design edits. Each issue completion is committed before fetching/rebasing onto main. The final PR records the last synchronized base and validation candidate.
+
+After #29 and after #33, fetch/rebase both confirmed main at `3357587e7bdb5203b3ead110965fe84f5bf67834`; the built #38 observation uses that repaired application. The final issue/final-publication fetches are recorded in the PR handoff.

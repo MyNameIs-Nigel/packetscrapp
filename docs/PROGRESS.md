@@ -1,6 +1,6 @@
 # Development and shared-gate audit
 
-Current QA addendum (2026-10-05): [independent Q1 E1 execution](qa/Q1_E1_REVIEW.md) under [#32](https://github.com/MyNameIs-Nigel/packetscrapp/issues/32) repeats the merged E1 baseline on `c83da08091bf73cb4733e71ca63fdd7f3db23fb2`. H02 fails missing-Origin preflight; Engineering owns [#34](https://github.com/MyNameIs-Nigel/packetscrapp/issues/34). G1 remains Blocked on the fix/retest, independent browser coverage and Design control review. Earlier evidence below remains candidate-specific.
+Current completion addendum (2026-10-05): Engineering repair #41 is merged at `3357587e7bdb5203b3ead110965fe84f5bf67834`. The [combined Design review](design/DESIGN_COMPLETION.md) completes remaining D2/D3 specification corrections and accepts the observed E1 movement/focus intent under #38 within system-Chromium prototype coverage. Independent QA #32 still needs to retest the merged origin/raw-frame/browser repairs and record defect disposition. G1 remains open. Earlier failures and evidence below remain candidate-specific; D2/D3 still require Engineering/QA contract acceptance.
 
 Audit date: 2026-10-04 UTC. Repository base: `53c2357e39f57303df2c3095df2eafa0fb7fa26a`. Audit owner: Codex, working for maintainer @MyNameIs-Nigel under [#13](https://github.com/MyNameIs-Nigel/packetscrapp/issues/13). This record supersedes stale phase-summary wording; it does not replace the [gate criteria](DELIVERY_PLAN.md#shared-checkpoints).
 
@@ -25,7 +25,7 @@ Audit date: 2026-10-04 UTC. Repository base: `53c2357e39f57303df2c3095df2eafa0fb
 | Gate | Current state | Exact next evidence / accountable owner |
 |---|---|---|
 | G0 contracts ready | Open; QA supplement review and sector-pin recheck recorded | D0/D1 acceptance recorded. [Q0_REVIEW.md](qa/Q0_REVIEW.md) accepted most oracles; #21 pins sector assignment; [Q1_SECTOR_PIN_RECHECK.md](qa/Q1_SECTOR_PIN_RECHECK.md) independently rechecks those vectors. Maintainer records E1.1 clearance on #14; G0 is not Verified. |
-| G1 connected foundation | Blocked: Q1 H02 failure | [Independent Q1 review](qa/Q1_E1_REVIEW.md) reproduces missing-Origin preflight failure on merged E1; Engineering fixes #34, QA retests. Independent browser matrix and Design control review remain open. Prior Engineering CI is separate evidence. Not Verified. |
+| G1 connected foundation | Blocked: independent QA repair retest pending | Repair #41 is merged; [Design's scoped control retest](design/E1_CONTROL_REVIEW.md#retest-after-merged-engineering-repair) passes on its clean documentation candidate with unchanged repaired application. QA #32 independently retests #34/#36/#39 and the required browser matrix on the merged repair; historical failure evidence remains valid for its original SHA. Not Verified. |
 | G2 development delivery | Planned; access unverified | E2 actual isolated HTTPS/WSS, same candidate on the Atlanta development server and client, failed-rollout restore and Q5 evidence; maintainer supplies access. E2 preparation can run during E1. |
 | G3 build loop | Planned | E3/Q2 all player counts, resources/purchases/privacy/timers and Design review. Accept proposed D2 revision 2 before the build-death/respawn slice. |
 | G4 complete match | Planned | Accepted D2 lifecycle, E4/Q3 deterministic combat, contenders, results and duration proof. |
@@ -106,3 +106,9 @@ Independent QA also records [#34](https://github.com/MyNameIs-Nigel/packetscrapp
 ## Engineering E1 repair checkpoint — 2026-10-05
 
 [Repair receipt](engineer/E1_REPAIR.md) records Engineering fixes for missing-Origin matchmaking preflight (#34), reliable initial raw-state capture (#36), and settled two-browser convergence/stop assertions (#39). Candidate `f47a20d4eab5fd953217ce0105264951f0b1e183` includes merged QA #35 and Design #40; 190 unit/109 integration checks and local built Chromium pass. This is developer evidence, not independent retest or Design acceptance. G1 remains open pending QA #32 and Design #38 on the repaired candidate. Historical failing evidence above is preserved; local pinned-browser downloads remain denied.
+
+## Combined Design completion checkpoint — 2026-10-05
+
+The [combined receipt](design/DESIGN_COMPLETION.md) covers all three open Design issues #29/#33/#38 in one maintainer-requested PR. D2 now consistently handles early build endings, abandoned scrap and retained former-player watching. D3 supplies legal bot facing and early-result/reconnect privacy in J21. All-cell duration arithmetic still yields 4830/5190 maximum ending ticks. These are completed Design specification checks; Engineering/QA acceptance of the proposed revisions remains pending.
+
+On clean candidate `cf40abb7904fb4ac37fbd763df8814d46935e55e`, application/tests/configuration match merged #41. Eleven existing built system-Chromium journeys and a separate two-context Design focus/stop/convergence observation pass. [Current Design disposition](design/E1_CONTROL_REVIEW.md#retest-after-merged-engineering-repair) accepts that prototype intent within its recorded coverage. Historical failure/trace details remain preserved; the original trace is unavailable here. Independent QA #32 and exact-head pinned-browser PR CI remain separate evidence. No shared gate, later gameplay, deployment or release is declared verified.

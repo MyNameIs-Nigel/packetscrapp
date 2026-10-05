@@ -1,0 +1,75 @@
+{
+  "candidate": "cf40abb7904fb4ac37fbd763df8814d46935e55e",
+  "implementation": "3357587e7bdb5203b3ead110965fe84f5bf67834",
+  "protocol": 2,
+  "seed": 42,
+  "seats": 2,
+  "environment": "Linux; loopback; no added latency",
+  "dateUTC": "2026-10-05T01:49:14.320Z",
+  "node": "v24.21.0",
+  "npm": "11.19.0",
+  "observations": {
+    "build": {
+      "initialFocus": "board",
+      "visibleSeats": [
+        0
+      ],
+      "initialShip": {
+        "x": 13,
+        "y": 11,
+        "facing": "right",
+        "alive": true
+      },
+      "focusOnTab": "leave-game",
+      "offBoardKeysDidNotMove": true,
+      "heldKeyBlurStopped": {
+        "x": 13,
+        "y": 14,
+        "facing": "down",
+        "alive": true
+      },
+      "legend": "Hatched orange bands are the asteroid Belt (lethal while it is up). Hatched dark sectors are hidden.",
+      "banner": "Local prototype, build view: you see only your own sector and the lethal Belt. Movement only — no scrap, combat, respawn or match flow. A ship that enters the Belt is lost for this test.",
+      "roster": "Seat 0 — Design Alpha (you)\nSeat 1 — Design Bravo",
+      "reducedMotion": true,
+      "narrowViewport": {
+        "width": 640,
+        "scrollWidth": 640
+      },
+      "afterLeaveFocus": "nickname"
+    },
+    "bravoRelease": {
+      "x": 34,
+      "y": 8,
+      "facing": "up",
+      "alive": true
+    },
+    "battle": {
+      "initialFocus": "board",
+      "visibleSeats": [
+        0,
+        1
+      ],
+      "initialShip": {
+        "x": 13,
+        "y": 11,
+        "facing": "right",
+        "alive": true
+      },
+      "focusOnTab": "leave-game",
+      "offBoardKeysDidNotMove": true,
+      "heldKeyBlurStopped": {
+        "x": 13,
+        "y": 15,
+        "facing": "down",
+        "alive": true
+      },
+      "legend": "Squares are cores, diamonds are deposits, triangles are ships pointing the way they face.",
+      "banner": "Local prototype, battle view: every sector is visible and the Belt is gone. Movement only — no scrap, combat, respawn or match flow.",
+      "roster": "Seat 0 — Design Alpha (you)\nSeat 1 — Design Bravo",
+      "reducedMotion": true,
+      "afterLeaveFocus": "nickname"
+    }
+  },
+  "browser": "151.0.7922.173"
+}
