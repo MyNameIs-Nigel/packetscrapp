@@ -13,8 +13,8 @@ Audit date: 2026-10-04 UTC. Repository base: `53c2357e39f57303df2c3095df2eafa0fb
 | E0 workspace/transport | Merged [#9](https://github.com/MyNameIs-Nigel/packetscrapp/pull/9), `3e416d387e86b98736f995d1b9d2422adba083fd`; [#8](https://github.com/MyNameIs-Nigel/packetscrapp/issues/8) remains open for independent acceptance | Implemented; original CI, independent clean-main checks and corrected audit candidate CI pass. New changes need independent review in [#15](https://github.com/MyNameIs-Nigel/packetscrapp/pull/15). |
 | Q0/Q1 preparation | [Q0 baseline and case catalog](qa/Q0_Q1_PLAN.md), [E1 technical handoff](engineer/E1_HANDOFF.md), #13; E1 execution tracked in [#14](https://github.com/MyNameIs-Nigel/packetscrapp/issues/14) | Prepared for review; E1 cases Ready, execution Blocked until implemented. |
 | E1–E7 / Q1 gameplay–Q6 | Phase plans plus #14 | Planned; no real game movement, matches, regional deployment or release evidence. |
-| D2 combat collision/targeting revision 1 | Proposed under [#25](https://github.com/MyNameIs-Nigel/packetscrapp/issues/25) in [GAME_DESIGN.md](GAME_DESIGN.md#d2-combat-collision-and-targeting-contract--revision-1) | Proposed contract for Engineering/QA review; not accepted, not implemented. |
-| D2 contender/win-draw revision 1 | Proposed under [#27](https://github.com/MyNameIs-Nigel/packetscrapp/issues/27) in [GAME_DESIGN.md](GAME_DESIGN.md#d2-contender-and-win-draw-contract--revision-1) | Proposed lifecycle eligibility rules for Engineering/QA review; not accepted, not implemented. |
+| Full D2 combat/lifecycle/UI proposal | [#29](https://github.com/MyNameIs-Nigel/packetscrapp/issues/29), [full-phase handoff](design/D2_HANDOFF.md), combat/lifecycle revision 2 and duration/UI revision 1 | In review. All four contract packages delivered as proposals; supersedes #26/#28 where stated. Independent Engineering/QA acceptance and runtime evidence pending. |
+| D2 duration paper calculation | Proposed immediate ring 0 and 30-tick cadence in [GAME_DESIGN.md](GAME_DESIGN.md#d2-phase-boundaries-and-finite-duration--revision-1) | 5:22/5:46 simulated upper bounds, excluding lobby/results. Paper coverage only; changed values await acceptance and runtime Q3. |
 
 ## Shared gates
 
@@ -23,7 +23,7 @@ Audit date: 2026-10-04 UTC. Repository base: `53c2357e39f57303df2c3095df2eafa0fb
 | G0 contracts ready | Open; QA supplement review and sector-pin recheck recorded | D0/D1 acceptance recorded. [Q0_REVIEW.md](qa/Q0_REVIEW.md) accepted most oracles; #21 pins sector assignment; [Q1_SECTOR_PIN_RECHECK.md](qa/Q1_SECTOR_PIN_RECHECK.md) independently rechecks those vectors. Maintainer records E1.1 clearance on #14; G0 is not Verified. |
 | G1 connected foundation | Blocked on E1 implementation | Complete #14's admission, pure/server movement, browser controls, validated transport/views/readiness, independent Q1 and Design control review against one SHA. Engineering implements; QA/Design verify. |
 | G2 development delivery | Planned; access unverified | E2 actual isolated HTTPS/WSS, same candidate on the Atlanta development server and client, failed-rollout restore and Q5 evidence; maintainer supplies access. E2 preparation can run during E1. |
-| G3 build loop | Planned | E3/Q2 all player counts, resources/purchases/privacy/timers and Design review. D2 build-death/respawn contract is still needed for that slice. |
+| G3 build loop | Planned | E3/Q2 all player counts, resources/purchases/privacy/timers and Design review. Accept proposed D2 revision 2 before the build-death/respawn slice. |
 | G4 complete match | Planned | Accepted D2 lifecycle, E4/Q3 deterministic combat, contenders, results and duration proof. |
 | G5 player journeys | Planned | Accepted D3, E5/E6/Q4, actual D4 playtests and Design acceptance. |
 | G6 launch | Planned | D5/E7/Q5/Q6 complete capacity, recovery, security, browser/network, rollback and release-candidate evidence; maintainer approval. |
@@ -52,9 +52,9 @@ Dirty working-tree runs are development feedback only. New changes in this audit
 | Movement/map, facing, simultaneous collision, Belt-shot boundary and public roster | Accepted in #4; implement/test under #14 | Design/Engineering/QA |
 | Exact seed stream, admission/input bounds, prototype fixture scope and health schema transition | Prepared in E1 handoff; review under #13 before implementation | Engineering/QA, maintainer coordinates |
 | Economy/radius/generation/UI | D1 contracts merged; full runtime qualification at E3/Q2 | Design/Engineering/QA |
-| Hull healing, beam priority, turret targeting/ties, simultaneous deposit credit | Proposed D2 combat contract revision 1 under [#25](https://github.com/MyNameIs-Nigel/packetscrapp/issues/25); Engineering/QA acceptance still required before E4 encoding | Design; Engineering/QA review |
-| Contenders, core-loss during respawn/disconnect, win/same-tick draw | Proposed D2 contender/win-draw contract revision 1 under [#27](https://github.com/MyNameIs-Nigel/packetscrapp/issues/27); Engineering/QA acceptance still required before E3 death slice / E4 | Design; Engineering/QA review |
-| Sudden-death duration / finite match bound | Remaining D2 package 3 still required | Design and Engineering; freeze at dependent slice entry |
+| Hull healing, beam priority, turret targeting/ties, simultaneous deposit credit | Proposed full D2 combat revision 2 under #29; Engineering/QA acceptance required before E4 encoding | Design; Engineering/QA review |
+| Contenders, core-loss during respawn/disconnect, win/same-tick draw | Proposed full D2 lifecycle revision 2 under #29; Engineering/QA acceptance required before E3 death slice / E4 | Design; Engineering/QA review |
+| Sudden-death duration / finite match bound | D2 #29 supplies proposed 5:22/5:46 paper bounds; cadence and boundary acceptance plus Q3 runtime evidence remain open | Design and Engineering; freeze at dependent slice entry |
 | Host/bot/reconnect/spectator journeys | D3 still required before dependent E5/E6 slices | Design and Engineering; freeze at dependent slice entry |
 | Hosting/Tunnel/SSH/Atlanta builder, credentials, budget | E2 access/provisioning unverified; no E1 local blocker | Maintainer and Engineering; resolve before E2 application deployment |
 | Operational workload and safe capacity | Q0 provisional targets documented; actual measurements required before E7/G6 | Engineering/QA; qualify on intended hosts |
