@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import {
   expectNoRooms,
   isBoardFocused,
@@ -6,6 +6,7 @@ import {
   rosterNames,
   ship,
   ships,
+  stableShip,
   startPrototype,
   type PrototypeOptions,
 } from "./helpers.ts";
@@ -37,15 +38,8 @@ async function twoPlayers(
   return { a, b };
 }
 
-async function expectStill(
-  page: Page,
-  seat: number,
-  milliseconds = 450,
-): Promise<void> {
-  const before = await ship(page, seat);
-  await page.waitForTimeout(milliseconds);
-  expect(await ship(page, seat)).toEqual(before);
-}
+/** The 2-player world is 48 x 24; a ship still 2 tiles inside the edge was stopped, not walled. */
+const SAFE_Y = 21;
 
 test("two browsers see identical server-owned movement and obey held-key rules", async ({
   browser,
@@ -76,12 +70,11 @@ test("two browsers see identical server-owned movement and obey held-key rules",
       .poll(async () => (await ship(a.page, 0))?.y ?? 0)
       .toBeGreaterThan(12);
     await a.page.keyboard.up("ArrowDown");
-    await expect
-      .poll(async () => ship(b.page, 0))
-      .toEqual(await ship(a.page, 0));
-    await expectStill(a.page, 0);
-    await expectStill(b.page, 0);
-    expect((await ship(b.page, 0))?.facing).toBe("down");
+    const stopped = await stableShip(a.page, 0);
+    expect(stopped).toMatchObject({ x: 13, facing: "down", alive: true });
+    expect(stopped.y).toBeGreaterThan(12);
+    expect(stopped.y).toBeLessThan(SAFE_Y);
+    expect(await stableShip(b.page, 0)).toEqual(stopped);
 
     // Hold S, then D: D wins while held; releasing D resumes down; releasing S stops.
     await a.page.keyboard.down("KeyS");
@@ -94,8 +87,9 @@ test("two browsers see identical server-owned movement and obey held-key rules",
     await expect.poll(async () => (await ship(b.page, 0))?.facing).toBe("down");
     expect((await ship(b.page, 0))?.x).toBeGreaterThanOrEqual(turnedX);
     await a.page.keyboard.up("KeyS");
-    await expectStill(b.page, 0);
-    expect(await ship(a.page, 0)).toEqual(await ship(b.page, 0));
+    const settled = await stableShip(b.page, 0);
+    expect(settled.y).toBeLessThan(SAFE_Y);
+    expect(await stableShip(a.page, 0)).toEqual(settled);
 
     // The other seat steers independently.
     await b.page.keyboard.down("KeyW");
@@ -139,9 +133,11 @@ test("losing focus stops the ship", async ({ browser }) => {
     await expect
       .poll(async () => (await ship(b.page, 0))?.y ?? 0)
       .toBeGreaterThan(11);
+    // The key is still physically held; only focus moves.
     await a.page.locator("#leave-game").focus();
-    await expectStill(b.page, 0);
-    expect(await ship(a.page, 0)).toEqual(await ship(b.page, 0));
+    const stopped = await stableShip(b.page, 0);
+    expect(stopped.y).toBeLessThan(SAFE_Y);
+    expect(await stableShip(a.page, 0)).toEqual(stopped);
     await a.page.keyboard.up("ArrowDown");
   } finally {
     await a.context.close();
@@ -163,7 +159,8 @@ test("hiding the document stops the ship", async ({ browser }) => {
       });
       document.dispatchEvent(new Event("visibilitychange"));
     });
-    await expectStill(b.page, 0);
+    const stopped = await stableShip(b.page, 0);
+    expect(stopped.y).toBeLessThan(SAFE_Y);
     await a.page.keyboard.up("ArrowDown");
   } finally {
     await a.context.close();
@@ -184,7 +181,8 @@ test("a disconnect clears the held intent on the server", async ({
     await expect
       .poll(() => rosterNames(b.page, "game-roster"))
       .toEqual(["Seat 1 — Bravo (you)"]);
-    await expectStill(b.page, 0, 600);
+    const stopped = await stableShip(b.page, 0);
+    expect(stopped.y).toBeLessThan(SAFE_Y);
   } finally {
     await b.context.close();
   }
@@ -242,7 +240,7 @@ test("stepping into the build-phase Belt is lethal and never crosses it", async 
     const lost = await ship(a.page, 0);
     expect(lost).toMatchObject({ x: 23, alive: false, facing: "right" });
     await expect(a.page.locator("#ships li")).toContainText("lost in the Belt");
-    await expectStill(a.page, 0);
+    expect(await stableShip(a.page, 0)).toEqual(lost);
     // The other player never sees the first player's ship during build.
     expect((await ships(b.page)).map((row) => row.seat)).toEqual([1]);
   } finally {

@@ -102,6 +102,26 @@ export async function ship(
   return (await ships(page)).find((row) => row.seat === seat);
 }
 
+/**
+ * Wait until a ship has genuinely stopped: two reads a quiet interval apart
+ * agree. A release can leave one in-flight step, so a single before/after read
+ * would race it. Callers also assert the ship is short of the world edge, so a
+ * ship that was never told to stop cannot pass by running into a wall.
+ */
+export async function stableShip(
+  page: Page,
+  seat: number,
+  quietMs = 350,
+): Promise<ShipRow> {
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    const before = await ship(page, seat);
+    await page.waitForTimeout(quietMs);
+    const after = await ship(page, seat);
+    if (after && JSON.stringify(before) === JSON.stringify(after)) return after;
+  }
+  throw new Error(`Ship ${seat} never settled`);
+}
+
 export async function isBoardFocused(page: Page): Promise<boolean> {
   return page.evaluate(() => document.activeElement?.id === "board");
 }
