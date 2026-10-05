@@ -74,6 +74,8 @@ Small work packages:
 
 ## D3 — Complete multiplayer experience
 
+All four specification packages are delivered as [proposed revision 1](D3_JOURNEYS.md) under [#33](https://github.com/MyNameIs-Nigel/packetscrapp/issues/33). [The handoff](D3_HANDOFF.md) records exact inputs, J01–J20 examples, pending decisions and reviewing owners. Phase exit still requires Engineering/QA agreement; runtime G5 remains open.
+
 **Outcome:** players understand joining, disconnection, watching, replay, and server availability.
 
 **Entry:** D0 entry goals and D1 visibility contract. Draft early; final lifecycle language uses D2.
