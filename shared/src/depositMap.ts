@@ -68,13 +68,7 @@ function drawTemplate(random: RandomDraw, owned: boolean): TemplateDeposit[] {
   const used = new Set<number>();
   const selected: TemplateDeposit[] = [];
   const bands = owned
-    ? ([
-        { kind: "small", count: 2, min: 3, max: 4 },
-        { kind: "small", count: 4, min: 5, max: 7 },
-        { kind: "small", count: 2, min: 8, max: 10 },
-        { kind: "large", count: 1, min: 5, max: 7 },
-        { kind: "large", count: 1, min: 8, max: 10 },
-      ] as const)
+    ? CONFIG.ownedBands
     : ([
         { kind: "small", count: CONFIG.unownedSmall, min: 0, max: 48 },
         { kind: "large", count: CONFIG.unownedLarge, min: 0, max: 48 },
@@ -164,6 +158,32 @@ function validTemplate(
   starts: readonly Cell[],
   owned: boolean,
 ): boolean {
+  // Validate fallbacks against configuration too: later tuning must not
+  // silently retain a different fallback budget or distance distribution.
+  if (owned) {
+    for (const band of CONFIG.ownedBands) {
+      if (
+        deposits.filter(
+          (deposit) =>
+            deposit.kind === band.kind &&
+            distance(CORE, deposit) >= band.min &&
+            distance(CORE, deposit) <= band.max,
+        ).length !== band.count
+      )
+        return false;
+    }
+    if (
+      deposits.length !==
+      CONFIG.ownedBands.reduce((sum, band) => sum + band.count, 0)
+    )
+      return false;
+  } else if (
+    deposits.filter(({ kind }) => kind === "small").length !==
+      CONFIG.unownedSmall ||
+    deposits.filter(({ kind }) => kind === "large").length !==
+      CONFIG.unownedLarge
+  )
+    return false;
   const obstacles = new Set(deposits.map(key));
   if (obstacles.size !== deposits.length) return false;
   if (owned) {
