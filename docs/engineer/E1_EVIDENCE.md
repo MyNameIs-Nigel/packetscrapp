@@ -1,6 +1,6 @@
 # E1 implementation record
 
-Status: **In review.** Engineering implemented E1.1 (admission), E1.2 (movement) and E1.3 (authority, views, health) in one branch for [#14](https://github.com/MyNameIs-Nigel/packetscrapp/issues/14). This is developer evidence from the implementing team. It is not independent Q1 execution, not Design control review, and G1 is **not** Verified. Contract sources are the [E1 handoff](E1_HANDOFF.md), [D1 movement/map revision 1](../GAME_DESIGN.md#d1-movement-and-map-contract--revision-1) and the [Q0/Q1 catalog](../qa/Q0_Q1_PLAN.md).
+Status: **In review.** Engineering implemented E1.1 (admission), E1.2 (movement) and E1.3 (authority, views, health) in one branch for [#14](https://github.com/MyNameIs-Nigel/packetscrapp/issues/14). This is developer and CI evidence from the implementing team. It is not independent Q1 execution, not Design control review, and G1 is **not** Verified. Contract sources are the [E1 handoff](E1_HANDOFF.md), [D1 movement/map revision 1](../GAME_DESIGN.md#d1-movement-and-map-contract--revision-1) and the [Q0/Q1 catalog](../qa/Q0_Q1_PLAN.md).
 
 ## Candidate and environment
 
@@ -28,8 +28,11 @@ All commands ran against the clean candidate above.
 | `npm run build` twice, compare manifests | Identical manifests |
 | `PACKET_BUILD_ENV=development` and `production` build, then `npm run smoke:artifact` | Both artifacts built from the clean checkout and passed the bare-bundle smoke |
 | `npm run smoke:artifact` (local artifact) | Passed |
+| GitHub Actions [run 37249493014](https://github.com/MyNameIs-Nigel/packetscrapp/actions/runs/37249493014) on [PR #31](https://github.com/MyNameIs-Nigel/packetscrapp/pull/31), head `c70924a7dc6689696a0fce51b42544cbf5295dc6` (documentation-only on top of the candidate) | `repository-checks` and `application-checks` both passed: toolchain pin, `npm ci`, format/lint/types, unit and real-SDK integration tests, **33 built-browser tests passed (the 11 journeys in each of Chromium, Firefox and WebKit)**, repeated-manifest comparison and bare-artifact smoke |
 
-**Not run, and why.** Firefox and WebKit: the container's network policy denies `cdn.playwright.dev`, so the browsers cannot be installed, and no system build exists. The Playwright config and CI now install and run all three projects, but no Firefox or WebKit result exists yet. The CI workflow cannot be dispatched with the integration's token (403) and no pull request was opened, so remote CI has not run on this candidate. A pull request, or a maintainer dispatch, is the next step; the browser matrix required by the [Q0/Q1 plan](../qa/Q0_Q1_PLAN.md#fixtures-and-execution-environment) stays open until it passes.
+**Browser matrix.** CI installed the Playwright-pinned browsers and ran every journey in all three: Chrome for Testing 153.0.8010.12 (Playwright chromium v1243), Firefox 155.0 (v1543) and WebKit 26.6 (v2359), 33 tests in 1.1 minutes with one worker. CI checks out the pull request's merge ref, so its build log names `c33ce6c06a147cf1ab26960e2b70076fc8d1ea08` as the candidate; that merge has the same tree as head `c70924a`, because `main` (`5042235`) was already merged into the branch. Locally only Chromium 141 ran, through the container's system build, because the container's network policy denies the Playwright download host; the CI run is the only Firefox and WebKit evidence. The tests are developer-authored and use one worker on loopback with no added latency.
+
+**Not run.** Independent Q1 execution, Design control review, two-device or real-network checks, and any capacity or tick-time measurement (Q5). None of these is something the implementing team can supply.
 
 ## Mapping to the E1 checklist and Q1 cases
 
@@ -85,7 +88,6 @@ These resolve points the handoff left open or that real transport forced. QA and
 
 | Item | Owner |
 |---|---|
-| Firefox and WebKit execution, remote CI on the exact candidate | Maintainer opens or dispatches CI; QA records browser versions |
 | Independent Q1 execution on one immutable candidate; Design control review | QA, Design; maintainer assigns reviewers on #14 |
 | Matchmaking requests are not connection-counted. An unclaimed seat reservation holds a seat for the 15 s reservation window, so a flood of matchmaking POSTs can fill seats or rooms until the reservations expire. The frame, peer and `MAX_ROOMS` limits do not cover it | Engineering with E2 proxy rate limits; QA adds an abuse case at Q5 |
 | Real-network, two-device and timing evidence; capacity and tick p95/p99 | Q4/Q5 |
