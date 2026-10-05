@@ -347,7 +347,7 @@ On either disconnect expiry or voluntary departure, zero the abandoned seat's un
 | `awaiting_respawn` | Deadline due, reserved tile occupied | `awaiting_respawn`, retry without resetting deadline |
 | Either contender role | Disconnect, grace not expired | Same role, one fixed expiry `t+300` |
 | Either contender role | Grace expires or authenticated departure | `permanently_eliminated`, cancel all pending actions/timers |
-| `permanently_eliminated` | Any respawn, gameplay or seat-recovery request | Remains eliminated; request rejected |
+| `permanently_eliminated` | Any respawn, gameplay or player-seat recovery request | Remains eliminated; player request rejected. D3 may restore only former-player watching before the original deadline. |
 
 #### Win and draw evaluation
 

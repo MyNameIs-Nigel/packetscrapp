@@ -1,6 +1,6 @@
 # Design team phases
 
-Status: D0 and D1 contracts are merged; PRs #3/#4 record acceptance of E1 inputs. The [full D2 handoff](D2_HANDOFF.md) under [#29](https://github.com/MyNameIs-Nigel/packetscrapp/issues/29) delivers all four D2 contract packages, including combat/lifecycle revision 2, exact duration boundaries, UI and balance experiments. It is In review; Engineering/QA acceptance and runtime G4 evidence remain open. D4 preparation exists; D3–D5 completion remains open. See the [gate audit](../PROGRESS.md), [delivery plan](../DELIVERY_PLAN.md) and [acceptance matrix](../qa/ACCEPTANCE_MATRIX.md). Branches use `design/summary-of-branch`.
+Status: D0 and D1 contracts are merged; PRs #3/#4 record acceptance of E1 inputs. All four packages in both the [D2 handoff](D2_HANDOFF.md) under [#29](https://github.com/MyNameIs-Nigel/packetscrapp/issues/29) and the [D3 handoff](D3_HANDOFF.md) under [#33](https://github.com/MyNameIs-Nigel/packetscrapp/issues/33) are delivered as proposals. The [combined completion review](DESIGN_COMPLETION.md) resolves remaining specification inconsistencies and records E1 control evidence. Engineering/QA contract acceptance and runtime G4/G5 evidence remain open. D4 preparation exists; actual D4/D5 playtest/release inputs remain unavailable. See the [gate audit](../PROGRESS.md), [delivery plan](../DELIVERY_PLAN.md) and [acceptance matrix](../qa/ACCEPTANCE_MATRIX.md). Branches use `design/summary-of-branch`.
 
 ## Responsibility and working method
 

@@ -21,6 +21,12 @@ Paper transitions reviewed: two simultaneous deaths with 0/1/2 living cores; shi
 
 Engineering/QA still review combat/lifecycle revision 2 and duration/UI revision 1 under #29. Cadence/pacing disposition remains with the maintainer. Runtime Q2/Q3 and G3/G4 wait for their actual candidates.
 
+## D3 — player journeys (#33)
+
+Reviewed all four packages and J01–J20 against accepted D1 and proposed D2. Added legal firing/build poses for the bot: facing requires a successful step, and neither a blocked move nor a client-only rotation can aim. Added J21 for an early-build result and recovery without an unauthorized reveal. Reconciled the D2 eliminated-role recovery row with D3's watcher-only restoration and made Architecture's protocol-versus-SHA compatibility rule explicit.
+
+Paper walkthroughs cover both bot/start/admission race orders, host transfer, all seven role permission rows, recovery at `d+299`/`d+300`/`d+301`, ten external watchers plus five former players, early-build result filtering, perpendicular bot arrival and blocked facing, fresh replay identity, and region A→fallback B→restored A with stale responses. J01–J21 remain proposed oracles for Engineering/QA acceptance and independent Q4 execution. D3 introduces no runtime protocol change in this PR.
+
 ## Main synchronization
 
 Initial fetched main was `c057b55d444b81db1cf48988325351acfccca3f4`. Engineering repair #41 merged during discovery; main `3357587e7bdb5203b3ead110965fe84f5bf67834` was incorporated before Design edits. Each issue completion is committed before fetching/rebasing onto main. The final PR records the last synchronized base and validation candidate.
