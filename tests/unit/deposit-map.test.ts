@@ -185,7 +185,7 @@ describe("D1 seeded deposit map preparation", () => {
         1,
         42,
         0xffffffff,
-        ...Array.from({ length: 64 }, (_, i) => i + 2),
+        ...Array.from({ length: 64 }, (_, i) => (i >= 40 ? i + 3 : i + 2)),
       ]) {
         const seats = Array.from({ length: count }, (_, i) => i);
         const map = generateDepositMap(seats, seed);
