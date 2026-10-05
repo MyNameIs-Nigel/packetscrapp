@@ -13,6 +13,7 @@ Packet Scrapp is a planned space-themed multiplayer browser game targeting `pack
 | [Q0/Q1 baseline and cases](qa/Q0_Q1_PLAN.md) | Owners, fixtures, browser/network plan, independent expected results and evidence format |
 | [Q0 supplement review](qa/Q0_REVIEW.md) / [sector pin recheck](qa/Q1_SECTOR_PIN_RECHECK.md) | Independent QA reading of E1 technical oracles and #21 assignment vectors |
 | [Full D2 contract handoff](design/D2_HANDOFF.md) / [combat UI](design/D2_UI.md) | Proposed full-phase combat/lifecycle/duration and keyboard feedback contract; Engineering/QA acceptance pending |
+| [Complete D3 journeys](design/D3_JOURNEYS.md) / [handoff](design/D3_HANDOFF.md) | Proposed lobby, reconnect, BOT, watcher, replay, region and keyboard contract; Engineering/QA acceptance pending |
 | [Design phases](design/README.md) | D0–D5: scope, rule/map/UI contracts, balance studies, player acceptance |
 | [Engineering / Programming phases](engineer/README.md) | E0–E7: foundation, simulation, delivery, player journeys, release readiness |
 | [QA phases](qa/README.md) | Q0–Q6: specification review, independent verification, operational qualification |

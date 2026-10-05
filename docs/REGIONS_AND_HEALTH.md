@@ -39,7 +39,7 @@ export const REGIONS = {
 ### How the client chooses
 
 1. When the start page loads, the client requests `/health` from every region at the same time, with a 2-second timeout.
-2. A region is **available** when the request succeeds, `status` is `ok`, `accepting` is `true`, and both `protocol` and `environment` match the client.
+2. A region is **available** when the request succeeds, `status` is `ok`, `accepting` is `true`, both `protocol` and `environment` match the client, and the reported region ID matches the requested allowlisted region.
 3. In automatic mode, the client uses the first available region in priority order.
 4. The client checks again every 30 seconds while the start page is open, and once more when the player presses Quick Play.
 
@@ -91,7 +91,7 @@ Every server answers `GET /health` on the same port as the game.
   "region": "nyc",
   "version": "0123456789abcdef0123456789abcdef01234567",
   "environment": "production",
-  "protocol": 1,
+  "protocol": 2,
   "uptimeSeconds": 86400,
   "rooms": 3,
   "players": 11,
@@ -125,7 +125,7 @@ Rules for the endpoint:
 
 ### The live match list
 
-`GET /rooms` returns the matches that can be watched on that server: a room id, the phase, and the player count. The start page calls it for the region in use.
+`GET /rooms` is planned to return public build/battle/sudden-death matches: room ID, phase and fixed participant count including BOT. Proposed D3 excludes private, waiting and ended rooms, uses a 2-second timeout and 30-second start-page refresh, and discards stale responses after a region change. Build entries admit metadata-only waiters, not hidden layouts. See the complete D3 contract below.
 
 **Why a separate endpoint:** `/health` is called often and by everything. Keeping it tiny keeps it cheap.
 
@@ -186,3 +186,11 @@ One thing to verify: Cloudflare may close a proxied connection that stays idle f
 3. Add one line to that environment's list in `shared/regions.ts` at the right priority.
 4. Extend the production release workflow to deploy it after New York passes.
 5. Test capacity, monitoring, failover, and deployment, then release to production.
+
+## Proposed D3 region journey detail — revision 1
+
+[The D3 region/link/list contract](design/D3_JOURNEYS.md#regions-links-and-live-lists) under #33 completes user-visible failures, status copy and keyboard recovery. Engineering/QA acceptance remains pending. Readiness excludes full/draining regions for new player matchmaking/create; it does not by itself block a bound reconnect or existing-room watcher. Those operations still validate identity, lifecycle and capacity independently. No live or linked match relocates, and environments never cross.
+
+Saved manual preference remains visible during fallback; restoration affects only the next new join from start after a fresh probe. A private link never uses automatic fallback. Wrong protocol/environment/region identity or malformed health cannot admit; a different SHA with matching protocol alone is not a mismatch. Text distinguishes Checking, Available, Offline, Incompatible and Full or restarting; `accepting:false` cannot identify fullness versus drain without a separate accepted reason field.
+
+**Decision:** separate selection availability, live-room address and response generation. **Why:** a stale probe cannot reserve a seat, an old region response cannot overwrite a new selection, and an independent server cannot take over another server's match. [J14–J18](design/D3_JOURNEYS.md#observable-acceptance-scenarios) require SDK/HTTP/browser execution later; controlled fixtures are preparation, not deployed evidence.
