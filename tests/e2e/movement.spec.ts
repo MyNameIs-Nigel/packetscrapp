@@ -97,9 +97,13 @@ test("two browsers see identical server-owned movement and obey held-key rules",
       .poll(async () => (await ship(a.page, 1))?.y ?? 99)
       .toBeLessThan(10);
     await b.page.keyboard.up("KeyW");
-    await expect
-      .poll(async () => ship(b.page, 1))
-      .toEqual(await ship(a.page, 1));
+    // Release can leave a final server step in flight. Compare settled reads
+    // from both clients, rather than freezing A before its final patch arrives.
+    const bravoStopped = await stableShip(a.page, 1);
+    expect(bravoStopped).toMatchObject({ x: 34, facing: "up", alive: true });
+    expect(bravoStopped.y).toBeLessThan(10);
+    expect(bravoStopped.y).toBeGreaterThan(1);
+    expect(await stableShip(b.page, 1)).toEqual(bravoStopped);
   } finally {
     await a.context.close();
     await b.context.close();
