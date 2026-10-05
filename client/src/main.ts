@@ -335,8 +335,11 @@ let focusedGame = false;
 
 function renderAll(): void {
   const view = latest;
+  // Only a local build knows how to show the prototype; public builds ignore it.
   const running =
-    view.prototype && (view.phase === "build" || view.phase === "battle");
+    prototypeEnabled &&
+    view.prototype &&
+    (view.phase === "build" || view.phase === "battle");
   syncAnimators(view);
   if (running) {
     if (screen !== "game") {
@@ -357,9 +360,10 @@ function renderAll(): void {
   }
   playerCount.textContent = String(view.players.length);
   fillRoster(rosterList, view);
-  lobbyNote.textContent = view.prototype
-    ? "Local movement prototype room: the test map starts when every seat is filled."
-    : "Waiting for more players. The match itself is not built yet.";
+  lobbyNote.textContent =
+    prototypeEnabled && view.prototype
+      ? "Local movement prototype room: the test map starts when every seat is filled."
+      : "Waiting for more players. The match itself is not built yet.";
 }
 
 function renderGame(view: RoomView): void {

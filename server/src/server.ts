@@ -7,7 +7,6 @@ import {
   matchMaker,
   type RegisteredHandler,
 } from "@colyseus/core";
-import { WebSocketTransport } from "@colyseus/ws-transport";
 import {
   MAX_FRAME_BYTES,
   PROTOCOL_VERSION,
@@ -17,8 +16,6 @@ import {
   type Clock,
   type HealthDocument,
 } from "@packetscrapp/shared";
-import type { IncomingMessage } from "node:http";
-import type { WebSocket } from "ws";
 import {
   PeerConnectionTracker,
   createUpgradeVerifier,
@@ -36,6 +33,7 @@ import {
   type ServerRuntime,
 } from "./runtime.ts";
 import { createMatchRoom, createPrototypeRoom } from "./rooms.ts";
+import { GatedWebSocketTransport } from "./transport.ts";
 
 declare const __BUILD_SHA__: string;
 declare const __BUILD_ENV__: string;
@@ -141,22 +139,13 @@ export async function startServer(
 
   const httpServer: HttpServer = createServer();
   const tracker = new PeerConnectionTracker();
-  const transport = new WebSocketTransport({
-    server: httpServer,
-    maxPayload: MAX_FRAME_BYTES,
-    verifyClient: createUpgradeVerifier(runtime, tracker),
-  });
-  (
-    transport as unknown as {
-      wss: {
-        prependListener: (
-          event: "connection",
-          listener: (socket: WebSocket, request: IncomingMessage) => void,
-        ) => void;
-      };
-    }
-  ).wss.prependListener("connection", (socket, request) =>
-    attachFrameGate(socket, request, runtime),
+  const transport = new GatedWebSocketTransport(
+    {
+      server: httpServer,
+      maxPayload: MAX_FRAME_BYTES,
+      verifyClient: createUpgradeVerifier(runtime, tracker),
+    },
+    (socket, request) => attachFrameGate(socket, request, runtime),
   );
 
   const gameServer = defineServer({

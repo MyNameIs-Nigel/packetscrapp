@@ -59,9 +59,9 @@ test("two independent browsers share one waiting room roster", async ({
 test("a nickname is rendered as text, never as markup", async ({ browser }) => {
   const player = await newPlayer(browser);
   try {
-    await joinWaitingRoom(player.page, "<img src=x onerror=alert(1)>");
+    await joinWaitingRoom(player.page, "<img onerror=1>");
     await expect(player.page.locator("#roster li")).toHaveText(
-      "Seat 0 — <img src=x onerror=alert(1)> (you)",
+      "Seat 0 — <img onerror=1> (you)",
     );
     await expect(player.page.locator("#roster img")).toHaveCount(0);
   } finally {

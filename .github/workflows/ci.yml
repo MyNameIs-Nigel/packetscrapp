@@ -33,7 +33,7 @@ jobs:
   application-checks:
     name: application-checks
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -59,9 +59,9 @@ jobs:
         run: |
           npm run test:unit
           npm run test:integration
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-      - name: Built browser smoke
+      - name: Install Chromium, Firefox and WebKit
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Built browser journeys (Chromium, Firefox, WebKit)
         run: npm run test:e2e
       - name: Build server and client
         run: |
