@@ -72,8 +72,8 @@ Visibility follows one rule per phase:
 
 | Phase | Players receive | Spectators receive |
 |---|---|---|
-| `waiting` | The player list | Nothing |
-| `build` | Match info, plus everything in their own sector | Match info only |
+| `waiting` | The public player list | No external admission |
+| `build` | Match info and own-sector entities for active/respawning seats; eliminated seats get metadata only | D3 allowlisted match metadata only |
 | `battle` and later | Everything | Everything |
 
 This uses Colyseus per-client state views. Each player's view holds their own sector during the build phase, and everything is added to every view when the Belt drops.
@@ -84,7 +84,7 @@ This uses Colyseus per-client state views. Each player's view holds their own se
 
 ## Messages
 
-Clients send five message types.
+The original plan specifies five gameplay/start message types; proposed D3 session/host additions are described below.
 
 | Message | Payload | Server checks |
 |---|---|---|
@@ -143,3 +143,16 @@ The bot runs inside the room. Each tick it reads the same state a player in its 
 ## Operational boundaries
 
 Development and production have separate region allowlists and never fail over across environments. Validate configuration at startup. Deployments must coordinate draining, protocol compatibility, client promotion, and rollback as specified in [DEPLOYMENT.md](DEPLOYMENT.md). Test capacity before raising room limits; monitor runtime metrics privately under [OPERATIONS.md](OPERATIONS.md).
+
+## Proposed D3 session and role contract — revision 1
+
+The [complete D3 journeys](design/D3_JOURNEYS.md) under [#33](https://github.com/MyNameIs-Nigel/packetscrapp/issues/33) extend room lifecycle, messages, reconnection and visibility above. They remain proposed pending Engineering/QA acceptance; E1 protocol 2 is unchanged by this documentation. D2 lifecycle revision 2 remains separately proposed.
+
+- Waiting-room disconnect releases the seat immediately. Private host authority transfers to the earliest remaining human; in active play there is no host authority. Proposed inactive-private disposal is five minutes after the last accepted human lobby action/admission.
+- Ten external watcher slots include build waiters. Up to five former player connections retain watching separately; maximum admitted human connections is fifteen. Private rooms are unlisted; waiting/ended rooms reject new external watch admission. No role receives tokens or internal identity in public state.
+- Eliminated players lose own-sector entity access during build and receive only the D3 metadata allowlist, just like external build watchers. Reveal uses the authoritative tick-1800 state transition. Every server action checks current role, including old player connections.
+- Active reconnect credentials bind one seat/room/region/environment, live only in tab sessionStorage, rotate safely and never enter URLs/logs. Acceptance is strictly before `d+300`; death/respawn cannot extend it. A replaced socket loses authority. Voluntary leave acknowledges immediate elimination; an undelivered leave can only take the disconnect-grace path.
+- E5 must add validated private waiting host bot add/remove actions, voluntary departure and role-aware join/watch/reconnect operations beyond the five planned gameplay/start messages. Proposed bot control is `bot` with `{ action: "add" | "remove" }`; `start` and `leave` have no payload. Transport admission/reconnect use supported SDK operations, not client assertions of role/seat. Engineering pins exact payloads, refusal codes, frame allowlist, credential issuance/rotation and protocol bump before implementation; unknown messages remain refused under current E1.
+- Results cannot be extended by reconnect; replay makes a fresh room/identity. A former player token cannot resurrect an expired player or grant a watcher a second player slot. Expired recovery may offer explicit ordinary Watch admission, with cap rechecked.
+
+**Decision:** specify user-visible role and recovery guarantees before choosing SDK wire details. **Why:** an implementable transport must prove single seat ownership, current-role filtering and exact deadline refusal; a nickname or stale client view cannot establish those facts. Engineering/QA acceptance is a prerequisite, not a claim supplied by this Design proposal. [D3 scenarios J03/J06/J07/J12/J13](design/D3_JOURNEYS.md#observable-acceptance-scenarios) define the negative cases.

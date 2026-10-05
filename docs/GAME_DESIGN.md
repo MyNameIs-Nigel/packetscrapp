@@ -421,7 +421,7 @@ Observable A06/A07 boundary cases:
 
 - A bot joins a Quick Play lobby if the countdown ends with only one human in it.
 - The bot is clearly labelled as a bot.
-- It plays by the same rules through the same actions as a human. It harvests the nearest deposit, alternates spending between walls and blaster upgrades, and after the Belt drops it heads for the nearest enemy core.
+- It plays by the same rules through the same actions as a human. Proposed D3 makes reachable-deposit harvesting, alternating wall/blaster spending, visible enemy-core attacks and stuck/hazard recovery precise in the linked bot contract below.
 
 **Why label it:** many browser games pass bots off as people. In an open-source game anyone can read that in the code, and a player who feels tricked does not come back.
 
@@ -432,7 +432,7 @@ Observable A06/A07 boundary cases:
 - The start page lists live matches on the selected region.
 - Spectators can watch a match only after the Belt drops. Before that they see a countdown.
 - Eliminated players become spectators of their own match.
-- Each match allows at most 10 spectators.
+- Proposed D3: ten external watcher slots, including build waiters, plus up to five former player connections retained after elimination; see the role/cap contract below.
 
 **Why not during the build phase:** base layouts are secret until the Belt drops. A spectator could pass a rival's layout to a friend in the match.
 
@@ -479,10 +479,24 @@ All of these live in `shared/config.ts` and will change with playtesting.
 | Small deposit health and payout | 30 health, 10 scrap |
 | Large deposit health and payout | 90 health, 40 scrap |
 | Build radius around the core | 8 tiles |
-| Spectator cap per match | 10 |
+| Spectator cap per match | Proposed D3: 10 external watchers plus up to 5 retained former player connections |
 
 ## Known balance risks
 
 - **Blaster upgrades also speed up harvesting**, because harvesting is shooting. This may make arming strictly better than fortifying. If playtests show that, switch harvesting to a fixed rate that ignores blaster level.
 - **Full wall enclosures** may make cores too safe before sudden death. Wall health and cost are the levers.
 - **Scrap drop on death** can snowball a lead. Dropping half instead of all is the fallback.
+
+## D3 multiplayer journey contract — revision 1
+
+**Proposed under [#33](https://github.com/MyNameIs-Nigel/packetscrapp/issues/33), not accepted or implemented.** The [complete journey contract](design/D3_JOURNEYS.md) is the authoritative detailed extension of joining, bot, spectator and replay rules above; its [handoff](design/D3_HANDOFF.md) records dependencies and review ownership. D0/D1 remain accepted; D2 lifecycle revision 2 is still separately proposed.
+
+| Rule slice | Exact player behavior and review target |
+|---|---|
+| [Lobby and private host](design/D3_JOURNEYS.md#joining-and-lobby-contract) | Absolute Quick Play deadline, one solo BOT, atomic start/admission, friend replaces private BOT before start, host departure/transfer, five-minute private inactivity proposal. |
+| [Roles and watchers](design/D3_JOURNEYS.md#roles-and-allowed-actions) | Ten external watchers, up to five retained former players, private unlisted watch links, metadata-only build wait and eliminated-role filtering. |
+| [Reconnect and replay](design/D3_JOURNEYS.md#reconnect-departure-and-replay) | Bound seat identity, strict 300-tick expiry, vulnerable absent ships, acknowledged leave, fresh private replay link/host and results cleanup. |
+| [Solo opponent](design/D3_JOURNEYS.md#bot-opponent-contract) | Filtered visible-state inputs, legal deterministic harvest/spend/navigation/attack priorities, blocked-path and no-resource behavior; playable fixture criteria without human win-rate claims. |
+| [Regions and keyboard journeys](design/D3_JOURNEYS.md#regions-links-and-live-lists) | Saved preference/fallback, region-bound links, typed failure recovery, safe public live list and copy/focus paths. |
+
+**Decision:** publish every happy, unavailable and recovery path as proposed examples before E5/E6 implement them. **Why:** host powers, hidden build information, reconnect expiry and watcher capacity must not be guessed from UI or code. Engineering reviews feasibility/messages and QA accepts the [J01–J20 oracles](design/D3_JOURNEYS.md#observable-acceptance-scenarios). Runtime G5 still requires E5/E6/Q4 and D4 evidence; this contract closes no gate.
