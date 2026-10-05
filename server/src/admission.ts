@@ -162,6 +162,11 @@ export function installHttpGate(
         response.end();
         return;
       }
+      // The SDK sends matchmaking with `credentials: include`, which browsers
+      // allow only with an exact origin and this header. No cookies are used.
+      if (path.startsWith("/matchmake/")) {
+        originalSetHeader("Access-Control-Allow-Credentials", "true");
+      }
       response.writeHead(204);
       response.end();
       return;
@@ -177,6 +182,7 @@ export function installHttpGate(
         });
         return;
       }
+      originalSetHeader("Access-Control-Allow-Credentials", "true");
       const declared = Number(headerValue(request.headers["content-length"]));
       if (
         request.method === "POST" &&

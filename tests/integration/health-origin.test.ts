@@ -279,7 +279,9 @@ describe("H02 exact origin policy", () => {
     expect(response.headers.get("access-control-allow-origin")).toBe(
       LOCAL_ORIGIN,
     );
-    expect(response.headers.get("access-control-allow-credentials")).toBeNull();
+    expect(response.headers.get("access-control-allow-credentials")).toBe(
+      "true",
+    );
     expect(response.headers.get("vary")).toContain("Origin");
     await response.json();
   });
@@ -300,6 +302,9 @@ describe("H02 exact origin policy", () => {
     expect(allowed.status).toBe(204);
     expect(allowed.headers.get("access-control-allow-origin")).toBe(
       LOCAL_ORIGIN,
+    );
+    expect(allowed.headers.get("access-control-allow-credentials")).toBe(
+      "true",
     );
     const refused = await fetch(
       `${test.endpoint}/matchmake/joinOrCreate/${ROOM_MATCH}`,
