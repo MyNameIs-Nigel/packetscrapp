@@ -20,7 +20,7 @@ Replay records `configRevision`, `seed`, `generation.attemptLimit`, admitted sea
 
 ## Verification receipt
 
-Code candidate `2dec118e262d273b121adf5bb95cc9c312d8e15d` on `engineer/e3-seeded-deposits-20261005`; base refreshed through merged E1 repair #41 at `3357587e7bdb5203b3ead110965fe84f5bf67834`. Claim `refs/heads/engineer/claim-e3` at `63d448026821e1575c429622d93910569af3c5c2`; owner `codex-engineer-lead-map-20261005`. Date 2026-10-05 UTC, managed Linux, Node 24.21.0/npm 11.19.0, system Chromium 151.0.7922.173, loopback without injected latency. The final commit only replaces a duplicated seed in the test corpus; application code is identical to the earlier clean build/browser candidates. Later documentation commits do not change code.
+Code candidate `a1cba0f7dfafe0aa7fff9b443a4a5d2a83170ad0` on `engineer/e3-seeded-deposits-20261005`; base refreshed through merged E1 repair #41 at `3357587e7bdb5203b3ead110965fe84f5bf67834`. Claim `refs/heads/engineer/claim-e3` at `63d448026821e1575c429622d93910569af3c5c2`; owner `codex-engineer-lead-map-20261005`. Date 2026-10-05 UTC, managed Linux, Node 24.21.0/npm 11.19.0, system Chromium 151.0.7922.173, loopback without injected latency. Final source review moved owned bands into shared configuration and validates fallback counts/bands against it, retaining the same current seed outputs. Affected checks were repeated; later documentation commits do not change code.
 
 | Check | Actual result |
 |---|---|
@@ -30,8 +30,8 @@ Code candidate `2dec118e262d273b121adf5bb95cc9c312d8e15d` on `engineer/e3-seeded
 | Separate Python uint32/candidate enumeration | Seed 42 canonical owned cells `(9,13),(8,12),(14,16),(9,14),(13,8),(18,12),(7,8),(19,14),(15,16),(21,11)`; next unowned cell `(21,6)` matches generated slot-4 world `(45,30)`; pinned in tests |
 | `npm run test:unit` | 214 passed |
 | `npm run test:integration` | 109 passed after refreshing E1 repair; independent QA probes unchanged |
-| Two builds/manifest comparison and `npm run smoke:artifact` | Passed on clean `ff69e86e512ee2bf2e95b00caa1bc7e525795146`; later change only adds the independent vector test; final candidate build/browser recorded on PR |
-| Built system Chromium / documentation / phase-claim checks | 11 browser journeys, documentation/whitespace and three claim checks passed on `d1148e54c606f34390a200538eeb4a490337a8a8`; final test-only update removes a duplicated corpus seed and its 24 generation cases pass |
+| Two builds/manifest comparison and `npm run smoke:artifact` | Passed on clean final source candidate `a1cba0f7dfafe0aa7fff9b443a4a5d2a83170ad0` |
+| Built system Chromium / documentation / phase-claim checks | 11 browser journeys passed on final source candidate; documentation/whitespace and three phase-claim checks passed; required exact-head CI tracked on PR |
 
 The traversal tests implement their own coordinate-key BFS and rays, not the generator's validation helper. They check received map data as pure output, not a rendered approximation. These are developer tests, not independent QA Q2 or Design balance observations. No safe server capacity is measured. Local pinned browser download is denied by CDN HTTP 403; required PR CI supplies its own exact-head browser evidence.
 
