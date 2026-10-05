@@ -10,6 +10,7 @@
     "noImplicitOverride": true,
     "skipLibCheck": true,
     "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
     "allowImportingTsExtensions": true,
     "types": ["node"]
   }
