@@ -1,6 +1,6 @@
 # E1 implementation handoff
 
-Status: QA reviewed this supplement in [Q0_REVIEW.md](../qa/Q0_REVIEW.md) under [#19](https://github.com/MyNameIs-Nigel/packetscrapp/issues/19). That review is not implementation and does not verify G0 or G1. [#21](https://github.com/MyNameIs-Nigel/packetscrapp/issues/21) pins slot-index origin and the Fisher–Yates variant below so M03 can name expected seats; [#23](https://github.com/MyNameIs-Nigel/packetscrapp/issues/23) records an independent QA recomputation of those vectors in [Q1_SECTOR_PIN_RECHECK.md](../qa/Q1_SECTOR_PIN_RECHECK.md). Neither package implements rooms or movement. The other decision rows have QA test oracles; the maintainer records whether E1.1 may start. [#14](https://github.com/MyNameIs-Nigel/packetscrapp/issues/14) tracks broader E1 and G1. No E1 runtime criterion has passed. The [gate audit](../PROGRESS.md), [Q0/Q1 plan](../qa/Q0_Q1_PLAN.md), and source specifications control acceptance.
+Status: QA reviewed this supplement in [Q0_REVIEW.md](../qa/Q0_REVIEW.md) under [#19](https://github.com/MyNameIs-Nigel/packetscrapp/issues/19). That review is not implementation and does not verify G0 or G1. [#21](https://github.com/MyNameIs-Nigel/packetscrapp/issues/21) pins slot-index origin and the Fisher–Yates variant below so M03 can name expected seats; [#23](https://github.com/MyNameIs-Nigel/packetscrapp/issues/23) records an independent QA recomputation of those vectors in [Q1_SECTOR_PIN_RECHECK.md](../qa/Q1_SECTOR_PIN_RECHECK.md). Neither package implements rooms or movement. The other decision rows have QA test oracles; the maintainer records whether E1.1 may start. [#14](https://github.com/MyNameIs-Nigel/packetscrapp/issues/14) tracks broader E1 and G1. Engineering has now implemented E1.1–E1.3; the [implementation record](E1_EVIDENCE.md) lists the candidate, commands, results, decisions and limits. That is developer evidence only: independent Q1 execution and Design control review are still open, and G1 is not Verified. The [gate audit](../PROGRESS.md), [Q0/Q1 plan](../qa/Q0_Q1_PLAN.md), and source specifications control acceptance.
 
 ## Accepted inputs
 
@@ -27,7 +27,7 @@ These supply previously unspecified Engineering choices. Accept this supplement 
 | Tick time | Simulation advances integer ticks at 15 Hz, using injected clock/seed interfaces. Positions derive from simulation ticks, never client timestamps. Interpolation only draws received tiles. | Odd ticks do not move; tick 2 moves one tile. A client-supplied future timestamp cannot accelerate movement. |
 | Health/protocol | Implement the canonical `version` and `protocol` fields in [REGIONS_AND_HEALTH.md](../REGIONS_AND_HEALTH.md), plus its readiness/counters. E0 currently exposes `sha` and `protocolVersion`; changing the harness/state contract requires a protocol bump to 2 and simultaneous client/SDK fixture updates. | Old protocol or wrong environment is rejected before seat allocation; a built health probe agrees with the manifest. |
 | Capacity/origins | Validate a positive `MAX_ROOMS` (provisional 20), max five seats, and max 20 concurrent connections per peer IP. Use exact configured environment origins for HTTP and WebSocket admission; local browser origin is `http://127.0.0.1:5173`. SDK tests use explicit test-only admission policy, never a public origin bypass. | Sixth seat fails; capacity sets `accepting: false`; wrong/missing browser Origin fails; health `status: ok` can coexist with `accepting: false`. |
-| Message limits | Bound application WebSocket frames to 1 KiB and JSON depth/shape through exact validation. Count all frames, including unknown/malformed actions, in one per-connection fixed monotonic one-second window. Accept at most 30 actions/window; drop excess; disconnect after two consecutive windows each exceeding 60 frames. Test boundaries and reset. | A 31st action is dropped; over-limit frame is rejected before parsing; sustained flooding closes only the offender. Waiting queues remain one movement intent/seat. |
+| Message limits | Bound application WebSocket frames to 1 KiB and JSON depth/shape through exact validation. Count all frames, including unknown/malformed actions, in one per-connection fixed monotonic one-second window. Accept at most 30 actions/window; drop excess; disconnect after two consecutive windows each exceeding 60 frames. Test boundaries and reset. **Window anchor (recorded in E1.3):** the first window opens when the connection is accepted, on an injected monotonic clock; the handshake `JOIN_ROOM` acknowledgement is not counted. | A 31st action is dropped; over-limit frame is rejected before parsing; sustained flooding closes only the offender. Waiting queues remain one movement intent/seat. |
 | Logs | Structured event type, environment, region and SHA; redact names, full payloads, addresses and reconnect/authorization tokens. | Input rejection records reason/counter; logs do not repeat attacker payloads or credentials. |
 
 ### Worked sector-assignment example (seed 42, five players)
@@ -51,14 +51,16 @@ Do not add debug fixture controls to public builds, expose private entities to s
 
 ## Completion checklist
 
-- [ ] #13 changes integrated; Q0 baseline reviewed; E0 independently repeated on the resulting candidate.
-- [x] Sector-assignment index origin and Fisher–Yates formula pinned with recomputable examples (#21); independent QA recomputation recorded in [#23](https://github.com/MyNameIs-Nigel/packetscrapp/issues/23). Runtime map wiring still open under E1.2.
-- [ ] Two real SDK clients and two independent built-browser contexts agree on movement and identity.
-- [ ] All four seeded layouts and D1 boundary/collision/facing cases pass; forged state cannot change authority.
-- [ ] Five seats work; sixth rejected; final disconnect disposes rooms and counters recover.
-- [ ] Malformed/unknown/oversized/flooded input, Origin/environment/protocol mismatch, and capacity boundaries pass.
-- [ ] Per-seat view tests inspect received state; no enemy/unowned entities leak in build fixtures.
-- [ ] Canonical no-store health metadata and exact Origin policy agree with the built candidate.
-- [ ] Required root commands and CI pass; Design control review and independent Q1 evidence name the same full SHA, config/seed and contract revision.
+`[x]` marks developer evidence recorded in the [implementation record](E1_EVIDENCE.md). Items that need a second person stay open. The last item is the gate itself.
+
+- [ ] #13 changes integrated; Q0 baseline reviewed; E0 independently repeated on the resulting candidate. (#13 merged as #15 and Q0 was reviewed under #19; the independent E0 repeat on the E1 candidate is not done.)
+- [x] Sector-assignment index origin and Fisher–Yates formula pinned with recomputable examples (#21); independent QA recomputation recorded in [#23](https://github.com/MyNameIs-Nigel/packetscrapp/issues/23). Runtime map wiring now reproduces all 16 published vectors through the prototype room.
+- [x] Two real SDK clients and two independent built-browser contexts agree on movement and identity. (Developer and CI evidence: SDK clients and isolated contexts agree in Chromium, Firefox and WebKit, [run 37249493014](https://github.com/MyNameIs-Nigel/packetscrapp/actions/runs/37249493014); independent QA has not run.)
+- [x] All four seeded layouts and D1 boundary/collision/facing cases pass; forged state cannot change authority. (Developer tests; independent confirmation pending.)
+- [x] Five seats work; sixth rejected; final disconnect disposes rooms and counters recover.
+- [x] Malformed/unknown/oversized/flooded input, Origin/environment/protocol mismatch, and capacity boundaries pass.
+- [x] Per-seat view tests inspect received state; no enemy/unowned entities leak in build fixtures.
+- [x] Canonical no-store health metadata and exact Origin policy agree with the built candidate.
+- [ ] Required root commands and CI pass; Design control review and independent Q1 evidence name the same full SHA, config/seed and contract revision. (Root commands pass locally and in CI on [PR #31](https://github.com/MyNameIs-Nigel/packetscrapp/pull/31); Design review and independent Q1 evidence are open.)
 
 Only the completed checklist closes G1. The maintainer (@MyNameIs-Nigel) owns assignment and checkpoint review under #14 until named team reviewers replace that fallback owner.

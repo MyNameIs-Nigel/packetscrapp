@@ -1,6 +1,6 @@
 # Packet Scrapp docs
 
-Packet Scrapp is a planned space-themed multiplayer browser game targeting `packetscr.app`. D0/D1 contracts and the E0 connection harness are merged; the [current gate audit](PROGRESS.md) records evidence, prerequisite work, and the next E1 package. Game rules, player journeys, and live infrastructure remain unverified and unimplemented.
+Packet Scrapp is a planned space-themed multiplayer browser game targeting `packetscr.app`. D0/D1 contracts and the E0 harness are merged, and the E1 connected-room slice is implemented and in review; the [current gate audit](PROGRESS.md) records evidence and what independent QA and Design must still verify. Game rules, player journeys, and live infrastructure remain unverified and unimplemented.
 
 ## Reading order
 
@@ -9,7 +9,7 @@ Packet Scrapp is a planned space-themed multiplayer browser game targeting `pack
 | [VISION.md](VISION.md) | What the game is, the design pillars, non-goals, and October targets |
 | [DELIVERY_PLAN.md](DELIVERY_PLAN.md) | Parallel work streams, cross-team dependencies, shared gates, decision owners, branch conventions |
 | [PROGRESS.md](PROGRESS.md) | Dated implementation audit, accepted revisions, exact evidence, gate states and next owners |
-| [E1 implementation handoff](engineer/E1_HANDOFF.md) | Prerequisite artifacts, deterministic/input/health decisions, PR slices and G1 checklist |
+| [E1 implementation handoff](engineer/E1_HANDOFF.md) / [E1 implementation record](engineer/E1_EVIDENCE.md) | Prerequisite artifacts, deterministic/input/health decisions, PR slices and G1 checklist; the implemented candidate, results, decisions and limits |
 | [Q0/Q1 baseline and cases](qa/Q0_Q1_PLAN.md) | Owners, fixtures, browser/network plan, independent expected results and evidence format |
 | [Q0 supplement review](qa/Q0_REVIEW.md) / [sector pin recheck](qa/Q1_SECTOR_PIN_RECHECK.md) | Independent QA reading of E1 technical oracles and #21 assignment vectors |
 | [Full D2 contract handoff](design/D2_HANDOFF.md) / [combat UI](design/D2_UI.md) | Proposed full-phase combat/lifecycle/duration and keyboard feedback contract; Engineering/QA acceptance pending |

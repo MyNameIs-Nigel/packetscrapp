@@ -1,6 +1,6 @@
 # Architecture
 
-Design specification; E0 implements only a transport room and local connection harness. Game state, actions, and deployment are not implemented. The diagram shows the planned production topology. Development runs the client and one server together on the Atlanta host, as described in [DEPLOYMENT.md](DEPLOYMENT.md).
+Design specification. E1 implements the connected-room slice described below: admission, a roster-only waiting room, the 15 Hz movement simulation (in a labelled local prototype), per-seat state views, input limits, origin policy and canonical health. Match lifecycle, combat, economy, reconnection and deployment are not implemented; see [E1_EVIDENCE.md](engineer/E1_EVIDENCE.md). The diagram shows the planned production topology. Development runs the client and one server together on the Atlanta host, as described in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Components
 
@@ -94,15 +94,17 @@ Clients send five message types.
 | `upgrade` | `blaster` or `hull` | The level is below the maximum and the player can afford it |
 | `start` | None | The room is private and waiting, the sender is the host, and at least two participants are present |
 
+Implemented in E1: only `move`, in the local movement prototype, with the exact payload `{ direction: "up" | "down" | "left" | "right" | "none" }`; the server stores one intent per seat and applies the latest validated one. Every other type, including `fire`, `build`, `upgrade` and `start`, is dropped and counted until its phase lands. The server also sends each client one private `welcome` message with its admitted seat and the protocol version.
+
 Anything else, or anything malformed, is dropped.
 
 ## Abuse limits
 
 | Limit | Starting value | Why |
 |---|---|---|
-| Actions per client | 30 per second | The game cannot use more than a few per tick. Excess is dropped, and sustained flooding disconnects the client. |
-| Connections per IP address | 20 | Stops one machine from filling a server. The limit is generous because players on the same campus or home network share one public address. |
-| Allowed origins | Exact client origin for the environment; localhost only in local mode | Stops other websites from embedding the game against these servers. It does not stop custom clients, which is why the server validates everything. |
+| Actions per client | 30 per second | The game cannot use more than a few per tick. Excess is dropped, and sustained flooding disconnects the client. Implemented as a fixed one-second window per connection that opens when the connection is accepted; two consecutive windows with more than 60 frames close only that connection, and frames above 1 KiB are refused before parsing. |
+| Connections per IP address | 20 | Stops one machine from filling a server. The limit is generous because players on the same campus or home network share one public address. Counted per WebSocket connection on the transport peer address, never a forwarded header. |
+| Allowed origins | Exact client origin for the environment; localhost only in local mode | Stops other websites from embedding the game against these servers. It does not stop custom clients, which is why the server validates everything. Checked on matchmaking, preflight and every WebSocket upgrade; a missing or different `Origin` is refused. |
 | Rooms per server | `MAX_ROOMS`, starting at 20 | Protects the 512 MB droplet. When the limit is reached, the server reports that it is not accepting players. |
 | Nickname | 1 to 16 characters, trimmed, control characters removed | Nicknames are shown to other players, so they are treated as untrusted input. |
 
@@ -127,7 +129,7 @@ The bot runs inside the room. Each tick it reads the same state a player in its 
 
 `shared/` exports a `PROTOCOL_VERSION` number. It increases whenever messages or state change in a way an old client could not handle.
 
-- Each server reports its protocol version, environment, and full build SHA from `/health`.
+- Each server reports its protocol version, environment, and full build SHA (`protocol`, `environment`, `version`) from `/health`. Protocol 2 replaced the E0 `protocolVersion` and `sha` fields.
 - The client ignores any region whose version differs from its own.
 
 **Why:** the client and the servers deploy separately and at slightly different times. Without the check, a player could join a server running different rules and see a broken game.

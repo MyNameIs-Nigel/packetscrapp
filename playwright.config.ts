@@ -1,8 +1,29 @@
 import { defineConfig } from "@playwright/test";
 
+// Local Chromium builds that differ from the pinned Playwright revision can be used
+// by pointing PACKET_CHROMIUM_EXECUTABLE at them. CI installs the pinned browsers.
+const chromiumExecutable = process.env.PACKET_CHROMIUM_EXECUTABLE;
+
 export default defineConfig({
   testDir: "tests/e2e",
-  use: { baseURL: "http://127.0.0.1:5173", browserName: "chromium" },
+  // One shared game server serves every test, so tests run one at a time.
+  fullyParallel: false,
+  workers: 1,
+  retries: 0,
+  use: { baseURL: "http://127.0.0.1:5173", trace: "retain-on-failure" },
+  projects: [
+    {
+      name: "chromium",
+      use: {
+        browserName: "chromium",
+        launchOptions: chromiumExecutable
+          ? { executablePath: chromiumExecutable }
+          : {},
+      },
+    },
+    { name: "firefox", use: { browserName: "firefox" } },
+    { name: "webkit", use: { browserName: "webkit" } },
+  ],
   webServer: [
     {
       command:
