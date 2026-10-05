@@ -44,3 +44,5 @@ Design deliverables for #29/#33 and the scoped #38 observation are complete in t
 Initial fetched main was `c057b55d444b81db1cf48988325351acfccca3f4`. Engineering repair #41 merged during discovery; main `3357587e7bdb5203b3ead110965fe84f5bf67834` was incorporated before Design edits. Each issue completion is committed before fetching/rebasing onto main. The final PR records the last synchronized base and validation candidate.
 
 After #29 and after #33, fetch/rebase both confirmed main at `3357587e7bdb5203b3ead110965fe84f5bf67834`; the built #38 observation uses that repaired application. The final issue/final-publication fetches are recorded in the PR handoff.
+
+For the maintainer-authorized merge, main was refreshed to `595edd76caeab7705b34538a205598d9165d0371` (Engineering #43, standalone E3 deposit preparation). The only merge conflict was adjacent additions in PROGRESS; both Engineering and Design checkpoint receipts were retained. Original browser observations remain tied to their recorded E1 candidate. The updated merge candidate requires fresh repository/application CI before merging PR #44.
