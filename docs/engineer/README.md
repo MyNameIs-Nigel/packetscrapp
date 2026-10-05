@@ -55,6 +55,8 @@ Packages and deliverables:
 
 ## E3 — Harvest and build loop
 
+[Deterministic map preparation](E3_MAP_PREPARATION.md) under #42 implements the pure generation subset for QA/Design review. It is not integrated harvest/build gameplay and does not verify G3.
+
 **Entry:** E1 plus accepted D1 map/economy contract; the death/respawn slice also needs D2's accepted build-phase rules. E2 may run concurrently.
 
 Packages and deliverables:
