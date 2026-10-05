@@ -209,6 +209,32 @@ describe("D1 seeded deposit map preparation", () => {
     expect(map.generation.attemptLimit).toBe(0);
   });
 
+  it("pins seed-42 draws against a separate Python uint32 and candidate enumeration", () => {
+    const map = generateDepositMap([0, 1, 2, 3, 4], 42);
+    expect(map.generation.ownedAttempts).toBe(1);
+    expect(map.generation.unownedAttempts).toBe(1);
+    expect(
+      map.deposits.filter(({ slot }) => slot === 0).map(({ x, y }) => [x, y]),
+    ).toEqual([
+      [9, 13],
+      [8, 12],
+      [14, 16],
+      [9, 14],
+      [13, 8],
+      [18, 12],
+      [7, 8],
+      [19, 14],
+      [15, 16],
+      [21, 11],
+    ]);
+    // First unowned cell is local (21,6), from the draw following the owned ten.
+    expect(map.deposits.find(({ slot }) => slot === 4)).toMatchObject({
+      x: 45,
+      y: 30,
+      kind: "small",
+    });
+  });
+
   it("replays exact geometry and preserves pinned seat assignment and join order", () => {
     const seats = [4, 2, 0, 3, 1];
     const map = generateDepositMap(seats, 42);
