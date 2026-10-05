@@ -1,6 +1,6 @@
 # Design team phases
 
-Status: D0 scope and D1 movement/map, economy and UI contracts are merged; PRs #3/#4 record acceptance of the immediate E1 inputs. D2 package 1 proposes combat collision/targeting under [#25](https://github.com/MyNameIs-Nigel/packetscrapp/issues/25); D2 package 2 proposes contender/win-draw rules under [#27](https://github.com/MyNameIs-Nigel/packetscrapp/issues/27). Sudden-death duration and combat UI packages remain open. D4's playtest protocol is prepared; runtime Design acceptance and D2–D5 completion remain open. See the [gate audit](../PROGRESS.md). Use [parallel delivery and shared gates](../DELIVERY_PLAN.md) for scheduling and [QA acceptance IDs](../qa/ACCEPTANCE_MATRIX.md) for traceability. Branches use `design/summary-of-branch`.
+Status: D0 and D1 contracts are merged; PRs #3/#4 record acceptance of E1 inputs. The [full D2 handoff](D2_HANDOFF.md) under [#29](https://github.com/MyNameIs-Nigel/packetscrapp/issues/29) delivers all four D2 contract packages, including combat/lifecycle revision 2, exact duration boundaries, UI and balance experiments. It is In review; Engineering/QA acceptance and runtime G4 evidence remain open. D4 preparation exists; D3–D5 completion remains open. See the [gate audit](../PROGRESS.md), [delivery plan](../DELIVERY_PLAN.md) and [acceptance matrix](../qa/ACCEPTANCE_MATRIX.md). Branches use `design/summary-of-branch`.
 
 ## Responsibility and working method
 
@@ -55,20 +55,20 @@ Small work packages:
 
 **Outcome:** combat and every ending are fair, explainable, and deterministic.
 
-**Entry:** accepted D1 map/economy contracts. Draft alongside E3; hand off build-phase death/respawn rules before E3 implements that slice, and review technical tick order before E4 implements combat.
+**Entry:** accepted D1 map/economy contracts. Contract preparation can proceed alongside E1/E3; hand off build-phase death/respawn rules before E3 implements that slice, and review technical tick order before E4 implements combat.
 
 Small work packages:
 
-1. Specify beam collision priority, range boundaries, friendly-structure behavior, turret target selection/occlusion/ties, and damage timing. Resolve hull-upgrade healing and simultaneous scrap pickup outcomes. **Proposed revision 1** is in [GAME_DESIGN.md](../GAME_DESIGN.md#d2-combat-collision-and-targeting-contract--revision-1) under [#25](https://github.com/MyNameIs-Nigel/packetscrapp/issues/25); Engineering/QA acceptance is still required.
-2. Define a contender across alive, dead-awaiting-respawn, disconnected, and permanently eliminated states. Resolve core destruction during a respawn wait and reconnect expiry. State precisely when a winner or same-tick draw may be declared; a temporarily absent ship must not accidentally end a match. **Proposed revision 1** is in [GAME_DESIGN.md](../GAME_DESIGN.md#d2-contender-and-win-draw-contract--revision-1) under [#27](https://github.com/MyNameIs-Nigel/packetscrapp/issues/27); Engineering/QA acceptance is still required.
-3. Specify build/battle/sudden-death boundary ticks, lethal Belt behavior, pending respawns when cores shatter, and final results. Prove a finite bound on every map using the approved dimensions and shrink cadence. Reconcile that bound with the vision's five-to-six-minute target.
-4. Document combat/death/respawn/results UI states and concise feedback. Record hypotheses for upgrade-assisted harvesting, full wall enclosures, and death-drop snowballing, with experiments and allowed tuning levers.
+1. Specify beam collision priority, range boundaries, friendly-structure behavior, turret target selection/occlusion/ties, and damage timing. Resolve hull-upgrade healing and simultaneous scrap pickup outcomes. **Proposed revision 2** supersedes #26 in [GAME_DESIGN.md](../GAME_DESIGN.md#d2-combat-collision-and-targeting-contract--revision-2) under #29; Engineering/QA acceptance is pending.
+2. Define a contender across alive, dead-awaiting-respawn, disconnected, and permanently eliminated states. Resolve core destruction during a respawn wait and reconnect expiry. State precisely when a winner or same-tick draw may be declared; a temporarily absent ship must not accidentally end a match. **Proposed revision 2** supersedes #28 in [GAME_DESIGN.md](../GAME_DESIGN.md#d2-contender-and-win-draw-contract--revision-2) under #29; Engineering/QA acceptance is pending.
+3. Specify build/battle/sudden-death boundary ticks, lethal Belt behavior, pending respawns when cores shatter, and final results. Prove a finite bound on every map using the approved dimensions and shrink cadence. The proposed [duration contract](../GAME_DESIGN.md#d2-phase-boundaries-and-finite-duration--revision-1) proves 5:22/5:46 maximums using immediate ring 0 and two-second cadence; that tuning change needs acceptance.
+4. Document combat/death/respawn/results UI states and concise feedback. Record hypotheses for upgrade-assisted harvesting, full wall enclosures, and death-drop snowballing, with experiments and allowed tuning levers. The proposed [D2 UI](D2_UI.md) supplies all states, keyboard paths and five experiment records.
 
-**Deliverables:** lifecycle transition table, combat examples and boundary cases, duration calculation for each map, results wireframe, and A06/A07 acceptance updates. Packages 1–2 deliver combat targeting and contender/win-draw examples; packages 3–4 complete the lifecycle exit.
+**Deliverables:** lifecycle transition table, combat examples and boundary cases, duration calculation for each map, results wireframe, and A06/A07 acceptance updates. All four packages are supplied by the [full-phase handoff](D2_HANDOFF.md); its exit checklist keeps independent contract acceptance open.
 
 **Exit / checkpoint:** QA and Engineering agree on expected outcomes for simultaneous final deaths, no living ships with a respawn pending, core loss during a respawn delay, and disconnect expiry. A paper calculation and expected tick sequence establish the termination bound for each layout. No “decide in code” rule remains in E4's scope. G4 later requires runtime verification too.
 
-**Handoff and overlap:** E4 receives the accepted transition table; Q3 receives exact expected outcomes; D3 and early D4 can proceed while combat is built. Package 1 alone is enough for Engineering to implement beam/turret resolution against proposed examples while packages 2–3 finish.
+**Handoff and overlap:** E4 receives the accepted transition table; Q3 receives exact expected outcomes; D3 and early D4 can proceed while combat is built. Dependent implementation consumes accepted revisions; a merged proposal alone does not provide that acceptance. E1 work can continue independently.
 
 ## D3 — Complete multiplayer experience
 
