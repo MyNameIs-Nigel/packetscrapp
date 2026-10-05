@@ -1,0 +1,19 @@
+{
+  "candidate": "c83da08091bf73cb4733e71ca63fdd7f3db23fb2",
+  "browser": "151.0.7922.173",
+  "viewport": "1280x900",
+  "seed": 42,
+  "before": {
+    "focus": "board",
+    "banner": "Local prototype, build view: you see only your own sector and the lethal Belt. Movement only — no scrap, combat, respawn or match flow. A ship that enters the Belt is lost for this test.",
+    "legend": "Hatched orange bands are the asteroid Belt (lethal while it is up). Hatched dark sectors are hidden.",
+    "ships": "Seat 0 — Design Alpha (you): x 13, y 11, facing right",
+    "roster": "Seat 0 — Design Alpha (you)\nSeat 1 — Design Bravo"
+  },
+  "afterTab": "leave-game",
+  "afterMove": "Seat 0 — Design Alpha (you): x 13, y 14, facing down",
+  "blurStops": true,
+  "stopA": "Seat 0 — Design Alpha (you): x 13, y 16, facing down",
+  "stopB": "Seat 0 — Design Alpha (you): x 13, y 16, facing down",
+  "afterLeave": "nickname"
+}

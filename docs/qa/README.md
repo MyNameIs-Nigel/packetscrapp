@@ -1,5 +1,7 @@
 # QA team phases
 
+Current execution: [Q1 independent E1 review](Q1_E1_REVIEW.md) records passing local subsets and a failing H02 preflight criterion under #32/#34. Q1/G1 remain Blocked; the earlier preparation and oracle reviews below remain valid for their stated scope.
+
 Status: the [Q0 baseline and Q1 catalog](Q0_Q1_PLAN.md) have an independent [supplement review](Q0_REVIEW.md) and a [sector-assignment pin recheck](Q1_SECTOR_PIN_RECHECK.md). The [gate audit](../PROGRESS.md) records independent E0 foundation checks and original CI evidence; E1 gameplay, later QA phases, and full acceptance rows remain unverified. Branches use `qa/summary-of-branch`. Start with the [parallel plan](../DELIVERY_PLAN.md), [acceptance matrix](ACCEPTANCE_MATRIX.md), and existing [testing practices](../ENGINEERING.md).
 
 ## Responsibility and verification policy

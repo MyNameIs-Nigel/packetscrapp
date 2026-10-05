@@ -1,5 +1,7 @@
 # Development and shared-gate audit
 
+Current QA addendum (2026-10-05): [independent Q1 E1 execution](qa/Q1_E1_REVIEW.md) under [#32](https://github.com/MyNameIs-Nigel/packetscrapp/issues/32) repeats the merged E1 baseline on `c83da08091bf73cb4733e71ca63fdd7f3db23fb2`. H02 fails missing-Origin preflight; Engineering owns [#34](https://github.com/MyNameIs-Nigel/packetscrapp/issues/34). G1 remains Blocked on the fix/retest, independent browser coverage and Design control review. Earlier evidence below remains candidate-specific.
+
 Audit date: 2026-10-04 UTC. Repository base: `53c2357e39f57303df2c3095df2eafa0fb7fa26a`. Audit owner: Codex, working for maintainer @MyNameIs-Nigel under [#13](https://github.com/MyNameIs-Nigel/packetscrapp/issues/13). This record supersedes stale phase-summary wording; it does not replace the [gate criteria](DELIVERY_PLAN.md#shared-checkpoints).
 
 ## What is actually delivered
@@ -23,7 +25,7 @@ Audit date: 2026-10-04 UTC. Repository base: `53c2357e39f57303df2c3095df2eafa0fb
 | Gate | Current state | Exact next evidence / accountable owner |
 |---|---|---|
 | G0 contracts ready | Open; QA supplement review and sector-pin recheck recorded | D0/D1 acceptance recorded. [Q0_REVIEW.md](qa/Q0_REVIEW.md) accepted most oracles; #21 pins sector assignment; [Q1_SECTOR_PIN_RECHECK.md](qa/Q1_SECTOR_PIN_RECHECK.md) independently rechecks those vectors. Maintainer records E1.1 clearance on #14; G0 is not Verified. |
-| G1 connected foundation | E1 implemented; verification open | Engineering evidence is in [E1_EVIDENCE.md](engineer/E1_EVIDENCE.md). Still required: independent Q1 execution and Design control review naming one SHA. CI is green on PR #31 across Chromium, Firefox and WebKit. Not Verified. |
+| G1 connected foundation | Blocked: Q1 H02 failure | [Independent Q1 review](qa/Q1_E1_REVIEW.md) reproduces missing-Origin preflight failure on merged E1; Engineering fixes #34, QA retests. Independent browser matrix and Design control review remain open. Prior Engineering CI is separate evidence. Not Verified. |
 | G2 development delivery | Planned; access unverified | E2 actual isolated HTTPS/WSS, same candidate on the Atlanta development server and client, failed-rollout restore and Q5 evidence; maintainer supplies access. E2 preparation can run during E1. |
 | G3 build loop | Planned | E3/Q2 all player counts, resources/purchases/privacy/timers and Design review. Accept proposed D2 revision 2 before the build-death/respawn slice. |
 | G4 complete match | Planned | Accepted D2 lifecycle, E4/Q3 deterministic combat, contenders, results and duration proof. |
@@ -94,3 +96,9 @@ Recorded under [#27](https://github.com/MyNameIs-Nigel/packetscrapp/issues/27). 
 Current upstream base `c83da08091bf73cb4733e71ca63fdd7f3db23fb2` includes merged #30 (D2 proposal) and #31 (E1 implementation); earlier “In review” implementation/PR wording above is historical, not an assertion that those PRs remain open. Merge does not supply independent rule/control acceptance. Q1 is actively owned under [#32](https://github.com/MyNameIs-Nigel/packetscrapp/issues/32); G1 still needs independent Q1 and Design control review. No live game, region deployment or release is verified.
 
 D3's [complete proposal](design/D3_JOURNEYS.md) under #33 delivers all four documented contract packages, including host/BOT permissions, bound reconnect identity, external watcher versus former-player capacity, replay, region/list recovery and J01–J20 expected scenarios. Author checks are specification consistency and links only. Next owners: Engineering/QA accept proposed decisions and exact transport mapping; Engineering supplies E5/E6; QA supplies Q4; Design conducts D4 only on qualified playable candidates. D5 waits for D4 and E7/Q6. No gate is marked Verified by this handoff.
+
+## E1 Design control checkpoint — 2026-10-05
+
+Design reviewed merged implementation `c83da08091bf73cb4733e71ca63fdd7f3db23fb2` under [#38](https://github.com/MyNameIs-Nigel/packetscrapp/issues/38). [Control review and visual observation](design/E1_CONTROL_REVIEW.md) support focus escape, blur stop, build hazard/display and prototype labelling, but **acceptance is Blocked**: system Chromium browser run passed ten cases and failed the final two-client convergence assertion. Engineering diagnoses [#39](https://github.com/MyNameIs-Nigel/packetscrapp/issues/39), a suspected snapshot race without established persistent product divergence; Design does not fix Engineering code/tests or call the failure a pass.
+
+Independent QA also records [#34](https://github.com/MyNameIs-Nigel/packetscrapp/issues/34) missing-Origin preflight and [#36](https://github.com/MyNameIs-Nigel/packetscrapp/issues/36) raw-frame positive-control capture, in [draft #35](https://github.com/MyNameIs-Nigel/packetscrapp/pull/35). G1 remains open for Engineering evidence/fixes, QA retest and Design review of the affected controls on one immutable SHA. D4/D5 still require qualified gameplay/playtest/release inputs. No Design or shared gate is marked Verified by this receipt.

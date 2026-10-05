@@ -32,6 +32,8 @@ Small work packages:
 
 ## D1 — Movement, map, and build economy contracts
 
+Merged E1 received a [Design control review](E1_CONTROL_REVIEW.md) under #38. Partial focus/display observations passed; blanket acceptance is Blocked on Engineering #39 convergence evidence and independent QA #34/#36 retest. Contracts remain accepted; G1 is open.
+
 **Outcome:** a player can learn move/shoot/build and choose a meaningful use for limited scrap.
 
 The [movement and map contract](../GAME_DESIGN.md#d1-movement-and-map-contract--revision-1) is the first D1 slice for E1/Q1. The [deposit budget](../GAME_DESIGN.md#d1-deposit-budget-and-generation--revision-1) and [purchase/placement contract](../GAME_DESIGN.md#d1-purchase-and-placement-contract--revision-1) complete the economy slice for E3/Q2. The [D1 UI wireframes](D1_UI.md) define the start, lobby, and build HUD handoff against those contracts.

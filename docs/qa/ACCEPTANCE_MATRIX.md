@@ -1,5 +1,7 @@
 # Cross-team acceptance matrix
 
+Current subset evidence: [Q1 E1 independent review](Q1_E1_REVIEW.md) on merged candidate `c83da08091bf73cb4733e71ca63fdd7f3db23fb2`; H02/A11/A12 fails missing-Origin preflight (#34), so G1 is Blocked. Other local E1 subset results and browser limits are recorded there; full rows remain Planned.
+
 Full acceptance rows remain **Planned** until their runtime scope is verified. The [gate audit](../PROGRESS.md) records passing E0 subsets separately; the [Q0/Q1 case catalog](Q0_Q1_PLAN.md) marks each E1 case Ready or Blocked, and runtime execution stays Blocked on implementation. The [Q0 review](Q0_REVIEW.md) is an oracle review, not a Pass. This is a coverage contract, not a report of full passing tests. Each work issue links one or more IDs and records evidence using the [shared handoff record](../DELIVERY_PLAN.md). QA owns verification; Design owns player-rule intent; Engineering owns implementation and developer tests. Phase IDs resolve in the [Design](../design/README.md), [Engineering](../engineer/README.md), and [QA](README.md) plans.
 
 **Decision:** use stable acceptance IDs across teams and track detailed cases in linked issues. **Why:** one feature may land in several PRs and require multiple test layers without losing its original intent.
