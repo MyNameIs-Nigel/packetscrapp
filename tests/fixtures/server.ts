@@ -1,4 +1,4 @@
-import { Client, type Room } from "@colyseus/sdk";
+import { Client, Protocol, type Room } from "@colyseus/sdk";
 import {
   PROTOCOL_VERSION,
   type WelcomeMessage,
@@ -73,10 +73,14 @@ export async function seat(
   roomName: string,
   options: Record<string, unknown>,
   roomId?: string,
+  beforeWelcome?: (room: Room) => void,
 ): Promise<Seated> {
   const room = roomId
     ? await client.joinById(roomId, options)
     : await client.joinOrCreate(roomName, options);
+  // The SDK resolves on JOIN_ROOM, before the first state message. Attach raw
+  // capture synchronously here, before awaiting welcome (which can follow state).
+  beforeWelcome?.(room);
   const message = await new Promise<WelcomeMessage>((resolve, reject) => {
     const timer = setTimeout(
       () => reject(new Error("No welcome message")),
@@ -195,7 +199,11 @@ export function receivedState(room: Room): {
 }
 
 /** Capture every raw frame this client receives, to inspect the serialized bytes themselves. */
-export function recordFrames(room: Room): { text(): string; count(): number } {
+export function recordFrames(room: Room): {
+  text(): string;
+  count(): number;
+  initialStateCount(): number;
+} {
   const frames: Buffer[] = [];
   const transport = room.connection.transport as unknown as {
     ws: {
@@ -215,6 +223,8 @@ export function recordFrames(room: Room): { text(): string; count(): number } {
   return {
     text: () => Buffer.concat(frames).toString("latin1"),
     count: () => frames.length,
+    initialStateCount: () =>
+      frames.filter((frame) => frame[0] === Protocol.ROOM_STATE).length,
   };
 }
 
@@ -240,8 +250,8 @@ export async function startPrototype(
       "prototype",
       joinOptions(`Pilot${index}`, options),
       roomId,
+      (room) => record?.(room, index),
     );
-    record?.(entry.room, index);
     roomId = entry.room.roomId;
     seated.push(entry);
   }

@@ -154,7 +154,10 @@ export function installHttpGate(
     const path = (request.url ?? "/").split("?")[0] ?? "/";
     const origin = headerValue(request.headers.origin);
     if (request.method === "OPTIONS") {
-      if (origin !== undefined && !isAdmittedOrigin(origin, clientOrigin)) {
+      if (
+        (path.startsWith("/matchmake/") || origin !== undefined) &&
+        !isAdmittedOrigin(origin, clientOrigin)
+      ) {
         runtime.counters.originRejected += 1;
         runtime.logger.event("origin_rejected", { transport: "http" });
         response.removeHeader("Access-Control-Allow-Origin");
