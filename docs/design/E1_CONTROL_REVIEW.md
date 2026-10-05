@@ -1,4 +1,32 @@
-# E1 Design control review — blocked acceptance
+# E1 Design control review
+
+Current disposition, 2026-10-05: **Design accepts the observed E1 movement/focus intent on merged repair #41**, limited to the local prototype and system Chromium coverage below. All eleven built browser journeys pass; a separate Design observation confirms both clients settle at the same stopped position before the edge. Independent QA #32, pinned-browser CI and later gameplay/accessibility acceptance remain separate requirements. G1 is not closed by this receipt.
+
+## Retest after merged Engineering repair
+
+Merged implementation: `3357587e7bdb5203b3ead110965fe84f5bf67834` (#41); clean build/retest candidate: `cf40abb7904fb4ac37fbd763df8814d46935e55e`. The intervening commits change Design documentation only; application, tests, configuration and dependencies match the merged repair. Owner `codex-design-all-20261005`, branch `design/complete-design-issues-20261005`, isolated `/workspace/packetscrapp-design-all`. Accepted source revisions remain D1 movement/map revision 1 (#4) and D1 UI revision 1 (#6), A02 plus the A04 display subset, protocol 2.
+
+Linux, 2026-10-05 UTC, Node 24.21.0/npm 11.19.0, system Chromium 151.0.7922.173, loopback without added latency. Two-seat seed-42 build and battle fixtures. With the pinned toolchain on PATH, `npm ci --cache /tmp/packet-design-npm-cache`, `npm run build`, and the existing unchanged command below passed:
+
+```sh
+PACKET_CHROMIUM_EXECUTABLE=/usr/bin/chromium \
+  node node_modules/@playwright/test/cli.js test --project=chromium
+```
+
+Result: **11 passed, 28.9 seconds, no retries/skips or assertion changes by Design.** Includes repaired two-client held-key convergence, input focus, blur/document-hidden/disconnect stopping, build display/Belt and waiting-room/error journeys. The historical ten-pass/one-failure receipt below remains evidence for its original candidate only.
+
+The separate [Design observation JSON](evidence/E1_REPAIR_OBSERVATION.json) and [build](evidence/E1_REPAIR_BUILD.png), [battle](evidence/E1_REPAIR_BATTLE.png), and [narrow dark-mode](evidence/E1_REPAIR_NARROW.png) screenshots record these independently exercised steps:
+
+1. Open two clean browser contexts at 1280 × 900, reduced motion enabled, names Design Alpha/Bravo. Select two participants, seed 42, build view, then repeat with battle view. Initial focus is `board`; build displays only seat 0 to Alpha and battle displays both seats.
+2. Tab to Leave and hold ArrowDown for 500 ms: Alpha stays at `(13,11)`. Refocus the board, hold ArrowDown until `y ≥ 14`, then focus Leave while the key is still held. Two reads 500 ms apart agree: build `(13,14)`, battle `(13,15)`, facing down/alive. Another 500 ms read after key release stays unchanged; both battle clients agree, before the bottom edge.
+3. In battle, Bravo holds W until `y ≤ 8`, releases, then both clients independently settle at `(34,8)`, facing up/alive, before the top edge. Comparison uses current settled reads from both contexts rather than a frozen pre-settle expected value.
+4. Inspect text/shape/hatching/facing and visible board focus at 1280 px light and 640 px dark width. At 640 px the measured document width is 640 px, with no horizontal overflow. Leave returns focus to `nickname`. These are prototype visual observations, not mobile gameplay acceptance or measured contrast/assistive-technology coverage.
+
+The observed controls meet the accepted D1 intent within this scope, so the previous convergence failure no longer blocks this Design control review on the repaired candidate. The original trace belongs to `/workspace/packetscrapp-controls`, which is unavailable here; no original-trace inspection or reproduction of that exact timing is claimed. The recorded failure and trace digest are preserved below. QA/Engineering retain defect disposition and independent retest ownership.
+
+Pinned browser installation still returns CDN HTTP 403. No local pinned Chromium/Firefox/WebKit pass is claimed; the combined PR must supply its own exact-head CI. Combat, economy, respawn, D3 journeys, real networks, measured contrast, assistive technology and full Design/G1 acceptance remain outside this E1 prototype result.
+
+## Historical review before repair
 
 Owner: Codex run `codex-design-controls-20261005`, Design, under [#38](https://github.com/MyNameIs-Nigel/packetscrapp/issues/38). **Partial observation delivered; blanket control acceptance withheld.** Engineering diagnoses [#39](https://github.com/MyNameIs-Nigel/packetscrapp/issues/39), QA retests. This is a Design intent review, not independent QA approval or G1 closure.
 

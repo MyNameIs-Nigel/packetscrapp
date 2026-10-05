@@ -90,3 +90,7 @@ PY
 - [ ] Maintainer records disposition of cadence/pacing and coordinates reviewers.
 
 After acceptance, E3 can implement core-backed build deaths; E4 can implement the complete combat lifecycle; Q3 can prepare oracles before executing those candidates; D3 can specify reconnect/watcher/replay journeys using these roles and deadlines. G4 still needs actual deterministic and real-client full-match evidence plus Design UI review. D4 needs a qualified playable candidate for balance observations.
+
+## Final Design completion review
+
+The [combined Design receipt](DESIGN_COMPLETION.md#d2--combat-and-lifecycle-29) records the 2026-10-05 consistency review and repeated all-cell duration calculation. The lifecycle table now includes an early build winner/draw; abandonment explicitly zeroes unspent scrap without changing earlier death pickups; elimination UI uses D3's reserved former-player connection rather than external watcher capacity. These complete Design's specification corrections under #29. The proposed revisions still need the Engineering/QA acceptance listed above before dependent implementation; this Design review cannot supply another team's sign-off.

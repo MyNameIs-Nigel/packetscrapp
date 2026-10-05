@@ -48,3 +48,7 @@ Application code/config/dependencies unchanged. Local application suites not rer
 D2 and D3 acceptance require Engineering/QA input. D4 protocol/experiments are already prepared; actual build/full-match sessions need E3/E4/E5 and critical Q2/Q3 qualification. D5 requires D4 acceptance and E7/Q6 release candidate. G1's Design control review can target merged E1 independently of D3 and of current Q1; it is a separate focused package, not a reason to mark this contract Verified. No empty speculative release/preparation package is needed.
 
 After reviewing the proposed D3 revisions, Engineering can implement accepted lobby slices after E1; full reconnect/watcher/replay/BOT integration consumes accepted D2 and implemented E4 where listed in the delivery plan. QA can prepare cases immediately but executes only against real candidates. Maintainer records acceptance owners and pacing/capacity implications. All shared gates remain open.
+
+## Final Design completion review
+
+The [combined receipt](DESIGN_COMPLETION.md#d3--player-journeys-33) records the final consistency pass. D1-compatible bot firing/build poses now require a successful step to acquire facing; no hidden rotate action is implied. J21 specifies early-build result and result-reconnect privacy. D2's transition table now distinguishes forbidden player recovery from D3's permitted former-player watching, and Architecture distinguishes protocol compatibility from build SHA equality. J01–J21 are Design-authored proposed oracles awaiting Engineering/QA review. They supply no runtime journey acceptance.
