@@ -102,6 +102,9 @@ describe("V01 build-phase views, as received", () => {
       // Raw bytes: every foreign sentinel id is absent from everything this client received.
       const bytes = frames.get(index)?.text() ?? "";
       expect(bytes.length).toBeGreaterThan(0);
+      // Including the initial state is required: later tick patches alone
+      // cannot prove that hidden entities were absent at admission.
+      expect(frames.get(index)?.initialStateCount()).toBe(1);
       for (const id of idsOf(own)) expect(bytes).toContain(id);
       for (const slot of ALL_SLOTS.filter((candidate) => candidate !== own)) {
         for (const id of idsOf(slot)) expect(bytes).not.toContain(id);
@@ -185,8 +188,9 @@ describe("V01 waiting room is roster-only", () => {
       sdkClient(test.endpoint),
       ROOM_MATCH,
       joinOptions("A"),
+      undefined,
+      (room) => frames.attach(room),
     );
-    frames.attach(first.room);
     const second = await seat(
       sdkClient(test.endpoint),
       ROOM_MATCH,

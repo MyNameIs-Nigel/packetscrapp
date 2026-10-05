@@ -320,6 +320,26 @@ describe("H02 exact origin policy", () => {
     expect(refused.headers.get("access-control-allow-origin")).toBeNull();
   });
 
+  it("refuses matchmaking preflight without Origin and allocates nothing", async () => {
+    test = await startTestServer();
+    const refused = await fetch(
+      `${test.endpoint}/matchmake/joinOrCreate/${ROOM_MATCH}`,
+      {
+        method: "OPTIONS",
+        headers: { "Access-Control-Request-Method": "POST" },
+      },
+    );
+    expect(refused.status).toBe(403);
+    expect(refused.headers.get("access-control-allow-origin")).toBeNull();
+    expect(refused.headers.get("access-control-allow-credentials")).toBeNull();
+    expect(test.server.counters).toMatchObject({
+      rooms: 0,
+      players: 0,
+      originRejected: 1,
+    });
+    expect((await health(test)).response.status).toBe(200);
+  });
+
   it("refuses an oversized or undeclared matchmaking body before reading it", async () => {
     test = await startTestServer();
     const big = await post(test, LOCAL_ORIGIN, {
