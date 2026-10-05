@@ -335,6 +335,8 @@ A seat is a **contender** iff its role is `alive` or `awaiting_respawn`. Spectat
 
 Permanent elimination never removes other seats' cores or structures except through ordinary combat damage.
 
+On either disconnect expiry or voluntary departure, zero the abandoned seat's unspent scrap when removing its ship or canceling its respawn. Create no abandonment pickup and carry no balance into a watcher or new room. Scrap dropped by an earlier real death remains in the world; abandonment never deletes or duplicates that existing pickup. A winner or draw can end build before tick 1800, using the same final contender evaluation and results window as later phases; ending early does not reveal the hidden build world.
+
 | Current role | Event / condition | Next role and timer |
 |---|---|---|
 | `alive` | Ship dies, core lives after all damage | `awaiting_respawn`, deadline `t+225` |
@@ -371,6 +373,7 @@ Observable A06/A07 examples:
 6. Given three contenders and seat 2 permanently eliminated earlier, when only seat 0 remains in `C`, then seat 0 wins; seat 2 is not placed in a draw set.
 7. Given a death at tick 100 and a living core, when tick 324 finishes, then the seat still awaits respawn. At timer stage 325 it spawns if the reserved tile is clear. If occupied, it waits; once clear it spawns exactly once. Destroying the core during this wait eliminates it.
 8. Given disconnect at tick 100 and a respawn at tick 325, when tick 400 arrives without reconnect, then the seat is eliminated; spawning did not extend the deadline to 625. Reconnect accepted at 399 is valid; at 400 it is rejected.
+9. Given two build-phase contenders and seat 0 voluntarily leaves with 40 scrap, then seat 0 is eliminated with zero balance and no new pickup; seat 1 wins before battle. Any pickup from an earlier death remains unchanged, and the result view does not expose the other sector.
 
 ### D2 phase boundaries and finite duration — revision 1
 

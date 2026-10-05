@@ -56,7 +56,7 @@ The step logic is a set of pure functions in `shared/`. The Colyseus room calls 
 | State | Entered when | Leaves when |
 |---|---|---|
 | `waiting` | The room is created | Quick Play: the countdown ends or 5 players join. Private: the host starts it. |
-| `build` | The match starts | 120 s pass |
+| `build` | The match starts | 120 s pass or a winner/draw is resolved |
 | `battle` | The Belt drops | 300 s pass or a winner/draw is resolved |
 | `sudden_death` | 300 s pass | A winner/draw is resolved |
 | `ended` | A winner or draw is decided | Proposed D2: 225 ticks after ending, or immediately when empty |

@@ -29,7 +29,7 @@ Keep the ship/facing indicator visible, with a shape/text distinction for self a
 | Core destroyed during respawn wait | `CORE DESTROYED — you are eliminated.` Remove the timer immediately; never promise another spawn. |
 | Respawn arrives | `SHIP REBUILT — hull restored.` Show current maximum hull and persistent upgrade levels from server state. Require fresh keys: held input from before death cannot restart movement or fire. |
 | Sudden death | `SUDDEN DEATH — all cores destroyed. Belt closes every 2 seconds.` Label hazard cells `LETHAL BELT` with pattern as well as color; show `NEXT RING 0:02` from server deadline. Construction shows `Core required`; legal living-ship upgrades remain available. |
-| Permanently eliminated | `ELIMINATED — you cannot respawn.` Reject gameplay locally and at the server. If watcher admission succeeds, show `Watching this match`; otherwise show the actual watcher-capacity notice supplied by D3. |
+| Permanently eliminated | `ELIMINATED — you cannot respawn. Watching this match.` Reject gameplay locally and at the server. Under proposed D3, the existing former-player connection retains its own watching slot even when all ten external slots are full; build viewing becomes metadata only. A later fresh external Watch request follows D3 admission/capacity rules. |
 | Build Belt death | `SHIP LOST — the Belt is lethal. Respawn in 0:15.` Keep only the authorized own-sector view; death never unlocks enemy/unowned build data. |
 | Abandoned/expired seat | `Your seat has expired. You cannot return as a player.` No gameplay controls or implied resurrection; offer return to start. D3 supplies reconnect transport notices. |
 
