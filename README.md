@@ -5,9 +5,9 @@
 
 A space-themed multiplayer browser game for 2–5 players. Harvest scrap, fortify your core, and fight to be the last ship standing when the asteroid belt drops.
 
-**Status: engineering foundation.** The npm workspaces, a Colyseus transport room, and a browser connection harness exist. Gameplay and deployment are not implemented; `packetscr.app` is the planned public site, and this is not yet a playable game.
+**Status: connected-room prototype.** The npm workspaces, an authoritative Colyseus server with admission, a roster-only waiting room, 15 Hz server-owned ship movement (in a labelled local prototype), per-seat state views, input limits, an exact-origin policy and canonical `/health`, plus a browser client, exist. Harvesting, building, combat, matches and deployment are not implemented; `packetscr.app` is the planned public site, and this is not yet a playable game.
 
-The [development/gate audit](docs/PROGRESS.md) records accepted D0/D1 inputs and E0 evidence; the [E1 handoff](docs/engineer/E1_HANDOFF.md) and [Q0/Q1 case catalog](docs/qa/Q0_Q1_PLAN.md) define the next authoritative-movement milestone.
+The [development/gate audit](docs/PROGRESS.md) records accepted D0/D1 inputs and E0 evidence; the [E1 implementation record](docs/engineer/E1_EVIDENCE.md) records the connected-room slice, which still needs independent Q1 and Design review before gate G1.
 
 ## Planned stack
 

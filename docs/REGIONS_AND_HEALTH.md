@@ -1,6 +1,6 @@
 # Regions and health checks
 
-Design specification; E0 implements a local `/health` endpoint with environment, region, protocol, and build SHA. Regional readiness, capacity, CORS/origin policy, and infrastructure are not implemented or verified.
+Design specification. E1 implements the canonical `/health` document below (all fields, no-store, exact-origin CORS, `accepting: false` at the room limit) and the exact Origin policy. Draining, region selection, the room list and infrastructure are not implemented. Developer evidence is in [E1_EVIDENCE.md](engineer/E1_EVIDENCE.md); nothing here is independently verified.
 
 ## Summary
 
