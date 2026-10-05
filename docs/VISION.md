@@ -32,7 +32,7 @@ The game has three verbs: move, shoot, build. The timer, the Belt, and the shop 
 
 ### Short matches
 
-A match ends in about five to six minutes, guaranteed by sudden death.
+A match targets about five to six minutes; early victories may finish sooner. The proposed [D2 duration contract](GAME_DESIGN.md#d2-phase-boundaries-and-finite-duration--revision-1) bounds simulation time at 5:22 for two players and 5:46 for three through five, excluding lobby and results. Its two-second shrink cadence awaits Engineering/QA acceptance; real-time duration still requires Q3 and performance evidence.
 
 **Why:** short matches are where "one more game" comes from. They also keep a lost match cheap, which matters when a server restart or a disconnect ends one early.
 

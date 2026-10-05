@@ -6,7 +6,7 @@ The [Design phase plan](design/README.md) schedules rule, map, balance, and UI d
 
 ## Summary
 
-Packet Scrapp is a free-for-all for 2 to 5 ships on a tile grid. Each player has a ship and a core. Destroyed ships respawn at their core until the core is destroyed. The last player with a ship wins.
+Packet Scrapp is a free-for-all for 2 to 5 ships on a tile grid. Each player has a ship and a core. Destroyed ships respawn beside their core until the core is destroyed. The last eligible contender wins; a ship awaiting a legal respawn still counts. The proposed [D2 lifecycle contract](#d2-contender-and-win-draw-contract--revision-2) makes this precise.
 
 ## Match flow
 
@@ -82,7 +82,7 @@ Movement uses four cardinal directions. The client maps WASD and arrow keys to t
 
 All movement intents on a tick use positions at the start of that tick. A ship cannot enter a tile occupied by another ship at that point, even if the occupant also intends to leave; swaps and two ships aiming at one tile both fail. A core, deposit, turret, and enemy wall block entry. An owned wall is passable to its owner. A scrap pickup is passable and is collected under the tick-order rule. A ship may step into a Belt cell during build; that step succeeds and the Belt kills the ship in the damage/death stage of the same tick. A step beyond the world is rejected, leaving position and facing unchanged. Facing changes only after a successful step, including a lethal Belt step; holding fire while stopped uses the last successful facing.
 
-**Decision:** shots fired during build stop at the first Belt cell and cannot hit a neighboring sector. **Why:** the lethal crossing hazard must not let a player raid an unseen base from safety. Full beam collision priority is in the [D2 combat contract](#d2-combat-collision-and-targeting-contract--revision-1); this boundary rule remains enough for E1 visibility and E3 harvest preparation.
+**Decision:** shots fired during build stop at the first Belt cell and cannot hit a neighboring sector. **Why:** the lethal crossing hazard must not let a player raid an unseen base from safety. Full beam collision priority is in the [D2 combat contract](#d2-combat-collision-and-targeting-contract--revision-2); this boundary rule remains enough for E1 visibility and E3 harvest preparation.
 
 Observable examples for A02–A04:
 
@@ -96,7 +96,7 @@ Observable examples for A02–A04:
 
 During the build phase, bands of asteroids two tiles thick run along every sector border. A ship that enters a Belt tile is destroyed at once.
 
-- The owner respawns at their core after the normal respawn delay.
+- The owner respawns on the reserved tile beside their core after the normal respawn delay.
 - Any scrap the ship was holding drops inside the Belt and cannot be reached until the Belt is gone.
 - At 2:00 the Belt disappears everywhere.
 
@@ -172,9 +172,9 @@ These rules are the Engineering/QA contract with the deposit budget above. They 
 
 - A purchase uses the ship's facing and position at the **start of the tick**, before that tick's movement. Keys `1` and `2` target exactly the cell immediately in front of the ship. `Q` and `E` affect that player's ship, wherever it is. The ship must be alive. The server is the only authority for price, position, ownership, level, and scrap.
 - The build radius is **Manhattan distance** `|x - coreX| + |y - coreY| ≤ 8`, inclusive. The target must lie inside the player's own sector and off the Belt. The core and reserved spawn tile are never buildable. A target occupied by any core, deposit, wall, turret, ship, or scrap pickup is rejected. No structure replaces another. A living core is required to build a wall or turret; building is allowed in build and battle, but not sudden death or results.
-- Upgrade costs are the listed next-level price: blaster 50/100/150 and hull 40/80/120 for levels 1/2/3. Level 3 is the cap. Upgrades are allowed while alive in build, battle, and sudden death and survive a respawn. Hull-upgrade healing is specified in the [D2 combat contract](#d2-combat-collision-and-targeting-contract--revision-1): max hull rises by the level bonus and current hull rises by the same amount, capped at the new max.
+- Upgrade costs are the listed next-level price: blaster 50/100/150 and hull 40/80/120 for levels 1/2/3. Level 3 is the cap. Upgrades are allowed while alive in build, battle, and sudden death and survive a respawn. Hull-upgrade healing is specified in the [D2 combat contract](#d2-combat-collision-and-targeting-contract--revision-2): max hull rises by the level bonus and current hull rises by the same amount, capped at the new max.
 - The server applies at most one valid build and one valid upgrade request per player per tick, in that order, against the current scrap balance. For each kind, the earliest valid request received before the tick is the candidate; later requests of that kind are ignored. A successful request creates exactly one item or level and deducts its cost once. An invalid or unaffordable request changes neither balance nor world. Scrap earned by fire or pickup later in a tick becomes spendable on the next tick. Concurrent client input does not permit two purchases with the same funds.
-- An owned wall is passable by its owner's ship and beam; an enemy ship cannot pass it, and an enemy beam hits and damages it before anything behind it. A turret blocks movement for every ship. Beam pass-through, turret targeting, occlusion, and seat ties are specified in the [D2 combat contract](#d2-combat-collision-and-targeting-contract--revision-1).
+- An owned wall is passable by its owner's ship and beam; an enemy ship cannot pass it, and an enemy beam hits and damages it before anything behind it. A turret blocks movement for every ship. Beam pass-through, turret targeting, occlusion, and seat ties are specified in the [D2 combat contract](#d2-combat-collision-and-targeting-contract--revision-2).
 - Destroying a small or large deposit awards its 10 or 40 scrap **once** to the player credited with the final hit; partial damage pays nothing. The deposit disappears and does not regrow. Simultaneous final hits and pickup merges follow the D2 combat damage-stage order.
 
 **Decision:** treat failed purchases as no-ops with a visible reason. **Why:** a player should never lose scrap when placement, range, occupancy, or a cap prevents the intended item, and QA can verify conservation from server state.
@@ -203,17 +203,19 @@ Observable A03/A05 examples:
 
 **Why a beam and not a moving projectile:** a beam resolves in a single tick. There are no bullet objects for the server to track and send, which keeps both the rules and the network traffic small.
 
-### D2 combat collision and targeting contract — revision 1
+### D2 combat collision and targeting contract — revision 2
 
-This Design rule contract is for E4 and Q3 preparation (A06). It does not claim implemented or verified behavior. It freezes package-1 combat ambiguities called out by the [delivery decision register](DELIVERY_PLAN.md): beam priority, turret selection/occlusion/ties, hull-upgrade healing, and simultaneous deposit/pickup credit. Contender, win/draw, sudden-death duration, and combat UI remain later D2 packages. Starting damage, range, cooldown, and health numbers stay hypotheses in [Starting numbers](#starting-numbers) until playtests.
+<a id="d2-combat-collision-and-targeting-contract--revision-1"></a>
+
+**Proposed, not accepted or implemented.** This revision supersedes package 1 in #26 and forms part of the [full D2 handoff](design/D2_HANDOFF.md) under [#29](https://github.com/MyNameIs-Nigel/packetscrapp/issues/29). It resolves beam priority, turret geometry, damage credit and hull healing; the lifecycle and duration contracts below and [D2 UI](design/D2_UI.md) complete the phase. Engineering and QA must review all revisions before dependent implementation. Starting values remain tuning hypotheses.
 
 Positions, facings, structure placement, and alive/dead flags used for combat are those **after** that tick's movement stage and **before** fire resolution, matching [ARCHITECTURE.md](ARCHITECTURE.md) tick order (actions → move → fire → damage/deaths/drops/pickups → timers).
 
 #### Blaster beams
 
-- A living ship may queue at most one `fire` per tick. The shot resolves only if the ship's blaster cooldown has expired at the start of the fire stage. Cooldown is measured in whole ticks from the config fire rate (starting value: 3 shots/s at 15 Hz → **5 ticks** between accepted shots). A rejected or empty shot does not refresh cooldown.
+- A living ship may queue at most one `fire` per tick. The shot resolves only if the ship's blaster cooldown has expired at the start of the fire stage. Cooldown is measured in whole ticks, rounding `tickRate / fireRate` upward (3 shots/s at 15 Hz → **5 ticks**). Every accepted shot starts cooldown, including a miss, a Belt-stopped shot, or a shot blocked by an owned structure. Rejected requests do not. A shot accepted at tick `t` permits the next at `t + 5`.
 - The beam is a **cardinal ray** from the ship's facing at fire time. It never travels diagonally. Tile 1 is the adjacent cell in that facing; tiles continue through inclusive range `R` (starting blaster range 8). The ship's own tile is not a hit candidate.
-- Build-phase Belt rule from D1 still applies: the beam stops at the first Belt cell and cannot affect a cell beyond it. After the Belt drops, rays use the ordinary occupancy rules below with no Belt stopper.
+- Build-phase Belt rule from D1 still applies: the beam stops at the first Belt cell and cannot affect a cell beyond it. Battle has no Belt stopper; sudden-death rays again stop at the first active Belt cell.
 - Walk the ray from near to far. The first **blocking** occupant stops the beam and is the only combat target of that shot. Occupants are classified as:
 
 | Occupant | Effect on the shooter's beam |
@@ -224,16 +226,18 @@ Positions, facings, structure placement, and alive/dead flags used for combat ar
 | Own core | Block; core takes no damage |
 | Enemy ship, enemy wall, any deposit, enemy turret, enemy core | Block and become the shot's target |
 
+If a ship occupies its own passable wall tile, test the wall before the ship. An enemy beam hits only that wall; destroying it does not retarget this tick's recorded shot. An owned wall remains transparent to its owner's beams. Other blocking structures cannot share a ship tile under D1.
+
 - There is no friendly-fire damage to the shooter's own ship, walls, turrets, or core. Enemy walls always block before anything behind them, including a ship on a farther tile.
 - Range boundary: a target on tile `R` may be hit; a target on tile `R + 1` may not. A wall on tile `R` blocks the beam there even if a ship sits on `R + 1`.
 - Damage equals the shooter's current blaster damage from config/upgrades. The fire stage only records `(attackerSeat, targetRef, damage)`. The damage stage applies recorded hits.
 
 #### Turrets
 
-- Each living enemy-owned turret may fire at most once per tick when its cooldown has expired (starting value: 2 shots/s → **8 ticks** between accepted shots). Turrets never fire in `waiting` or `ended`. They fire in build, battle, and sudden death.
+- Each turret with a contender owner may fire at most once per tick when its cooldown has expired (2 shots/s at 15 Hz rounds upward → **8 ticks** between accepted shots). Turrets never fire in `waiting` or `ended`; they fire in build, battle, and sudden death. Permanently eliminated owners' turrets remain blocking, damageable structures but stop firing after the elimination tick.
 - Eligible targets are **living enemy ships** only. Turrets never target structures, deposits, cores, scrap, or the turret's owner.
 - Range uses **Chebyshev** distance `max(|dx|, |dy|)` and is inclusive of the configured turret range (starting value 6).
-- Line of sight is required. Trace discrete cells from the turret tile to the target tile with a grid line that steps through orthogonal neighbors (no corner cutting: a diagonal step requires both adjacent orthogonal cells to be clear of blockers). Blockers are enemy walls, any turret, any core, any deposit, and any ship other than the chosen target. Scrap pickups and the turret owner's walls do not block. If LOS fails, that ship is ineligible.
+- Line of sight is required. Trace the segment between tile centers using a **supercover**: include every intermediate cell whose closed square intersects the segment, excluding the source and target cells. At an exact grid corner include both orthogonal side cells as well as the diagonal cell. Compare integer/rational crossings exactly, so axis or rounding choices cannot change the covered set. Blockers are enemy walls, any turret, any core, any deposit, any ship other than the chosen target, and any active Belt cell. Scrap pickups and the turret owner's walls do not block. Also reject a target on an active Belt cell or behind an enemy wall sharing its target tile. If LOS fails, that ship is ineligible.
 - Among eligible ships, choose the smallest Chebyshev distance. Distance ties break to the **lowest seatIndex**. If no eligible ship remains, the turret skips the tick and does not refresh cooldown.
 - A turret shot is a beam that damages only the chosen ship for configured turret damage. It does not continue past the ship and does not damage intervening pass-through cells (LOS already required them to be clear of blockers).
 
@@ -241,9 +245,10 @@ Positions, facings, structure placement, and alive/dead flags used for combat ar
 
 #### Damage stage, last-hit credit, and pickups
 
-- Apply all blaster hits this tick in ascending **attacker seatIndex**, then all turret hits in ascending **(ownerSeatIndex, structureId)** where `structureId` is the server's stable placement id. Each hit subtracts from the target's current health after earlier hits in this stage.
+- Record all shots from the same post-movement snapshot before applying any damage. Apply blaster hits in ascending **attacker seatIndex**, then turret hits in ascending **(ownerSeatIndex, structureId)** where `structureId` is the server's stable placement id. A recorded shot still applies if its attacker or turret is destroyed later in this damage stage; it cannot retarget when a blocker is destroyed. Each hit subtracts from the target's current health after earlier hits. A hit whose target was already destroyed does nothing and pays nothing.
 - When a hit reduces a deposit, wall, turret, ship, or core to health ≤ 0, that attacker receives last-hit credit for the destruction. Earlier hits the same tick still apply their damage but do not share payout. Deposit payout follows the D1 once-only scrap rule.
 - Destroyed ships are removed before scrap drops resolve. The death drop creates one pickup on the death tile holding all unspent scrap. If that tile already holds a pickup, **merge** the amounts into a single pickup on that tile.
+- Zero the dead seat's scrap as the pickup is created; a zero balance creates no pickup. After all damage, choose each dead ship's respawn eligibility using the core's final health this tick, independent of whether the ship or core hit was processed first. Apply active Belt lethality before choosing death transitions; a ship already killed by fire cannot drop again.
 - After drops, each living ship occupying a tile that holds a pickup collects it: add the pickup scrap to that seat and remove the pickup. Movement already forbids two ships on one tile, so pickup collection needs no seat tie-break. A ship that dies on a tile does not collect a pickup on that tile in the same tick.
 
 **Decision:** sequential seat-ordered damage inside one tick, not summed simultaneous HP math. **Why:** last-hit credit, overkill, and mid-tick destruction stay one rule for ships, structures, and deposits, and QA can step a single ordered list.
@@ -264,11 +269,15 @@ Observable A06 examples:
 5. Given a turret and two enemy ships at Chebyshev distance 4 with clear LOS, seats 2 and 0, when the turret fires, then seat 0 is hit. If seat 0 is behind an enemy wall on the LOS path and seat 2 is clear, then seat 2 is hit.
 6. Given a deposit at 10 health and two blaster hits of 10 damage from seats 3 then 1 recorded this tick, when damage applies in seat order, then seat 1's hit is applied first and receives the deposit payout; seat 3's hit finds no deposit.
 7. Given 40 current hull, max 100, and a successful hull upgrade that adds 50 max, when the upgrade resolves, then max becomes 150 and current becomes 90.
+8. Given an accepted empty shot at tick 20, when another fire request arrives at 24, then it is rejected; tick 25 permits a new shot. Turret shots at tick 20 permit another at 28, not 27.
+9. Given a turret at `(0,0)` and an enemy at `(2,2)`, when an enemy wall occupies `(1,0)` or `(0,1)`, then the exact corner trace is blocked. An owner wall in either cell is transparent; a build-phase Belt cell there blocks too.
+10. Given two final ships with destroyed cores each record a lethal hit at the other in the same fire snapshot, when seat-ordered damage applies, then both hits apply and both ships die; earlier seat order cannot cancel the second shot.
+11. Given a ship and its core both receive lethal recorded hits this tick, when the ship hit is applied first or last, then it is permanently eliminated in both cases. One scrap drop is created and no respawn is scheduled.
 
 ## Cores, death, and respawn
 
 - A destroyed ship drops all of its unspent scrap as a pickup on the tile where it died. Any ship can collect it.
-- If the owner's core is alive, the ship respawns at the core after 15 seconds.
+- If the owner's core is alive, the ship respawns on its reserved neighboring tile after 15 seconds, subject to the lifecycle rules below.
 - A core has its own health. Enemy shots damage it. It cannot be repaired.
 - Once a core is destroyed, its owner's next death is permanent.
 
@@ -278,17 +287,19 @@ Observable A06 examples:
 
 ## Winning
 
-- The last player with a ship wins.
-- If the final ships are destroyed on the same tick, the match is a draw between them.
-- At 5:00, every remaining core shatters. From then on, the outer ring of the map turns into Belt every 3 seconds.
+- The last eligible contender wins, including a seat awaiting a legal respawn.
+- If the final contenders become permanently eliminated on the same tick, they draw. Simultaneous ship deaths with living cores instead begin respawn waits.
+- At 5:00, every remaining core shatters and the outer ring immediately becomes Belt. The proposed duration contract adds one ring every **2 seconds**, replacing the original 3-second hypothesis to meet the six-minute upper target.
 
 **Why the Belt returns for sudden death:** it reuses a hazard players already understand, so the ending needs no new rule.
 
-### D2 contender and win-draw contract — revision 1
+### D2 contender and win-draw contract — revision 2
 
-This Design rule contract is D2 package 2 for E3's build-phase death/respawn slice and E4/Q3 lifecycle checks (A06/A07). It does not claim implemented behavior. It freezes who remains eligible to win across alive, respawn-wait, disconnect, and eliminated states. Sudden-death **duration and ring cadence proof** stay in D2 package 3; combat hit resolution stays in the [combat contract](#d2-combat-collision-and-targeting-contract--revision-1). Reconnect token storage details stay with D3/E5; this package only states how disconnect grace affects contender status.
+<a id="d2-contender-and-win-draw-contract--revision-1"></a>
 
-Match tick order remains [ARCHITECTURE.md](ARCHITECTURE.md): actions → move → fire → damage/deaths/drops/pickups → timers (respawns, phase, sudden-death Belt) → send views. Win/draw evaluation runs **once per tick after deaths and after timer advances** that can create or cancel respawns, using the contender set defined below.
+**Proposed, not accepted or implemented.** This revision supersedes package 2 in #28 as part of [#29](https://github.com/MyNameIs-Nigel/packetscrapp/issues/29). It corrects live-core simultaneous deaths, fixes one disconnect deadline across respawns, and specifies occupied spawn handling. Combat uses revision 2 above; phase boundaries and finite duration are below. D3/E5 still own reconnect identity and spectator admission.
+
+Match tick order remains [ARCHITECTURE.md](ARCHITECTURE.md): actions → move → fire → damage/deaths/drops/pickups → timers → send views. Win/draw evaluation runs **once**, after the complete timer stage, using the final contender set. The boundary contract fixes ordering inside that stage.
 
 #### Seat roles
 
@@ -297,31 +308,44 @@ Every admitted match seat is in exactly one role after each evaluation:
 | Role | Meaning |
 |---|---|
 | `alive` | Has a living ship in the world (connected or inside disconnect grace). |
-| `awaiting_respawn` | Ship destroyed this match, core still living, respawn timer running, not yet spawned. |
+| `awaiting_respawn` | Ship destroyed, core living, timer running or deadline reached with the spawn tile blocked. |
 | `permanently_eliminated` | Can no longer return a ship or win; becomes a spectator of this match when client connectivity allows. |
 
-Disconnect grace (starting value 20 seconds) is an overlay on `alive`: the seat remains `alive` while the ship stays in the world and can be damaged. It is not a separate win role.
+Disconnect grace (20 seconds = 300 ticks) overlays `alive` and `awaiting_respawn`; it is not a separate win role. A disconnect records one absolute expiry tick. Death or respawn while absent never restarts that deadline. An authenticated reconnect accepted strictly before expiry clears it; arrival at expiry is too late. D3/E5 specify transport identity and notices against this boundary.
 
 #### Contender set
 
-A seat is a **contender** iff its role is `alive` or `awaiting_respawn`. Spectators who were never players, permanently eliminated seats, and seats whose disconnect grace expired without a living core-backed respawn path are **not** contenders.
+A seat is a **contender** iff its role is `alive` or `awaiting_respawn`. Spectators who were never players and permanently eliminated seats, including every seat whose disconnect grace expired, are **not** contenders. Evaluate this only after all current-tick deaths, expiries and core-loss transitions.
 
 **Decision:** pending respawns and disconnect-grace ships stay contenders. **Why:** a player waiting 15 seconds to respawn, or briefly offline with a ship still on the map, must not hand the match to someone else by temporary absence.
 
 #### Transitions
 
-- **Ship destroyed, core living:** role becomes `awaiting_respawn`; start the respawn timer (starting value 15 s). Scrap drop rules from the bullets above apply. Upgrades persist.
-- **Respawn timer completes:** spawn one living ship at the reserved spawn tile (D1), facing the D1 default, hull at current max; role becomes `alive`. Cancel any movement/fire intent.
+- **Ship destroyed, core living:** role becomes `awaiting_respawn`; death at tick `t` sets respawn deadline `t + 225` (15 s). Scrap drop rules from the bullets above apply. Upgrades persist.
+- **Respawn timer completes:** if the core still lives and disconnect grace has not expired, spawn one ship at the reserved D1 tile, facing the D1 default, hull at current max. Clear queued actions and movement/fire intent; the blaster is ready for a fresh request next tick. If another ship blocks the tile, remain `awaiting_respawn` and retry each subsequent timer stage without moving or damaging the occupant. Never relocate, stack ships, or restart the 15-second timer. Core loss or disconnect expiry still cancels the wait.
 - **Ship destroyed, core already destroyed:** role becomes `permanently_eliminated` immediately (no respawn timer).
 - **Core destroyed while `alive`:** core is gone and cannot be repaired; role stays `alive` until the ship dies, then `permanently_eliminated` (the “next death is permanent” rule).
 - **Core destroyed while `awaiting_respawn`:** cancel the respawn timer; role becomes `permanently_eliminated` immediately. **Why:** there is no living ship to continue and no legal respawn without a core; waiting out a timer would falsely keep them a contender.
 - **Disconnect while `alive`:** keep the ship in world for the grace window; seat stays a contender. Damage, Belt, and turrets still apply. No gameplay actions are accepted from the missing client.
 - **Disconnect grace expires while `alive` with core living:** remove the ship without a scrap-drop-on-death (the seat abandoned the ship); do **not** start a respawn; role becomes `permanently_eliminated`. The abandoned core remains an inert damageable target but that seat is no longer a contender. **Why:** reconnect identity is D3, but expiry must not leave an immortal empty contender or let pull-the-plug dodge elimination forever.
 - **Disconnect grace expires while `alive` with core already destroyed:** remove the ship; role `permanently_eliminated` (same end state).
-- **Disconnect while `awaiting_respawn`:** timer continues; seat stays a contender. If the client is still absent when the ship would spawn, spawn anyway and begin a fresh disconnect grace on the new `alive` ship (still a contender). If core is destroyed during that wait, the core-loss rule above eliminates them.
+- **Disconnect while `awaiting_respawn`:** respawn timer continues. The same 300-tick disconnect deadline applies before and after spawning; no fresh grace is granted. On expiry cancel any pending respawn and permanently eliminate the seat, even if its core lives. Core loss during the wait also eliminates immediately.
+- **Voluntary match departure:** permanently eliminate immediately, cancel respawn/input, and remove any living ship using the same no-drop abandonment rule as grace expiry. It cannot be used to rejoin as a player. D3/E5 must distinguish authenticated voluntary departure from an accidental socket loss in the message/transport contract; D2 supplies the role outcome and confirmation copy. Unspent abandoned scrap is removed from the economy, never copied to a future seat.
 - **Build-phase Belt death:** same as any ship destruction: `awaiting_respawn` if the core lives. Build continues; this does not end the match by itself.
 
 Permanent elimination never removes other seats' cores or structures except through ordinary combat damage.
+
+| Current role | Event / condition | Next role and timer |
+|---|---|---|
+| `alive` | Ship dies, core lives after all damage | `awaiting_respawn`, deadline `t+225` |
+| `alive` | Ship dies, core destroyed after all damage | `permanently_eliminated`, no timer |
+| `alive` | Core destroyed, ship survives | `alive`, future death cannot respawn |
+| `awaiting_respawn` | Core destroyed, including sudden-death shatter | `permanently_eliminated`, cancel timer |
+| `awaiting_respawn` | Deadline due, core lives, tile clear, grace valid | `alive`, one ship; remove timer |
+| `awaiting_respawn` | Deadline due, reserved tile occupied | `awaiting_respawn`, retry without resetting deadline |
+| Either contender role | Disconnect, grace not expired | Same role, one fixed expiry `t+300` |
+| Either contender role | Grace expires or authenticated departure | `permanently_eliminated`, cancel all pending actions/timers |
+| `permanently_eliminated` | Any respawn, gameplay or seat-recovery request | Remains eliminated; request rejected |
 
 #### Win and draw evaluation
 
@@ -331,20 +355,59 @@ Let `C` be the contender set after deaths and timer transitions on this tick.
 2. If `|C| = 0`, the match is a **draw** among every seat that **left the contender set on this tick** (same-tick mutual elimination). If somehow no seat left this tick either (should not occur after match start), treat as a draw among all seats that were contenders at match start—an Engineering assert/fixture failure, not a silent continue.
 3. If `|C| ≥ 2`, the match continues. Phase changes (build→battle, battle→sudden_death) do not by themselves declare a winner.
 
-Same-tick example: two final `alive` ships both reach ≤0 hull in one damage stage → both leave contender set on that tick → `|C| = 0` → draw between those two seats, even if their cores still stood.
+Same-tick examples: two final ships die with **destroyed cores** → both leave the contender set → draw. If both cores live, both become `awaiting_respawn`, `|C| = 2`, and play continues. If just one core lives, that seat remains a contender and wins while awaiting respawn.
 
-**Decision:** evaluate win/draw after both the death stage and the timer stage each tick. **Why:** a respawn completing in the timer stage can restore a second contender before `ended` is entered, and a core-loss transition in the same timer stage must be allowed to eliminate a waiting seat before counting `C`.
+**Decision:** evaluate once after the complete timer stage. **Why:** core shatter, hazard expansion, respawn and expiry must all settle before counting contenders; a pending respawn already counts without requiring a sprite.
 
-Results linger for a short configured display window, then the room disposes (existing architecture). Eliminated seats and disconnect-expired seats watch as spectators under D3 capacity rules; they have no gameplay authority.
+Results last **15 seconds (225 ticks)** from the ending tick; gameplay stops immediately, then the room disposes and disconnects remaining clients. An empty ended room disposes immediately. Departed or eliminated seats never regain gameplay authority. D3 owns watcher admission and Play Again routing; [D2 UI](design/D2_UI.md) owns ending copy and focus.
 
 Observable A06/A07 examples:
 
 1. Given seats 0 and 1 both `alive`, when seat 0's ship dies and its core lives, then seat 0 is `awaiting_respawn` and still a contender; the match does not enter `ended`.
 2. Given seat 0 `awaiting_respawn` and seat 1 `alive` as the only contenders, when seat 1's ship dies and seat 1's core is already destroyed, then seat 1 is `permanently_eliminated`, `|C| = 1`, and seat 0 wins while still awaiting respawn.
-3. Given seats 0 and 1 as the only contenders, both `alive`, when both ships reach 0 hull in the same damage stage, then both leave the contender set on that tick and the result is a draw between seats 0 and 1.
+3. Given seats 0 and 1 as the only contenders, both with destroyed cores, when both ships reach 0 hull in the same damage stage, then both leave the contender set and draw. With both cores living they instead await respawn and the match continues; with only seat 0's core living, seat 0 wins while awaiting respawn.
 4. Given seat 0 `awaiting_respawn` with a living core and seat 1 `alive`, when seat 0's core is destroyed before the respawn timer fires, then seat 0 becomes `permanently_eliminated` immediately and, if seat 1 remains the only contender, seat 1 wins.
 5. Given seat 0 `alive` inside disconnect grace with a living core and seat 1 `alive`, when the grace expires, then seat 0's ship is removed, seat 0 is `permanently_eliminated` (not a contender), seat 0's core may remain as a target, and the match ends only if seat 1 is then the sole contender.
 6. Given three contenders and seat 2 permanently eliminated earlier, when only seat 0 remains in `C`, then seat 0 wins; seat 2 is not placed in a draw set.
+7. Given a death at tick 100 and a living core, when tick 324 finishes, then the seat still awaits respawn. At timer stage 325 it spawns if the reserved tile is clear. If occupied, it waits; once clear it spawns exactly once. Destroying the core during this wait eliminates it.
+8. Given disconnect at tick 100 and a respawn at tick 325, when tick 400 arrives without reconnect, then the seat is eliminated; spawning did not extend the deadline to 625. Reconnect accepted at 399 is valid; at 400 it is rejected.
+
+### D2 phase boundaries and finite duration — revision 1
+
+**Proposed under #29.** This is package 3 of the full D2 contract. Match ticks start at 1; waiting time is outside the match clock. Match time after tick `t` is `t / 15` seconds. Every timer uses absolute integer ticks. Render countdowns from server deadlines, never client wall-clock authority.
+
+| Tick / timer stage | Required behavior |
+|---|---|
+| 1–1799 | Actions, movement, fire and damage use build rules and private views. |
+| 1800 (120 s) | Actions through damage still use build rules: a ship entering internal Belt dies; a shot cannot cross it. In timers remove internal Belt, set battle, then resolve due respawns. Publish the complete battle view in this tick's send stage. Tick 1801 is the first tick whose actions use battle rules. |
+| 1801–4499 | Battle actions; no internal Belt. Normal core-backed respawns continue. |
+| 4500 (300 s) | Actions through damage use battle rules. In timers enter sudden death: shatter all remaining cores without damage credit or scrap rewards, cancel all pending respawns, add outer ring 0, kill ships in that ring, then evaluate contenders. A respawn due on this tick never spawns. |
+| `4500 + 30*k`, `k ≥ 1` | Add ring `k`, kill every ship on newly hazardous cells, then evaluate contenders. All earlier rings stay lethal. |
+| Ending tick `e` | Publish one immutable winner/draw result after timer transitions; clear queued actions and freeze gameplay/elapsed match time. Continue the room's disposal timer; dispose at `e + 225`, or immediately if no clients remain. |
+
+Within every timer stage: apply any phase/ring transition and its core loss first; kill ships on newly active Belt with the same once-only death/drop rule; process disconnect expiry; process due legal respawns; evaluate win/draw once. A core killed in ordinary damage on a respawn deadline likewise prevents respawn. Phase changes do not resurrect a seat or reset a disconnect deadline. New spawns cannot act until the next tick.
+
+The active sudden-death Belt kills ships entering it in the ordinary damage stage, before pickup collection. New ring kills occur in timers after ordinary pickups, so drops from a ring kill are available only from the next tick; they cannot be collected by a ship killed on that ring. Pickups may remain in Belt until disposal. Newly hazardous structures/deposits can remain visible but give no protection: hull, walls, cores, upgrades, occupancy and absence do not prevent hazard lethality. Shots stop at active Belt cells in every phase.
+
+For a `W × H` board, cell `(x,y)` is in ring `min(x, y, W-1-x, H-1-y)`. At shrink step `k`, every cell with ring index `≤ k` is lethal. Thus `N = ceil(min(W,H) / 2)` steps cover the entire board, including a final single row/column on an odd-sized board. Step 0 is immediate at 4500; the final step occurs at `4500 + 30*(N-1)`. Cores already shattered, so every seat then lacks both a living ship and a legal respawn. The contender set is empty or play ended earlier. The proof applies to every seed, placement, enclosure, disconnected seat and no-action match.
+
+| Participants | Board | Rings `N` | Latest ending tick | Maximum match duration | Latest disposal with connected clients |
+|---|---|---:|---:|---|---|
+| 2 | 48 × 24 | 12 | 4830 | 322 s = 5:22 | Tick 5055 = 5:37 |
+| 3 | 48 × 48 | 24 | 5190 | 346 s = 5:46 | Tick 5415 = 6:01 |
+| 4 | 48 × 48 | 24 | 5190 | 346 s = 5:46 | Tick 5415 = 6:01 |
+| 5 | 72 × 48 | 24 | 5190 | 346 s = 5:46 | Tick 5415 = 6:01 |
+
+**Decision:** propose immediate ring 0 and a 2-second cadence. **Why:** the former 3-second value yields 369 seconds (6:09) for the 48-high maps even with an immediate first ring, exceeding the six-minute match target. Two seconds gives a 5:46 maximum while keeping the existing 120/300-second boundaries. Early wins can finish sooner than five minutes; five-to-six minutes is a pacing target, not a minimum. Lobby and results time are excluded. These are simulation-time bounds; Q3 must separately measure real-time matches and Q5 must qualify tick performance under load. A stalled process has no real-time guarantee from this paper proof.
+
+Observable A06/A07 boundary cases:
+
+1. At tick 1799 enemy data remains absent. On 1800 a move into internal Belt is lethal before removal; the emitted state is battle and contains the full world. On 1801 the former internal boundary is traversable.
+2. A legal respawn due 4499 may spawn. One due 4500 is canceled by core shatter. A waiting contender eliminated by this transition cannot resurrect at 4501.
+3. At tick 4500 `(0,10)` becomes lethal; `(1,10)` is safe if not near another edge. At 4529 it remains safe; at 4530 ring 1 kills it. No hull upgrade or wall shields the ship.
+4. On the 48 × 24 board, the last central rows `y=11,12` become lethal at 4830. On the 48-high boards, `y=23,24` become lethal at 5190. A no-action fixture cannot still have a contender after those ticks.
+5. With two final pending respawns at 4500, core shatter eliminates both and the result is a draw among those two. If a living third contender survives ring 0, that seat wins instead.
+6. At ending tick `e`, all clients receive the same result; gameplay requests thereafter cannot mutate it. At `e+224` results still exist with clients connected; at `e+225` the room is disposed. A delayed client transitions to a readable expiry state rather than silently rejoining as a player.
 
 ## Joining a match
 
@@ -384,7 +447,7 @@ Observable A06/A07 examples:
 
 ## Screen layout
 
-- The [D1 text wireframes](design/D1_UI.md) define start, lobby, and build-HUD states for Engineering/QA implementation; they are not browser evidence.
+- The [D1 text wireframes](design/D1_UI.md) define start, lobby, and build HUD; proposed [D2 UI states](design/D2_UI.md) complete combat, death, respawn, elimination and results. They are contracts for review, not browser evidence.
 - Top center: the phase name and the clock, for example "WALLS DROP 0:47".
 - Top left: hull bar and core health bar.
 - Top right: the other players, with a marker showing whether each core is alive.
@@ -401,9 +464,10 @@ All of these live in `shared/config.ts` and will change with playtesting.
 | Belt thickness | 2 tiles |
 | Build phase | 120 s |
 | Sudden death starts | 300 s |
-| Sudden death Belt speed | 1 ring every 3 s |
+| Sudden death Belt speed | Proposed D2: ring 0 immediately at 300 s, then 1 ring every 2 s (30 ticks) |
 | Lobby countdown | 15 s |
 | Respawn delay | 15 s |
+| Results display window | Proposed D2: 15 s (225 ticks), empty room disposes immediately |
 | Ship speed | 1 tile every 2 ticks |
 | Ship hull | 100, plus 50 per hull level |
 | Blaster damage | 10, plus 5 per blaster level |

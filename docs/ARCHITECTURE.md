@@ -40,8 +40,10 @@ The server advances every match 15 times a second. Each tick runs in this order:
 2. Move ships.
 3. Resolve blaster and turret fire.
 4. Apply damage, deaths, scrap drops, and pickups.
-5. Advance timers: respawns, phase changes, the sudden-death Belt.
+5. Advance timers: phase/ring transitions and resulting core loss and hazard deaths, disconnect expiry, then due legal respawns. Evaluate contenders once after all transitions.
 6. Send each client the state changes it is allowed to see.
+
+The proposed [complete D2 contract](design/D2_HANDOFF.md) fixes boundary tick conventions, simultaneous hits, contender transitions and duration. It remains pending Engineering/QA acceptance under #29; E1 keeps its accepted movement contract. Once accepted, E3/E4 implement these refinements. In particular tick 1800 uses build rules through damage and reveals battle in its send stage; tick 4500 shatters cores before a due respawn. Gameplay freezes immediately on ending.
 
 The step logic is a set of pure functions in `shared/`. The Colyseus room calls them and holds the result.
 
@@ -55,9 +57,9 @@ The step logic is a set of pure functions in `shared/`. The Colyseus room calls 
 |---|---|---|
 | `waiting` | The room is created | Quick Play: the countdown ends or 5 players join. Private: the host starts it. |
 | `build` | The match starts | 120 s pass |
-| `battle` | The Belt drops | 300 s pass or one player remains |
-| `sudden_death` | 300 s pass | One player remains |
-| `ended` | A winner or draw is decided | Results have been shown for a few seconds, then the room is disposed |
+| `battle` | The Belt drops | 300 s pass or a winner/draw is resolved |
+| `sudden_death` | 300 s pass | A winner/draw is resolved |
+| `ended` | A winner or draw is decided | Proposed D2: 225 ticks after ending, or immediately when empty |
 
 - A room locks when it leaves `waiting`. After that it accepts only reconnecting players and spectators.
 - A room in `waiting` with no players is disposed.
@@ -111,7 +113,7 @@ Automation cannot be prevented: a script can play legal moves. The tick rate lim
 - When a connection drops, the server holds the player's seat for 20 seconds.
 - The ship stays in the world and can be attacked during that time.
 - The client keeps its reconnection token in `sessionStorage` and rejoins the same room automatically.
-- If the 20 seconds pass, the ship is removed, and the core stays as a target.
+- If the 20 seconds pass, the ship is removed, and the core stays as a target. Proposed [D2 revision 2](GAME_DESIGN.md#d2-contender-and-win-draw-contract--revision-2) applies one absolute 300-tick deadline across death and respawn, cancels pending respawn at expiry and permanently eliminates the seat. D3/E5 own identity/recovery implementation against the accepted boundary.
 
 **Why the ship stays in the world:** if disconnecting made a ship vanish, pulling the network cable would be a way to dodge a fight.
 
