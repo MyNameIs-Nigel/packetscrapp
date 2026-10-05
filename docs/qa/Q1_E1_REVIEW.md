@@ -2,6 +2,10 @@
 
 Status: **Blocked** under [#32](https://github.com/MyNameIs-Nigel/packetscrapp/issues/32). H02 fails the exact-origin preflight contract; Engineering owns [#34](https://github.com/MyNameIs-Nigel/packetscrapp/issues/34). G1 is not Verified. This QA run did not author or fix E1 product behavior.
 
+CI receipt supersedes any inference of complete V01 acceptance below: [run 37250690815](https://github.com/MyNameIs-Nigel/packetscrapp/actions/runs/37250690815) on QA head `f68ebdd20780330095f3fde12996a2c8021d4a4d` passed repository checks, formatting/lint/types and unit tests, but integration returned **106 passes / 2 failures**. H02 reproduced; the existing V01 raw-byte positive control also failed (`deposit-2` absent from captured bytes), although decoded-state assertions and the new four-layout probe passed. Browser/build/artifact CI steps were skipped after failure. [#36](https://github.com/MyNameIs-Nigel/packetscrapp/issues/36) records the unresolved evidence-capture problem. Local V01 results below remain local results; transport acceptance is **Blocked**, not Pass.
+
+The recorder in `startPrototype` attaches after `seat()` waits for welcome; an initial state can arrive before capture starts. This is a suspected capture race, not proven privacy disclosure or an established root cause. Engineering supplies fixture lifecycle evidence/correction; QA rechecks initial-state plus patch capture with own-sentinel positive controls and hidden-sector negative controls intact. No repeated CI run was used to dismiss the failure.
+
 ## Candidate and procedure
 
 Executed 2026-10-05 UTC against merged implementation `c83da08091bf73cb4733e71ca63fdd7f3db23fb2`, initially clean in an isolated checkout. Contract: accepted D1 movement/map revision 1, E1 handoff and Q0 reviewed oracles; protocol 2. Linux cloud runtime, Node 24.21.0/npm 11.19.0, Chromium 151.0.7922.173 (system executable, not Playwright's pinned browser). All traffic was loopback with no added latency. No deployed service, real player data or public disruption was used.
@@ -59,6 +63,7 @@ Severity: Major contract deviation; the hard acceptance failure blocks H02/G1. N
 | Remaining input | Owner / next action |
 |---|---|
 | H02 correct preflight rejection | Engineering, #34; supply fixed SHA for QA retest |
+| V01 reliable initial raw-frame evidence | Engineering/QA, #36; resolve CI positive-control failure before transport acceptance |
 | Independent required browser matrix | QA with environment/maintainer support; resolve CDN denial or run this QA candidate in supported CI; Engineering's prior browser CI is separate evidence |
 | Observed control acceptance | Design; review the built E1 candidate and record approval on #14 |
 | D2 revision 2 contract acceptance, E3/E4 gameplay | Design/Engineering; Q2/Q3 runtime entry is unavailable |
