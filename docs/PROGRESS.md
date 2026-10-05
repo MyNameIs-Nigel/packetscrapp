@@ -106,3 +106,9 @@ Independent QA also records [#34](https://github.com/MyNameIs-Nigel/packetscrapp
 ## Engineering E1 repair checkpoint — 2026-10-05
 
 [Repair receipt](engineer/E1_REPAIR.md) records Engineering fixes for missing-Origin matchmaking preflight (#34), reliable initial raw-state capture (#36), and settled two-browser convergence/stop assertions (#39). Candidate `f47a20d4eab5fd953217ce0105264951f0b1e183` includes merged QA #35 and Design #40; 190 unit/109 integration checks and local built Chromium pass. This is developer evidence, not independent retest or Design acceptance. G1 remains open pending QA #32 and Design #38 on the repaired candidate. Historical failing evidence above is preserved; local pinned-browser downloads remain denied.
+
+## Engineering lead checkpoint — 2026-10-05
+
+Upstream was rechecked after E1 and map milestones. #41 is now merged (`3357587`), repairing #34 missing-Origin preflight and developer evidence capture/convergence for #36/#39; exact-head CI run [37252005945](https://github.com/MyNameIs-Nigel/packetscrapp/actions/runs/37252005945) passed both jobs and the pinned Chromium/Firefox/WebKit matrix. Independent QA #32 and Design #38 acceptance still remain open; merge does not close G1.
+
+[E3 map preparation](engineer/E3_MAP_PREPARATION.md) under #42 supplies deterministic mirrored finite deposits, legal firing-path verification and bounded verified fallback. Candidate `a1cba0f7dfafe0aa7fff9b443a4a5d2a83170ad0` incorporates the E1 repair; 214 unit/109 integration tests pass. New developer geometry checks cover four layouts across 68 seeds and forced fallbacks. QA/Design review generation/replay choices before integration; no match, harvesting/building, death/respawn, G3 closure or balance observation is supplied. The receipt names review/access prerequisites for E2–E7; infrastructure delivery still needs maintainer access, and dependent combat/journey slices still need D2/D3 acceptance.

@@ -1,3 +1,9 @@
+export { DEPOSIT_CONFIG } from "./config.ts";
+export {
+  generateDepositMap,
+  type Deposit,
+  type DepositMap,
+} from "./depositMap.ts";
 export {
   DEFAULT_FRAME_LIMITS,
   FrameWindowLimiter,
