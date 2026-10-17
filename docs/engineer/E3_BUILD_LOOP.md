@@ -1,6 +1,6 @@
 # E3 first harvest/build loop — 2026-10-17
 
-Owner Codex `codex-three-steps-20261017`, Engineering, issue #55; branch `engineer/harvest-build-loop-20261017`. Current source candidate `7c206c8119c3213456a9aee3a04bf48174bd808a`, rebased onto main `dd6d78fe7a17472d2f5a5cbdb438a5d9053b21c4`. Later receipt commits change documentation/screenshots only. Claim `engineer/claim-e3` at `c24a620a687b0a5aeeeb3e07f72db07a2270e4ce`. Inputs: accepted D1 map/economy/UI revision 1, merged E1 repair #41 and generator #43, [D2/D3 Engineering acceptance](CONTRACT_ACCEPTANCE.md), independent prior-artifact/oracle review in [QA PR #54](https://github.com/MyNameIs-Nigel/packetscrapp/pull/54). A02/A03/A04/A05/A06 build subset/A12. No new dependency or tuning value.
+Owner Codex `codex-three-steps-20261017`, Engineering, issue #55; branch `engineer/harvest-build-loop-20261017`. Application/unit/SDK/browser candidate `7c206c8119c3213456a9aee3a04bf48174bd808a`, rebased onto main `dd6d78fe7a17472d2f5a5cbdb438a5d9053b21c4`. Clean final artifact/smoke candidate `7e1a2e1516a218895d47da741cd294da00da61e5` additionally verifies both local preview types are refused by development/production artifacts and their controls are absent from public client bundles. Subsequent receipt changes are documentation only. Claim `engineer/claim-e3` at `c24a620a687b0a5aeeeb3e07f72db07a2270e4ce`. Inputs: accepted D1 map/economy/UI revision 1, merged E1 repair #41 and generator #43, [D2/D3 Engineering acceptance](CONTRACT_ACCEPTANCE.md), independent prior-artifact/oracle review in [QA PR #54](https://github.com/MyNameIs-Nigel/packetscrapp/pull/54). A02/A03/A04/A05/A06 build subset/A12. No new dependency or tuning value.
 
 ## Observable result
 
@@ -30,7 +30,7 @@ Linux managed workspace, Node 24.21.0/npm 11.19.0, current main dependency pins 
 | `npm run test:unit` | 229 passed; 15 new build-loop cases cover cooldowns/misses, atomic spend/order, invalid/max/occupied/reserved/radius, conservation, last-hit order, Belt drop/respawn, fixed absence expiry, blocked spawn and 1800 boundary |
 | `npm run test:integration` | 115 passed; six new real-SDK cases cover 2/3/4/5-player initial raw-state positive/negative controls, hidden economy, tick 1799/1800 reveal, validated harvest/forged input/private feedback and early-build result privacy |
 | Built system Chromium | 12 passed; new two-context keyboard harvest/build/rejection/focus journey plus all E1 journeys; screenshot capture checked |
-| Two builds/full manifest comparison; bare artifact smoke | Passed on source candidates; final documentation head built clean and independently checked before publication |
+| Two builds/full manifest comparison; bare artifact smoke | Passed on clean `7e1a2e1516a218895d47da741cd294da00da61e5`; local manifests identical; local/development/production standalone bundles pass health/join/configuration and preview-registration boundaries |
 | Documentation/whitespace and diff review | Passed |
 | Pinned local browsers | Installation still returns CDN HTTP 403; exact-head PR CI provides required Chromium/Firefox/WebKit evidence separately |
 
