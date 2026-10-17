@@ -1,7 +1,5 @@
 # Development and shared-gate audit
 
-2026-10-17 E2 preparation: [service/routing/artifact-verification handoff](engineer/E2_HOSTING_PREPARATION.md) under #56 supplies reviewable files and validation. No host, Tunnel, credential, deployment or G2 evidence is supplied; exact runtime prerequisites and next owners are recorded.
-
 Current completion addendum (2026-10-05): Engineering repair #41 is merged at `3357587e7bdb5203b3ead110965fe84f5bf67834`. The [combined Design review](design/DESIGN_COMPLETION.md) completes remaining D2/D3 specification corrections and accepts the observed E1 movement/focus intent under #38 within system-Chromium prototype coverage. Independent QA #32 still needs to retest the merged origin/raw-frame/browser repairs and record defect disposition. G1 remains open. Earlier failures and evidence below remain candidate-specific; D2/D3 still require Engineering/QA contract acceptance.
 
 Audit date: 2026-10-04 UTC. Repository base: `53c2357e39f57303df2c3095df2eafa0fb7fa26a`. Audit owner: Codex, working for maintainer @MyNameIs-Nigel under [#13](https://github.com/MyNameIs-Nigel/packetscrapp/issues/13). This record supersedes stale phase-summary wording; it does not replace the [gate criteria](DELIVERY_PLAN.md#shared-checkpoints).
@@ -62,7 +60,7 @@ Dirty working-tree runs are development feedback only. New changes in this audit
 | Contenders, core-loss during respawn/disconnect, win/same-tick draw | Proposed full D2 lifecycle revision 2 under #29; Engineering/QA acceptance required before E3 death slice / E4 | Design; Engineering/QA review |
 | Sudden-death duration / finite match bound | D2 #29 supplies proposed 5:22/5:46 paper bounds; cadence and boundary acceptance plus Q3 runtime evidence remain open | Design and Engineering; freeze at dependent slice entry |
 | Host/bot/reconnect/spectator journeys | D3 revision 1 proposed under #33; exact message/identity and oracle acceptance required before dependent E5/E6 slices | Engineering/QA review; maintainer coordinates |
-| Hosting/Tunnel/SSH/Atlanta builder, credentials, budget | E2 access/provisioning unverified; no E1 local blocker | Maintainer and Engineering; resolve before E2 application deployment |
+| Hosting/Tunnel/SSH/Atlanta builder, credentials, budget | [E2 service/routing/artifact-verification preparation](engineer/E2_HOSTING_PREPARATION.md), #56, delivered 2026-10-17; actual host/Tunnel/status-token access, builder activation/restore and G2 remain unverified | Maintainer and Engineering; resolve before E2 application deployment |
 | Operational workload and safe capacity | Q0 provisional targets documented; actual measurements required before E7/G6 | Engineering/QA; qualify on intended hosts |
 
 E1's immediate implementation inputs are present. Integrating and reviewing #13 closes the prerequisite handoff; #14 is the next development package. Keep G1 open until actual authoritative movement and independent evidence satisfy its checklist.
