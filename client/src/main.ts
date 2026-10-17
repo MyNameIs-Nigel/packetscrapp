@@ -1,5 +1,7 @@
 import { Client, type Room } from "@colyseus/sdk";
 import {
+  BUILD_CONFIG,
+  ROOM_BUILD,
   FIXTURE_VIEWS,
   JOIN_ERROR_MESSAGES,
   MAX_SEATS,
@@ -18,7 +20,7 @@ import {
 import { TileAnimator } from "./animation.ts";
 import { IntentSender, KeyIntentTracker } from "./input.ts";
 import { BoardRenderer } from "./render.ts";
-import { readRoomView, type RoomView } from "./view.ts";
+import { readBuildDetails, readRoomView, type RoomView } from "./view.ts";
 
 const environment = __CLIENT_ENV__;
 /** The movement prototype and its controls exist only in local builds. */
@@ -54,6 +56,8 @@ const board = required("board", HTMLCanvasElement);
 const gameStatus = required("game-status", HTMLElement);
 const legend = required("legend", HTMLElement);
 const shipList = required("ships", HTMLElement);
+const buildHud = required("build-hud", HTMLElement);
+const shopFeedback = required("shop-feedback", HTMLElement);
 const gameRoster = required("game-roster", HTMLElement);
 const leaveGame = required("leave-game", HTMLButtonElement);
 const statusNode = required("status", HTMLElement);
@@ -153,6 +157,11 @@ function mountPrototypeControls(container: HTMLElement): {
   start.id = "start-prototype";
   start.textContent = "Start movement prototype";
   start.addEventListener("click", () => void join(ROOM_PROTOTYPE));
+  const buildStart = document.createElement("button");
+  buildStart.type = "button";
+  buildStart.id = "start-build";
+  buildStart.textContent = "Start harvest/build preview";
+  buildStart.addEventListener("click", () => void join(ROOM_BUILD));
   container.append(
     heading,
     note,
@@ -163,6 +172,7 @@ function mountPrototypeControls(container: HTMLElement): {
     labelFor("Fixture view", view),
     view,
     start,
+    buildStart,
   );
   return {
     read: () => ({
@@ -206,7 +216,7 @@ function describeJoinError(error: unknown): string {
 }
 
 async function join(
-  kind: typeof ROOM_MATCH | typeof ROOM_PROTOTYPE,
+  kind: typeof ROOM_MATCH | typeof ROOM_PROTOTYPE | typeof ROOM_BUILD,
 ): Promise<void> {
   if (room) return;
   nicknameError.textContent = "";
@@ -246,7 +256,10 @@ async function join(
       name: nickname.name,
       protocol: PROTOCOL_VERSION,
       environment,
-      ...(kind === ROOM_PROTOTYPE ? prototypeControls?.read() : {}),
+      ...(kind === ROOM_PROTOTYPE || kind === ROOM_BUILD
+        ? prototypeControls?.read()
+        : {}),
+      ...(kind === ROOM_BUILD ? { view: "build" } : {}),
     };
     const joined = await new Client(endpoint.href).joinOrCreate(kind, options);
     attach(joined);
@@ -277,6 +290,18 @@ function attach(joined: Room): void {
       renderAll();
     }
   });
+  joined.onMessage("feedback", (message: unknown) => {
+    if (
+      room !== joined ||
+      typeof message !== "object" ||
+      message === null ||
+      !("text" in message) ||
+      typeof message.text !== "string"
+    )
+      return;
+    shopFeedback.textContent = message.text;
+  });
+  shopFeedback.textContent = "";
   joined.onStateChange(() => {
     if (room !== joined) return;
     latest = readRoomView(joined.state);
@@ -325,7 +350,7 @@ function fillRoster(list: HTMLElement, view: RoomView): void {
     ...view.players.map((player) => {
       const item = document.createElement("li");
       item.dataset.seat = String(player.seat);
-      item.textContent = `${seatLabel(view, player.seat)}${player.bot ? " [BOT]" : ""}`;
+      item.textContent = `${seatLabel(view, player.seat)}${player.bot ? " [BOT]" : ""}${view.buildPreview ? (player.coreAlive ? " — Core active" : " — Core destroyed") : ""}`;
       return item;
     }),
   );
@@ -338,8 +363,8 @@ function renderAll(): void {
   // Only a local build knows how to show the prototype; public builds ignore it.
   const running =
     prototypeEnabled &&
-    view.prototype &&
-    (view.phase === "build" || view.phase === "battle");
+    ((view.prototype && (view.phase === "build" || view.phase === "battle")) ||
+      (view.buildPreview === true && view.phase !== "waiting"));
   syncAnimators(view);
   if (running) {
     if (screen !== "game") {
@@ -360,18 +385,42 @@ function renderAll(): void {
   }
   playerCount.textContent = String(view.players.length);
   fillRoster(rosterList, view);
-  lobbyNote.textContent =
-    prototypeEnabled && view.prototype
+  lobbyNote.textContent = view.buildPreview
+    ? "Harvest/build preview: starts when every requested seat is filled."
+    : prototypeEnabled && view.prototype
       ? "Local movement prototype room: the test map starts when every seat is filled."
       : "Waiting for more players. The match itself is not built yet.";
 }
 
 function renderGame(view: RoomView): void {
+  buildHud.hidden = !view.buildPreview;
+  if (view.buildPreview) {
+    const details = readBuildDetails(room?.state, ownSeat);
+    const nextBlaster =
+      BUILD_CONFIG.blasterCosts[details.blasterLevel] ?? "MAX";
+    const nextHull = BUILD_CONFIG.hullCosts[details.hullLevel] ?? "MAX";
+    const seconds = Math.max(
+      0,
+      Math.ceil((BUILD_CONFIG.buildTicks - view.tick) / 15),
+    );
+    const wait = Math.max(0, Math.ceil((details.respawnAt - view.tick) / 15));
+    buildHud.textContent = `Hull ${details.hull}/${details.maxHull} · Core ${details.coreHealth}/300 · Scrap ${details.scrap} · WALLS DROP ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}${seconds <= 10 && view.phase === "build" ? " — Belt drops soon" : ""} · 1 Wall 10 · 2 Turret 40 (combat pending) · Q Blaster ${nextBlaster} · E Hull ${nextHull} · Space Shoot/Harvest${details.role === "awaiting_respawn" ? ` · Respawning in ${wait}s — your living core will rebuild you` : ""}`;
+    if (view.phase !== "build") releaseKeys();
+  }
   gameHeading.textContent = "Movement prototype";
   banner.textContent =
     view.phase === "build"
       ? "Local prototype, build view: you see only your own sector and the lethal Belt. Movement only — no scrap, combat, respawn or match flow. A ship that enters the Belt is lost for this test."
       : "Local prototype, battle view: every sector is visible and the Belt is gone. Movement only — no scrap, combat, respawn or match flow.";
+  if (view.buildPreview) {
+    gameHeading.textContent = "Harvest/build preview";
+    banner.textContent =
+      view.phase === "build"
+        ? "Harvest finite deposits, spend scrap and protect your core. The Belt is lethal; a living core rebuilds your ship after 15 seconds. The preview pauses when the Belt drops. Turret combat, full matches, bots and reconnect are pending."
+        : view.phase === "ended"
+          ? `${view.result ?? "Result"}. The match ended during build; hidden sectors stay private.`
+          : "Belt down — build preview complete. The revealed map is paused for inspection. Combat and complete matches arrive next.";
+  }
   legend.textContent =
     view.phase === "build"
       ? "Hatched orange bands are the asteroid Belt (lethal while it is up). Hatched dark sectors are hidden."
@@ -386,10 +435,18 @@ function renderGame(view: RoomView): void {
       item.dataset.y = String(ship.y);
       item.dataset.facing = ship.facing;
       item.dataset.alive = String(ship.alive);
-      item.textContent = `${seatLabel(view, ship.seat)}: x ${ship.x}, y ${ship.y}, facing ${ship.facing}${ship.alive ? "" : ", lost in the Belt"}`;
+      item.textContent = `${seatLabel(view, ship.seat)}: x ${ship.x}, y ${ship.y}, facing ${ship.facing}${ship.alive ? "" : view.buildPreview ? ", awaiting core-backed respawn" : ", lost in the Belt"}`;
       return item;
     }),
   );
+  if (view.buildPreview) {
+    legend.textContent =
+      "Squares: cores; diamonds: deposits; W: walls; T: inactive turrets; circles: dropped scrap. Small outlined tiles are legal build positions; the front tile is outlined, or crossed when blocked. Hatched Belt is lethal; dark sectors are hidden.";
+    board.setAttribute(
+      "aria-label",
+      "Game board. WASD or arrows move. Space harvests. 1 wall, 2 turret, Q blaster, E hull. Tab leaves the board.",
+    );
+  }
   fillRoster(gameRoster, view);
 }
 
@@ -414,7 +471,33 @@ function drawFrame(): void {
   frame = requestAnimationFrame(drawFrame);
 }
 
+const ACTION_KEYS: Readonly<Record<string, { type: string; kind?: string }>> = {
+  Space: { type: "fire" },
+  Digit1: { type: "build", kind: "wall" },
+  Digit2: { type: "build", kind: "turret" },
+  KeyQ: { type: "upgrade", kind: "blaster" },
+  KeyE: { type: "upgrade", kind: "hull" },
+};
+let fireTimer: number | undefined;
+function stopFire(): void {
+  if (fireTimer !== undefined) window.clearInterval(fireTimer);
+  fireTimer = undefined;
+}
+function sendBuildKey(code: string): void {
+  const action = ACTION_KEYS[code];
+  if (
+    !action ||
+    !room ||
+    document.activeElement !== board ||
+    latest.phase !== "build" ||
+    !latest.buildPreview
+  )
+    return;
+  if (action.kind) room.send(action.type, { kind: action.kind });
+  else room.send(action.type);
+}
 function releaseKeys(): void {
+  stopFire();
   sender.set(tracker.reset());
 }
 
@@ -422,12 +505,26 @@ function releaseKeys(): void {
 // scrolling the page, and Tab never reach the server.
 board.addEventListener("keydown", (event) => {
   if (event.ctrlKey || event.metaKey || event.altKey) return;
+  if (latest.buildPreview && latest.phase !== "build") return;
+  if (latest.buildPreview && latest.phase === "build") {
+    const action = ACTION_KEYS[event.code];
+    if (action) {
+      event.preventDefault();
+      if (!event.repeat) {
+        sendBuildKey(event.code);
+        if (event.code === "Space" && fireTimer === undefined)
+          fireTimer = window.setInterval(() => sendBuildKey("Space"), 350);
+      }
+      return;
+    }
+  }
   const intent = tracker.keyDown(event.code);
   if (intent === undefined) return;
   event.preventDefault();
   if (!event.repeat) sender.set(intent);
 });
 board.addEventListener("keyup", (event) => {
+  if (event.code === "Space") stopFire();
   const intent = tracker.keyUp(event.code);
   if (intent === undefined) return;
   event.preventDefault();

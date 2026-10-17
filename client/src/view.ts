@@ -29,6 +29,9 @@ export interface EntitySummary {
 }
 
 export interface RoomView {
+  buildPreview?: boolean;
+  revealed?: boolean;
+  result?: string;
   phase: string;
   prototype: boolean;
   playerCount: number;
@@ -78,6 +81,13 @@ export function readRoomView(state: unknown): RoomView {
       ? (state as Record<string, unknown>)
       : {};
   return {
+    ...(record.buildPreview === true
+      ? {
+          buildPreview: true,
+          revealed: record.revealed === true,
+          result: text(record.result),
+        }
+      : {}),
     phase: text(record.phase, "waiting"),
     prototype: record.prototype === true,
     playerCount: integer(record.playerCount),
@@ -110,5 +120,40 @@ export function readRoomView(state: unknown): RoomView {
         slot: integer(entity.slot),
       }))
       .sort((a, b) => a.id.localeCompare(b.id)),
+  };
+}
+
+/** Private build-HUD fields are read only from this tab's own received player row. */
+export interface BuildDetails {
+  scrap: number;
+  hull: number;
+  maxHull: number;
+  blasterLevel: number;
+  hullLevel: number;
+  respawnAt: number;
+  role: string;
+  coreHealth: number;
+}
+export function readBuildDetails(
+  state: unknown,
+  ownSeat: number | undefined,
+): BuildDetails {
+  const record =
+    typeof state === "object" && state !== null
+      ? (state as Record<string, unknown>)
+      : {};
+  const player = members(record.players).find((p) => p.seat === ownSeat);
+  const core = members(record.entities).find(
+    (e) => e.kind === "core" && e.owner === ownSeat,
+  );
+  return {
+    scrap: integer(player?.scrap),
+    hull: integer(player?.hull),
+    maxHull: integer(player?.maxHull),
+    blasterLevel: integer(player?.blasterLevel),
+    hullLevel: integer(player?.hullLevel),
+    respawnAt: integer(player?.respawnAt),
+    role: text(player?.role),
+    coreHealth: integer(core?.hp),
   };
 }

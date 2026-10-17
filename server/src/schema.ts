@@ -18,6 +18,14 @@ export const PlayerSchema = schema(
     coreAlive: t.boolean(),
     /** Sector slot index. Hidden from other seats until the reveal. */
     slot: t.uint8().view(),
+    role: t.string().default(""),
+    connected: t.boolean().default(false),
+    scrap: t.uint32().default(0).view(),
+    hull: t.uint16().default(0).view(),
+    maxHull: t.uint16().default(0).view(),
+    blasterLevel: t.uint8().default(0).view(),
+    hullLevel: t.uint8().default(0).view(),
+    respawnAt: t.uint32().default(0).view(),
   },
   "Player",
 );
@@ -42,6 +50,9 @@ export const EntitySchema = schema(
     x: t.uint8(),
     y: t.uint8(),
     slot: t.uint8(),
+    owner: t.int8().default(-1),
+    hp: t.uint16().default(0),
+    scrap: t.uint32().default(0),
   },
   "Entity",
 );
@@ -51,6 +62,9 @@ export const RoomStateSchema = schema(
   {
     /** `waiting`, or the prototype's `build` / `battle` fixture view. */
     phase: t.string(),
+    buildPreview: t.boolean(),
+    revealed: t.boolean(),
+    result: t.string(),
     /** True for the labelled local movement prototype; always false in the ordinary waiting room. */
     prototype: t.boolean(),
     /** Seats in the fixture; 0 while waiting. Fixes the public map shape. */

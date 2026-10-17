@@ -10,6 +10,7 @@ import {
 import {
   MAX_FRAME_BYTES,
   PROTOCOL_VERSION,
+  ROOM_BUILD,
   ROOM_MATCH,
   ROOM_PROTOTYPE,
   monotonicClock,
@@ -33,6 +34,7 @@ import {
   type ServerRuntime,
 } from "./runtime.ts";
 import { createMatchRoom, createPrototypeRoom } from "./rooms.ts";
+import { createBuildRoom } from "./build-room.ts";
 import { GatedWebSocketTransport } from "./transport.ts";
 
 declare const __BUILD_SHA__: string;
@@ -96,6 +98,9 @@ export function roomDefinitions(
     [ROOM_MATCH]: defineRoom(MatchRoom),
   };
   if (runtime.prototypeEnabled) {
+    rooms[ROOM_BUILD] = defineRoom(
+      createBuildRoom(runtime, MatchRoom),
+    ).filterBy(["seats", "seed", "view"]);
     rooms[ROOM_PROTOTYPE] = defineRoom(
       createPrototypeRoom(runtime, MatchRoom),
     ).filterBy(["seats", "seed", "view"]);

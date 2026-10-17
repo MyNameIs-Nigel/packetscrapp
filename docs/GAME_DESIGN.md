@@ -1,5 +1,7 @@
 # Game design
 
+Current disposition (2026-10-17): the existing D2/D3 revisions are accepted as implementation inputs in the [Engineering review](engineer/CONTRACT_ACCEPTANCE.md) and independent QA oracle review PR #54, under the maintainer's request to complete the next three steps. Earlier proposal/acceptance-pending wording below is the preserved original handoff. Runtime gameplay, playtests and release gates remain separate.
+
 Design specification; gameplay is not implemented yet. Rule changes should include deterministic tests and a compatibility review under [ENGINEERING.md](ENGINEERING.md).
 
 The [Design phase plan](design/README.md) schedules rule, map, balance, and UI decisions. The [shared decision register](DELIVERY_PLAN.md) identifies unresolved edge cases and their owners; Engineering must use accepted contracts and QA checks them through the [acceptance matrix](qa/ACCEPTANCE_MATRIX.md). Starting values below remain hypotheses until validated.

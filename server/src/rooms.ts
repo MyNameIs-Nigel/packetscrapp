@@ -32,7 +32,7 @@ import {
 } from "./schema.ts";
 import type { ServerRuntime } from "./runtime.ts";
 
-interface SeatRecord {
+export interface SeatRecord {
   /** Server-issued seat index, the lowest free one at admission. */
   seat: number;
   /** Monotonic join counter. Sorting by it gives the replay join order. */

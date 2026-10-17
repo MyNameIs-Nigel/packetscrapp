@@ -127,7 +127,7 @@ describe("join options", () => {
 
   it("ignores a forged __proto__ key", () => {
     const forged: unknown = JSON.parse(
-      '{"name":"Alex","protocol":2,"environment":"local","__proto__":{"name":"x"}}',
+      `{"name":"Alex","protocol":${PROTOCOL_VERSION},"environment":"local","__proto__":{"name":"x"}}`,
     );
     expect(parseJoinOptions(forged, "local")).toEqual({
       ok: true,

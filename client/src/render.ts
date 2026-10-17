@@ -2,6 +2,9 @@ import {
   SECTOR_SIZE,
   beltCells,
   isPlayerCount,
+  isBeltCell,
+  inWorld,
+  slotAt,
   layoutFor,
   stepFor,
   type Cell,
@@ -68,7 +71,9 @@ export class BoardRenderer {
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     if (!layout) return;
     const { view, ownSeat } = scene;
-    const build = view.phase === "build";
+    const build =
+      view.phase === "build" ||
+      (view.buildPreview === true && view.revealed !== true);
     const own = view.players.find((player) => player.seat === ownSeat);
     const size = this.cell;
 
@@ -112,6 +117,57 @@ export class BoardRenderer {
       }
     }
 
+    // Advisory D1 placement area from this client's authorized state only.
+    if (
+      view.buildPreview &&
+      view.phase === "build" &&
+      own?.slot !== undefined
+    ) {
+      const core = view.entities.find(
+        (e) => e.kind === "core" && e.slot === own.slot,
+      );
+      const reserved = layout.slots[own.slot]?.spawn;
+      const legal = (cell: Cell): boolean =>
+        Boolean(
+          core &&
+          inWorld(layout, cell) &&
+          slotAt(layout, cell) === own.slot &&
+          !isBeltCell(layout, cell) &&
+          Math.abs(cell.x - core.x) + Math.abs(cell.y - core.y) <= 8 &&
+          !(reserved && reserved.x === cell.x && reserved.y === cell.y) &&
+          !view.entities.some((e) => e.x === cell.x && e.y === cell.y) &&
+          !view.ships.some((s) => s.alive && s.x === cell.x && s.y === cell.y),
+        );
+      if (core) {
+        for (let y = core.y - 8; y <= core.y + 8; y++)
+          for (let x = core.x - 8; x <= core.x + 8; x++) {
+            if (!legal({ x, y })) continue;
+            context.strokeStyle = "#274c46";
+            context.lineWidth = 1;
+            context.strokeRect(x * size + 2, y * size + 2, size - 4, size - 4);
+          }
+      }
+      const ship = view.ships.find((s) => s.seat === ownSeat && s.alive);
+      if (ship) {
+        const delta = stepFor(FACING[ship.facing] ?? "right");
+        const front = { x: ship.x + delta.x, y: ship.y + delta.y };
+        context.strokeStyle = legal(front) ? "#9ccc65" : "#ffbf69";
+        context.lineWidth = 3;
+        context.strokeRect(
+          front.x * size + 1,
+          front.y * size + 1,
+          size - 2,
+          size - 2,
+        );
+        if (!legal(front)) {
+          context.beginPath();
+          context.moveTo(front.x * size, front.y * size);
+          context.lineTo((front.x + 1) * size, (front.y + 1) * size);
+          context.stroke();
+        }
+      }
+    }
+
     for (const entity of view.entities) {
       const x = entity.x * size;
       const y = entity.y * size;
@@ -131,6 +187,22 @@ export class BoardRenderer {
           size * 0.7,
           size * 0.7,
         );
+      } else if (entity.kind === "wall" || entity.kind === "turret") {
+        context.fillStyle = entity.kind === "wall" ? "#8d99ae" : "#ffca28";
+        context.fillRect(x + 2, y + 2, size - 4, size - 4);
+        context.fillStyle = "#0b1020";
+        context.font = `${Math.max(8, size * 0.6)}px sans-serif`;
+        context.textAlign = "center";
+        context.fillText(
+          entity.kind === "wall" ? "W" : "T",
+          x + size / 2,
+          y + size * 0.75,
+        );
+      } else if (entity.kind === "pickup") {
+        context.fillStyle = "#9ccc65";
+        context.beginPath();
+        context.arc(x + size / 2, y + size / 2, size * 0.23, 0, Math.PI * 2);
+        context.fill();
       } else {
         context.fillStyle = "#b8a37a";
         context.beginPath();
