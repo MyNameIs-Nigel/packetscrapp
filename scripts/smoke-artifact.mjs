@@ -45,7 +45,9 @@ assert.ok(clientOrigin, `Unknown manifest environment ${manifest.environment}`);
 const runtimeEnvironment = {
   PATH: process.env.PATH,
   PACKET_ENV: manifest.environment,
-  PACKET_REGION: manifest.environment === "local" ? "local" : "nyc",
+  PACKET_REGION: { local: "local", development: "atl", production: "nyc" }[
+    manifest.environment
+  ],
   PACKET_HOST: "127.0.0.1",
   PACKET_PORT: String(port),
   PACKET_CLIENT_ORIGIN: clientOrigin,
