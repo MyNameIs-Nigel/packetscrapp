@@ -5,7 +5,7 @@
   "type": "module",
   "dependencies": {
     "@colyseus/core": "0.18.18",
-    "@colyseus/schema": "5.0.36",
+    "@colyseus/schema": "5.0.39",
     "@colyseus/ws-transport": "0.18.4",
     "@packetscrapp/shared": "0.0.0"
   }
