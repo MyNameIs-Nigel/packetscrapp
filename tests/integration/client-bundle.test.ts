@@ -35,6 +35,8 @@ const PROTOTYPE_ONLY = [
   "Local prototype",
   "Prototype only",
   "start-prototype",
+  "start-build",
+  "Start harvest/build preview",
   "Map seed (0 to 4294967295)",
   "Fixture view",
 ];
