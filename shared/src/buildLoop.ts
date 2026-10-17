@@ -1,3 +1,4 @@
+import { BUILD_CONFIG } from "./config.ts";
 import { generateDepositMap, type DepositMap } from "./depositMap.ts";
 import { inWorld, isBeltCell, slotAt, stepFor, type Cell } from "./layout.ts";
 import {
@@ -7,25 +8,6 @@ import {
 } from "./movement.ts";
 import { isPlainRecord, ownValue, type Direction } from "./protocol.ts";
 
-export const BUILD_CONFIG = Object.freeze({
-  revision: "d1-build-loop-r1",
-  buildTicks: 1800,
-  respawnTicks: 225,
-  disconnectTicks: 300,
-  resultsTicks: 225,
-  fireTicks: 5,
-  range: 8,
-  hull: 100,
-  hullBonus: 50,
-  damage: 10,
-  damageBonus: 5,
-  radius: 8,
-  wallCost: 10,
-  turretCost: 40,
-  blasterCosts: [50, 100, 150] as readonly number[],
-  hullCosts: [40, 80, 120] as readonly number[],
-  maxQueued: 30,
-});
 export const ROOM_BUILD = "build_preview";
 export type BuildAction =
   | { type: "fire" }
@@ -131,14 +113,17 @@ export function createBuildWorld(
         kind: "core",
         slot: s.slot,
         owner: s.seat,
-        hp: 300,
+        hp: BUILD_CONFIG.coreHull,
         scrap: 0,
       })),
       ...map.deposits.map((d): BuildEntity => ({
         ...d,
         kind: "deposit",
         owner: -1,
-        hp: d.kind === "small" ? 30 : 90,
+        hp:
+          d.kind === "small"
+            ? BUILD_CONFIG.smallDepositHull
+            : BUILD_CONFIG.largeDepositHull,
       })),
     ],
     spent: 0,
@@ -239,7 +224,10 @@ function purchase(
       kind: action.kind,
       slot: player.slot,
       owner: player.seat,
-      hp: action.kind === "wall" ? 60 : 80,
+      hp:
+        action.kind === "wall"
+          ? BUILD_CONFIG.wallHull
+          : BUILD_CONFIG.turretHull,
       scrap: 0,
     });
   } else if (action.type === "upgrade") {

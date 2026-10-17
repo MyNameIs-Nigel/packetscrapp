@@ -1,4 +1,4 @@
-export { DEPOSIT_CONFIG } from "./config.ts";
+export { BUILD_CONFIG, DEPOSIT_CONFIG } from "./config.ts";
 export {
   generateDepositMap,
   type Deposit,

@@ -17,3 +17,29 @@ export const DEPOSIT_CONFIG = Object.freeze({
   unownedLarge: 4,
   maxAttempts: 16,
 });
+
+/** Accepted D1 economy and D2 build-phase values; runtime tuning has one source. */
+export const BUILD_CONFIG = Object.freeze({
+  revision: "d1-build-loop-r1",
+  buildTicks: 1800,
+  respawnTicks: 225,
+  disconnectTicks: 300,
+  resultsTicks: 225,
+  fireTicks: 5,
+  range: DEPOSIT_CONFIG.blasterRange,
+  hull: 100,
+  coreHull: 300,
+  wallHull: 60,
+  turretHull: 80,
+  smallDepositHull: 30,
+  largeDepositHull: 90,
+  hullBonus: 50,
+  damage: 10,
+  damageBonus: 5,
+  radius: 8,
+  wallCost: 10,
+  turretCost: 40,
+  blasterCosts: [50, 100, 150] as readonly number[],
+  hullCosts: [40, 80, 120] as readonly number[],
+  maxQueued: 30,
+});
