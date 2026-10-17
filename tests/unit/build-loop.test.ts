@@ -75,6 +75,68 @@ describe("authoritative harvest/build stages", () => {
     stepBuildWorld(w);
     expect(p.fireReady).toBe(w.tick + 5);
   });
+  it("cannot spend same-tick harvested scrap and keeps paid = held + spent + pickups + abandoned", () => {
+    const w = createBuildWorld([0, 1], 42),
+      p = first(w);
+    w.entities = w.entities.filter((e) => e.kind === "core");
+    w.entities.push({
+      id: "ore",
+      kind: "deposit",
+      x: p.x + 3,
+      y: p.y,
+      slot: p.slot,
+      owner: -1,
+      hp: 10,
+      scrap: 10,
+    });
+    p.facing = "right";
+    queueBuildAction(w, p.seat, { type: "build", kind: "wall" });
+    queueBuildAction(w, p.seat, { type: "fire" });
+    stepBuildWorld(w);
+    expect(p.scrap).toBe(10);
+    expect(w.entities.some((e) => e.kind === "wall")).toBe(false);
+    queueBuildAction(w, p.seat, { type: "build", kind: "wall" });
+    stepBuildWorld(w);
+    expect(p.scrap).toBe(0);
+    expect(w.spent).toBe(10);
+    expect(w.entities.filter((e) => e.kind === "wall")).toHaveLength(1);
+    expect(w.paid).toBe(
+      w.seats.reduce((n, s) => n + s.scrap, 0) +
+        w.spent +
+        w.abandoned +
+        w.entities
+          .filter((e) => e.kind === "pickup")
+          .reduce((n, e) => n + e.scrap, 0),
+    );
+  });
+  it("credits a recorded final hit once in ascending seat order", () => {
+    const w = createBuildWorld([0, 1], 42),
+      a = first(w),
+      b = w.seats[1]!;
+    w.entities = [];
+    a.x = 10;
+    a.y = 10;
+    a.facing = "right";
+    b.x = 14;
+    b.y = 10;
+    b.facing = "left";
+    w.entities.push({
+      id: "ore",
+      kind: "deposit",
+      x: 12,
+      y: 10,
+      slot: a.slot,
+      owner: -1,
+      hp: 10,
+      scrap: 40,
+    });
+    queueBuildAction(w, b.seat, { type: "fire" });
+    queueBuildAction(w, a.seat, { type: "fire" });
+    stepBuildWorld(w);
+    expect(a.scrap).toBe(40);
+    expect(b.scrap).toBe(0);
+    expect(w.paid).toBe(40);
+  });
   it("purchases before moving and before harvested income; one build then one upgrade", () => {
     const w = createBuildWorld([0, 1], 42),
       p = first(w);

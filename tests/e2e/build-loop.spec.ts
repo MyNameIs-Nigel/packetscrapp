@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("two keyboard players harvest, build, get rejection feedback and keep focus boundaries", async ({
   browser,
-}) => {
+}, testInfo) => {
   const a = await browser.newContext(),
     b = await browser.newContext();
   try {
