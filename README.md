@@ -5,9 +5,9 @@
 
 A space-themed multiplayer browser game for 2–5 players. Harvest scrap, fortify your core, and fight to be the last ship standing when the asteroid belt drops.
 
-**Status: connected-room prototype.** The npm workspaces, an authoritative Colyseus server with admission, a roster-only waiting room, 15 Hz server-owned ship movement (in a labelled local prototype), per-seat state views, input limits, an exact-origin policy and canonical `/health`, plus a browser client, exist. Harvesting, building, combat, matches and deployment are not implemented; `packetscr.app` is the planned public site, and this is not yet a playable game.
+**Status: verified connected foundation with a local harvest/build preview.** The authoritative server supplies admission, private sector views, bounded inputs and 15 Hz movement. Local preview rooms now generate finite deposits, award scrap, build walls/turrets, apply upgrades, handle Belt deaths/core-backed respawns, and reveal the map after 120 seconds. The preview pauses at reveal: turret/PvP combat, complete matches, bots, reconnect and deployment are still ahead. `packetscr.app` remains the planned public site.
 
-The [development/gate audit](docs/PROGRESS.md) records accepted D0/D1 inputs and E0 evidence; the [E1 implementation record](docs/engineer/E1_EVIDENCE.md) records the connected-room slice, which still needs independent Q1 and Design review before gate G1.
+Independent E1 repair retest and required three-browser CI are recorded in [QA PR #54](https://github.com/MyNameIs-Nigel/packetscrapp/pull/54). The new gameplay slice has its own [Engineering evidence and limits](docs/engineer/E3_BUILD_LOOP.md); independent Q2 and Design UI acceptance remain required before G3.
 
 ## Planned stack
 
@@ -29,7 +29,7 @@ npm ci
 npm run dev
 ```
 
-Open `http://127.0.0.1:5173`, then choose **Connect**. For the full local checks:
+Open `http://127.0.0.1:5173`. To try the first build loop, open two independent browser tabs/contexts, enter nicknames, choose the same player count and map seed, then activate **Start harvest/build preview** in each. The room starts when all requested seats join. Focus the board: WASD/arrows move, Space harvests, 1/2 build wall/turret, Q/E upgrade blaster/hull. **Join waiting room** and **Start movement prototype** remain available separately. For the full local checks:
 
 ```sh
 npm run format:check
