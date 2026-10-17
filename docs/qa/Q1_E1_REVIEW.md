@@ -1,5 +1,7 @@
 # Independent Q1 execution of merged E1
 
+Current retest: [2026-10-17 repaired-candidate receipt](Q1_REPAIR_RETEST.md) passes the local foundation subset and records defect disposition; required exact-head three-browser CI remains the final G1 condition. The original candidate-specific failure record below is preserved.
+
 Status: **Blocked** under [#32](https://github.com/MyNameIs-Nigel/packetscrapp/issues/32). H02 fails the exact-origin preflight contract; Engineering owns [#34](https://github.com/MyNameIs-Nigel/packetscrapp/issues/34). G1 is not Verified. This QA run did not author or fix E1 product behavior.
 
 CI receipt supersedes any inference of complete V01 acceptance below: [run 37250690815](https://github.com/MyNameIs-Nigel/packetscrapp/actions/runs/37250690815) on QA head `f68ebdd20780330095f3fde12996a2c8021d4a4d` passed repository checks, formatting/lint/types and unit tests, but integration returned **106 passes / 2 failures**. H02 reproduced; the existing V01 raw-byte positive control also failed (`deposit-2` absent from captured bytes), although decoded-state assertions and the new four-layout probe passed. Browser/build/artifact CI steps were skipped after failure. [#36](https://github.com/MyNameIs-Nigel/packetscrapp/issues/36) records the unresolved evidence-capture problem. Local V01 results below remain local results; transport acceptance is **Blocked**, not Pass.

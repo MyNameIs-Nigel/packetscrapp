@@ -1,5 +1,7 @@
 # Development and shared-gate audit
 
+2026-10-17 QA retest: [Q1 repair receipt](qa/Q1_REPAIR_RETEST.md) independently passes 214 unit, 109 integration, 11 built system-Chromium journeys, reproducible artifacts and bare-bundle smoke on `296479a1f1079b3fe656c8c7275e65a97a2f7595`. #34/#36/#39 local repair retests pass; exact-head PR browser CI is required before G1 closure. QA also accepts the map-generation artifact and D2/D3 observable contract oracles; Engineering feasibility/mapping and later runtime acceptance remain separate. Older status tables below are historical unless superseded by this receipt.
+
 Current completion addendum (2026-10-05): Engineering repair #41 is merged at `3357587e7bdb5203b3ead110965fe84f5bf67834`. The [combined Design review](design/DESIGN_COMPLETION.md) completes remaining D2/D3 specification corrections and accepts the observed E1 movement/focus intent under #38 within system-Chromium prototype coverage. Independent QA #32 still needs to retest the merged origin/raw-frame/browser repairs and record defect disposition. G1 remains open. Earlier failures and evidence below remain candidate-specific; D2/D3 still require Engineering/QA contract acceptance.
 
 Audit date: 2026-10-04 UTC. Repository base: `53c2357e39f57303df2c3095df2eafa0fb7fa26a`. Audit owner: Codex, working for maintainer @MyNameIs-Nigel under [#13](https://github.com/MyNameIs-Nigel/packetscrapp/issues/13). This record supersedes stale phase-summary wording; it does not replace the [gate criteria](DELIVERY_PLAN.md#shared-checkpoints).
