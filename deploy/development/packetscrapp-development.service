@@ -1,0 +1,31 @@
+[Unit]
+Description=Packet Scrapp isolated development game server
+After=network.target
+
+[Service]
+Type=simple
+User=packetscrapp
+Group=packetscrapp
+WorkingDirectory=/opt/packetscrapp/development/current
+EnvironmentFile=/etc/packetscrapp/development.env
+ExecStart=/opt/packetscrapp/runtime/node-v24.21.0/bin/node --max-old-space-size=384 server/server.mjs
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+UMask=0077
+MemoryMax=512M
+TasksMax=128
+# Restarts terminate current rooms until E7 adds bounded draining.
+TimeoutStopSec=15
+
+[Install]
+WantedBy=multi-user.target

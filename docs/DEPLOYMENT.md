@@ -2,6 +2,8 @@
 
 ## Current status
 
+2026-10-17 preparation: [reviewable development service/routing templates and artifact verifier](../deploy/README.md) now exist under #56. They are not installed, and green-main selection, activation, rollback qualification, development-client endpoint and public HTTPS/WSS still require their E2 implementation/access/evidence.
+
 This is the delivery contract for the planned application. `.github/workflows/ci.yml` checks the E0 application harness and builds client/server artifacts. The workspace produces a digest manifest and a standalone server bundle, but no game, server provisioning, development builder, or production deployment workflow exists. GitHub settings alone will not deploy a game; complete the implementation checklist below first.
 
 ## Environments and triggers

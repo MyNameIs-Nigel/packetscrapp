@@ -1,0 +1,2 @@
+# Install with visudo -cf validation; verify the systemctl path on the target Ubuntu host.
+packetscrapp-deploy ALL=(root) NOPASSWD: /usr/bin/systemctl restart packetscrapp-development.service

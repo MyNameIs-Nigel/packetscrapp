@@ -1,0 +1,9 @@
+# Replace only with the maintainer-approved Tunnel ID/path; never commit its credential file.
+tunnel: REPLACE_WITH_APPROVED_TUNNEL_ID
+credentials-file: /etc/cloudflared/packetscrapp-development.json
+ingress:
+  - hostname: dev.packetscr.app
+    service: http://127.0.0.1:8080
+  - hostname: atl-dev.packetscr.app
+    service: http://127.0.0.1:2567
+  - service: http_status:404

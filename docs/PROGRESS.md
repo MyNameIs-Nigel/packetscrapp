@@ -62,7 +62,7 @@ Dirty working-tree runs are development feedback only. New changes in this audit
 | Contenders, core-loss during respawn/disconnect, win/same-tick draw | Proposed full D2 lifecycle revision 2 under #29; Engineering/QA acceptance required before E3 death slice / E4 | Design; Engineering/QA review |
 | Sudden-death duration / finite match bound | D2 #29 supplies proposed 5:22/5:46 paper bounds; cadence and boundary acceptance plus Q3 runtime evidence remain open | Design and Engineering; freeze at dependent slice entry |
 | Host/bot/reconnect/spectator journeys | D3 revision 1 proposed under #33; exact message/identity and oracle acceptance required before dependent E5/E6 slices | Engineering/QA review; maintainer coordinates |
-| Hosting/Tunnel/SSH/Atlanta builder, credentials, budget | E2 access/provisioning unverified; no E1 local blocker | Maintainer and Engineering; resolve before E2 application deployment |
+| Hosting/Tunnel/SSH/Atlanta builder, credentials, budget | [E2 service/routing/artifact-verification preparation](engineer/E2_HOSTING_PREPARATION.md), #56, delivered 2026-10-17; actual host/Tunnel/status-token access, builder activation/restore and G2 remain unverified | Maintainer and Engineering; resolve before E2 application deployment |
 | Operational workload and safe capacity | Q0 provisional targets documented; actual measurements required before E7/G6 | Engineering/QA; qualify on intended hosts |
 
 E1's immediate implementation inputs are present. Integrating and reviewing #13 closes the prerequisite handoff; #14 is the next development package. Keep G1 open until actual authoritative movement and independent evidence satisfy its checklist.
