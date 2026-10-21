@@ -1,4 +1,4 @@
-export { DEPOSIT_CONFIG } from "./config.ts";
+export { BUILD_CONFIG, DEPOSIT_CONFIG } from "./config.ts";
 export {
   generateDepositMap,
   type Deposit,
@@ -75,3 +75,4 @@ export const systemClock: Clock = { now: () => Date.now() };
 /** Monotonic milliseconds for windows and tick scheduling; never wall-clock time. */
 export const monotonicClock: Clock = { now: () => performance.now() };
 export const systemRandom: RandomSource = { next: () => Math.random() };
+export * from "./buildLoop.ts";

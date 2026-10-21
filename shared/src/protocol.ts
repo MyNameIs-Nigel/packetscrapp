@@ -1,11 +1,12 @@
 /**
  * Wire contract between the browser client and the authoritative server.
  *
- * Version 2 replaces the E0 health fields (`sha`, `protocolVersion`) with the
+ * Version 3 adds the harvest/build-preview schema, private economy fields and
+ * validated fire/build/upgrade actions. Version 2 replaces the E0 health fields (`sha`, `protocolVersion`) with the
  * canonical `version` / `protocol` pair and adds exact join and message
  * validation. Bump this for any change an old client could not handle.
  */
-export const PROTOCOL_VERSION = 2;
+export const PROTOCOL_VERSION = 3;
 
 /** Room type for the ordinary waiting room (roster only). */
 export const ROOM_MATCH = "match";

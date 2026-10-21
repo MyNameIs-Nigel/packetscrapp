@@ -1,5 +1,7 @@
 # Engineering / Programming team phases
 
+Current E3 increment: [harvest/build preview](E3_BUILD_LOOP.md) implements the first local build loop and protocol 3, with [accepted contract inputs](CONTRACT_ACCEPTANCE.md). Independent Q2/Design acceptance and full battle/session/delivery phases remain open. Earlier E1 summary below is historical.
+
 Status: E0 is merged in PR #9; its original CI passed and the [gate audit](../PROGRESS.md) supplies independent foundation evidence and a build correction for review. E1 is implemented and In review: the [implementation record](E1_EVIDENCE.md) holds the candidate, results, decisions and limits, and the [E1 handoff](E1_HANDOFF.md) tracks the G1 checklist, which independent Q1 and Design review still have to close. E2–E7 remain planned. Nothing here is a playable game: there is a roster-only waiting room and a local movement prototype. Branches use `engineer/summary-of-branch`. Follow [shared gates and dependencies](../DELIVERY_PLAN.md), [engineering practices](../ENGINEERING.md), and the [QA acceptance matrix](../qa/ACCEPTANCE_MATRIX.md).
 
 ## Responsibility and implementation boundaries

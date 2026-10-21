@@ -1,5 +1,7 @@
 # Architecture
 
+Current local implementation: [E3 harvest/build preview](engineer/E3_BUILD_LOOP.md) adds private economy/schema fields and exact fire/build/upgrade envelopes under protocol 3. It pauses at the authoritative build-to-battle reveal; complete combat/session/deployment behavior below remains planned. [Contract acceptance](engineer/CONTRACT_ACCEPTANCE.md) supersedes the earlier D2/D3 proposal status.
+
 Design specification. E1 implements the connected-room slice described below: admission, a roster-only waiting room, the 15 Hz movement simulation (in a labelled local prototype), per-seat state views, input limits, origin policy and canonical health. Match lifecycle, combat, economy, reconnection and deployment are not implemented; see [E1_EVIDENCE.md](engineer/E1_EVIDENCE.md). The diagram shows the planned production topology. Development runs the client and one server together on the Atlanta host, as described in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Components

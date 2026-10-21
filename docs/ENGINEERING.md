@@ -2,6 +2,8 @@
 
 ## Status and quality standard
 
+[E3 preview](engineer/E3_BUILD_LOOP.md) now supplies the local harvest/build slice and protocol 3. Its pause-at-reveal limitation and independent Q2/Design handoff are explicit; the earlier E1 scope statement below remains historical context.
+
 These are acceptance criteria for implementation. E0 added a runnable workspace and application checks; E1 extends them to admission, 15 Hz movement in a labelled local prototype, per-seat views, input limits, origin policy, canonical health, and two-context browser journeys in Chromium, Firefox and WebKit. Passing them does not mean a game or delivery works: there is no match lifecycle, economy or combat yet. Aim for small, verifiable changes and recoverable failures, not a promise of defect-free software.
 
 Implementation is divided into [Engineering team phases](engineer/README.md), with independent [QA phases](qa/README.md) and [Design contracts](design/README.md). The [shared delivery plan](DELIVERY_PLAN.md) controls cross-team handoffs and gates; the [acceptance matrix](qa/ACCEPTANCE_MATRIX.md) links each requirement to its evidence. Engineering branches use `engineer/summary-of-branch`; QA branches use `qa/summary-of-branch`; Design branches use `design/summary-of-branch`.

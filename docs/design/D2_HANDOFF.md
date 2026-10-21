@@ -1,5 +1,7 @@
 # Full D2 phase handoff
 
+Current disposition (2026-10-17): the existing D2/D3 revisions are accepted as implementation inputs in the [Engineering review](../engineer/CONTRACT_ACCEPTANCE.md) and independent QA oracle review PR #54, under the maintainer's request to complete the next three steps. Earlier proposal/acceptance-pending wording below is the preserved original handoff. Runtime gameplay, playtests and release gates remain separate.
+
 Status: **In review — proposed contracts, no independent acceptance or runtime verification.** Tracking [#29](https://github.com/MyNameIs-Nigel/packetscrapp/issues/29). Owner: Codex run `codex-d2-full-20261004`, Design. Engineering and QA review; maintainer @MyNameIs-Nigel coordinates named acceptance. This package supplies every D2 documentation deliverable in one reviewable phase, alongside the separately owned E1 implementation.
 
 ## Prerequisites and revision receipt

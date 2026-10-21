@@ -1,5 +1,7 @@
 # D3 complete journey handoff
 
+Current disposition (2026-10-17): the existing D2/D3 revisions are accepted as implementation inputs in the [Engineering review](../engineer/CONTRACT_ACCEPTANCE.md) and independent QA oracle review PR #54, under the maintainer's request to complete the next three steps. Earlier proposal/acceptance-pending wording below is the preserved original handoff. Runtime gameplay, playtests and release gates remain separate.
+
 Status: **In review — proposed revision 1, no independent acceptance or runtime evidence.** [#33](https://github.com/MyNameIs-Nigel/packetscrapp/issues/33). Owner: Codex run `codex-design-d3-20261005`, Design. Engineering reviews feasibility/messages/identity; QA reviews oracles; maintainer coordinates named acceptance. User scope is to advance Design until another team's input is required.
 
 ## Source and coordination receipt

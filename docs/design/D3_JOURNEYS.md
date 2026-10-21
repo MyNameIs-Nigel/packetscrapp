@@ -1,5 +1,7 @@
 # D3 player journeys — proposed revision 1
 
+Current disposition (2026-10-17): the existing D2/D3 revisions are accepted as implementation inputs in the [Engineering review](../engineer/CONTRACT_ACCEPTANCE.md) and independent QA oracle review PR #54, under the maintainer's request to complete the next three steps. Earlier proposal/acceptance-pending wording below is the preserved original handoff. Runtime gameplay, playtests and release gates remain separate.
+
 Status: **In review, proposed** under [#33](https://github.com/MyNameIs-Nigel/packetscrapp/issues/33). Engineering accepts transport/feasibility; QA accepts observable oracles. This is specification, not implementation, browser evidence or independent approval. Accepted D0 entry targets and D1 visibility remain binding. Lifecycle references consume the still-proposed [D2 revision 2](../GAME_DESIGN.md#d2-contender-and-win-draw-contract--revision-2); accepting this document alone cannot accept D2. [The handoff](D3_HANDOFF.md) records dependencies and evidence.
 
 The player rules below extend [GAME_DESIGN.md](../GAME_DESIGN.md). Identity/message requirements extend [ARCHITECTURE.md](../ARCHITECTURE.md). Region selection extends [REGIONS_AND_HEALTH.md](../REGIONS_AND_HEALTH.md). This is their linked authoritative D3 detail, not a second implementation API. Starting values are hypotheses. Do not implement a proposed slice until its required teams accept it.

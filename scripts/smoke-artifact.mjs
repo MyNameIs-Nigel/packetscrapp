@@ -152,21 +152,24 @@ try {
     ),
     (error) => error.code === 426,
   );
-  // The movement prototype exists only in a local artifact.
-  const prototype = new Client(endpoint, {
-    headers: { Origin: clientOrigin },
-  }).joinOrCreate("prototype", {
-    ...joinOptions,
-    seats: 2,
-    seed: 42,
-    view: "battle",
-  });
-  if (manifest.environment === "local") {
-    const prototypeRoom = await prototype;
-    prototypeRoom.onMessage("welcome", () => undefined);
-    await prototypeRoom.leave();
-  } else {
-    await assert.rejects(prototype);
+  // Neither local preview room can be created from a public artifact.
+  for (const [kind, view] of [
+    ["prototype", "battle"],
+    ["build_preview", "build"],
+  ]) {
+    const prototype = new Client(endpoint, {
+      headers: { Origin: clientOrigin },
+    }).joinOrCreate(kind, {
+      ...joinOptions,
+      seats: 2,
+      seed: 42,
+      view,
+    });
+    if (manifest.environment === "local") {
+      const prototypeRoom = await prototype;
+      prototypeRoom.onMessage("welcome", () => undefined);
+      await prototypeRoom.leave();
+    } else await assert.rejects(prototype);
   }
   await room.leave();
   const afterLeave = await waitForRooms(endpoint, 0);

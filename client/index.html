@@ -125,10 +125,10 @@
   <body>
     <main>
       <h1>Packet Scrapp</h1>
-      <p>Harvest scrap. Protect your core. Last ship wins.</p>
+      <p>Harvest scrap. Protect your core. Last contender wins.</p>
       <p class="muted">
-        Engineering preview: you can join a waiting room. Harvesting, building
-        and combat are not built yet.
+        Engineering preview: join a waiting room or try the local harvest/build
+        loop. Full combat and complete matches are still being built.
       </p>
 
       <section id="start" aria-labelledby="start-heading">
@@ -173,6 +173,8 @@
           aria-label="Game board. Press W A S D or the arrow keys to move your ship. Press Tab to leave the board."
         ></canvas>
         <p id="game-status" class="muted"></p>
+        <p id="build-hud" hidden></p>
+        <p id="shop-feedback" role="status" aria-live="polite"></p>
         <p id="legend" class="muted"></p>
         <h3>Ships you can see</h3>
         <ul id="ships" class="plain"></ul>
